@@ -2,7 +2,7 @@
 title: "P8105_Final Project Proposal"
 author: "Xuesen Zhao, Xicheng Xie, Lincole Jiang, Jiayi  Shi, Tianshu Liu"
 date: "2022-11-09"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
