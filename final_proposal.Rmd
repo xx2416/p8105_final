@@ -1,0 +1,45 @@
+---
+title: "P8105_Final Project Proposal"
+author: "Xuesen Zhao, Xicheng Xie, Lincole Jiang, Jiayi  Shi, Tianshu Liu"
+date: "2022-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Participants
+* Xuesen Zhao (xz3178)
+* Xicheng Xie (xx2416)
+* Lincole Jiang (tk2886)
+* Jiayi Shi (lj2575)
+* Tianshu Liu (tl3196)
+
+### Project title
+**NYC restaurants recommender**
+
+### Motivation for this project
+One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type.
+
+### The intended final products
+* a website containing details the map of NYC restaurants
+* a regression/logistic regression model that analyzes the correlational relationship between customer rating and explanatory variables like zip code, sanitary condition, etc.
+* an interactive shiny app that recommends one’s desired restaurant based on one’s preference for location, cuisine type, price, etc.
+
+### The anticipated data sources
+NYC Opendata, Restaurant Review Websites (Yelp, Resy, Opentable)
+
+### Potential challenges
+* Fetching real-time data from yelp website containing restaurant information and rating
+* Difficulties developing interactive shiny app
+
+### Planned timeline
+* `Nov. 9-15th`: project proposal, allocating data from yelp
+* `Nov.16-23th`: Preliminary analysis for regression model, shiny app, EDA/Visualization 
+* `Nov.23-30th`: Extending preliminary analysis results to encompass full dataset
+* `Nov.30th-Dec`.7th: Webpage screentest/developing interactive real-time shiny app
+* `Dec.7th-10th`: final review
+
+
+
