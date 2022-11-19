@@ -72,17 +72,14 @@ get_info = function(url){
     #   html_elements(".css-q7yb35:nth-child(1) .css-11bijt4") %>%
     #   html_text() %>% .[1]
     
-    # rating = 
-    #   data %>% 
-    #   str_split(name) %>%
-    #   .[[1]] %>% .[2] %>% 
-    #   str_split(review_num, n = 2) %>% 
-    #   .[[1]] %>% .[1] 
+    rating =
+      data %>%
+      str_split(name) %>%
+      .[[1]] %>% .[2] %>%
+      str_split(review_num, n = 2) %>%
+      .[[1]] %>% .[1] %>% 
+      str_sub(1, -3)
     
-    rating = 
-      html_page %>% 
-      html_elements(".css-gutk1c") %>%
-      html_text() %>% .[3]
     
     closeAllConnections()
     
