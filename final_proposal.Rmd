@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * Xuesen Zhao (xz3178)
 * Xicheng Xie (xx2416)
 * Lincole Jiang (tk2886)
-* Jiayi Shi (lj2575)
+* Jiayi Shi (js6177)
 * Tianshu Liu (tl3196)
 
 ### Project title
