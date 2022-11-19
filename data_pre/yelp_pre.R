@@ -82,7 +82,7 @@ get_info = function(url){
     rating = 
       html_page %>% 
       html_elements(".css-gutk1c") %>%
-      html_text() %>% .[4]
+      html_text() %>% .[3]
     
     closeAllConnections()
     
@@ -227,7 +227,7 @@ c(running_time_1, running_time_2, running_time_3, running_time_4, running_time_5
 
 file_name = str_c("./data/yelp/yelp_data_", as.character(start_index), "_", as.character(end_index), ".csv")
 
-result %>% 
+result %>%  
   select(-data) %>% 
   write_excel_csv(file = file_name)
 
