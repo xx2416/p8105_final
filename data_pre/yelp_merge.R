@@ -27,5 +27,8 @@ yelp_df %>%
 
 # export
 
-yelp_df %>% write_excel_csv("./data/yelp_data.csv")
+# yelp_df %>% write_excel_csv("./data/yelp_data.csv")
+
+inspection_df = 
+  read_csv("./data/inspection_data.csv")
 
