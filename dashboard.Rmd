@@ -1,0 +1,70 @@
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+library(flexdashboard)
+library(tidyverse)
+library(p8105.datasets)
+library(plotly)
+```
+
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Number of items ordered in each aisle
+
+```{r}
+data("instacart")
+
+instacart %>% 
+  count(aisle) %>% 
+  filter(n > 10000) %>% 
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
+  
+  plot_ly(x = ~aisle, y = ~n, color = ~aisle, type = "bar", colors = "viridis", source="Instacart")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Max temperature vs min temperature (1981 & 2010)
+
+```{r}
+data("ny_noaa")
+
+set.seed(2)
+ny_noaa %>%
+  drop_na() %>% 
+  sample_n(2000) %>% 
+  mutate(
+    prcp = prcp/10,
+    tmin = as.numeric(tmin)/10,
+    tmax = as.numeric(tmax)/10,
+    year = as.character(lubridate::year(date))
+    ) %>% 
+  filter(year %in% c("1981","2010")) %>% 
+  
+  plot_ly(x = ~tmin, y = ~tmax, color = ~year, colors = "Set2",  type = "scatter", mode = "markers", marker = list(size = ~prcp), text = ~paste('Precipitation: ', prcp))
+```
+
+### Scores of restaurant with grade A
+
+```{r}
+data("rest_inspec")
+
+rest_inspec %>% 
+  filter(boro %in% c("MANHATTAN","BRONX","BROOKLYN","QUEENS","STATEN ISLAND"),grade == "A") %>% 
+  drop_na() %>% 
+  mutate(
+    text_label = str_c("Score: ", score, "\nDescription: ", cuisine_description),
+    boro = fct_reorder(boro, score)
+    ) %>% 
+  
+  plot_ly(y = ~score, type = "box", color = ~boro, text = ~text_label, alpha = 0.5)
+```
