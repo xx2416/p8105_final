@@ -1,16 +1,22 @@
-name: "grace-website"
+name: "final_project"
 output_dir: "."
 navbar:
-  title: "Grace Website"
+  title: "Home"
   right:
     - text: "Home"
       href: index.html
-    - text: "About Me"
-      href: about.html
-    - text: "Dashboard"
-      href: dashboard.html
+    - text: "Exploratory Analysis"
+      href: eda.html
+    - text: "Statistical Analysis"
+      href: stat_analysis.html
+    - text: "Project report"
+      href: report.html
+    - text: "Shiny app"
+      href: shiny.html
     - icon: fa-envelope fa-lg
       href: mailto:<js6177@cumc.columbia.edu>
+    - icon: fa-github fa-lg
+      href: https://github.com/xx2416/p8105_final
       
 output:
   html_document:
