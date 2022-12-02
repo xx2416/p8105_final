@@ -1,0 +1,12 @@
+flexdashboard
+tidyverse
+ggplot2
+tibble
+tidyr
+readr
+purrr
+dplyr
+stringr
+forcats
+p8105.datasets
+plotly

@@ -9,7 +9,7 @@ navbar:
       href: eda.html
     - text: "Statistical Analysis"
       href: stat_analysis.html
-    - text: "Project report"
+    - text: "Project Report"
       href: report.html
     - text: "Shiny app"
       href: shiny.html
