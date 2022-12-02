@@ -13,7 +13,7 @@ library(plotly)
 ```
 
 
-```{r}
+```{r include=FALSE}
 inspection_sub<-read.csv("data/inspection_sub.csv") %>% 
   janitor::clean_names() %>% 
   select(-boro_y,-building_y,-street_y,-zipcode_y,-location_point,-dba_y,-url,-phone) %>% 
@@ -23,7 +23,7 @@ inspection_sub<-read.csv("data/inspection_sub.csv") %>%
 ```
 
 ## boro vs cuisine
-```{r}
+```{r echo = FALSE}
 boro_cuisine_bar<-
 inspection_sub %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
