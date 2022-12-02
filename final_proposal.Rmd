@@ -2,7 +2,7 @@
 title: "P8105_Final Project Proposal"
 author: "Xuesen Zhao, Xicheng Xie, Lincole Jiang, Jiayi  Shi, Tianshu Liu"
 date: "2022-11-09"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * Tianshu Liu (tl3196)
 
 ### Project title
-**NYC restaurants recommender**
+**NYC Restaurants Recommender**
 
 ### Motivation for this project
 One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type.
