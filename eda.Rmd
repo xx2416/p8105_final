@@ -10,6 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(plotly)
+library(ggridges)
 ```
 
 
@@ -42,5 +43,80 @@ inspection_sub %>%
   facet_grid(~boro)
 
 ggplotly(boro_cuisine_bar)
+```
+
+
+
+## Xuesen 
+
+```{r}
+inspection_sub = read.csv("data/inspection_sub.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-boro_y,-building_y,-street_y,-zipcode_y,-location_point,-dba_y,-url,-phone) %>% 
+  rename(dba=dba_x,boro=boro_x,building=building_x,street=street_x,zipcode=zipcode_x) %>%
+  replace_na(list(grade = "N"))
+
+inspection_raw = read_csv("./data/inspection_sub_all_date.csv") %>%
+  janitor::clean_names() %>%
+  mutate(
+    violation_description = as.factor(violation_description)
+  )
+  
+top_10_vio = inspection_raw %>% 
+  group_by(violation_description) %>%
+  summarize(
+    n = n()
+  ) %>%
+  mutate(
+    rank = rank(-n, ties.method = "first")
+  ) %>% 
+  filter(rank <=10) %>%
+  arrange(desc(n)) %>% mutate(
+    rank = as.factor(rank)
+  ) %>%
+  mutate(
+    abb_violation = fct_recode(
+      rank,
+      "Non-food contact surface improperly constructed" = "1",
+      "Food contact surface not properly cleaned" = "2",
+      "Unacceptable materials" = "3",
+      "Facility not vermin proof" = "4", 
+      "Not free of harborage" = "5",
+      "Evidence of mice or live mice present" = "6",
+      "Filth flies or food/refuse/sewage with FRSA  flies"  = "7",
+      "Cold CT food held above 41 F" = "8",
+      "Cold food item held above 41 F" = "9",
+     "Evidence of mice or live mice in establishment’s food or non-food areas" = "10"
+        )
+  )
+
+
+
+top_10_vio %>%
+  ggplot(aes(x = rank, y = n, fill = n), data = .)+geom_bar(stat="identity")+labs(x = "violation type", y = "frequency", caption = "Exact violation type and associated frquency is shown in the following table")
+  
+top_10_vio %>% 
+  select(abb_violation, n) %>%
+  knitr::kable()
+```
+
+```{r}
+## Yelp Rating vs. price boxplot 
+inspection_sub %>% 
+  filter(!is.na(price)) %>%
+  ggplot(aes(x = price, y = rating, fill = price), data = .)+geom_boxplot()+labs(title = "Yelp Rating vs. Price")
+```
+
+```{r}
+inspection_sub %>%
+  filter(!is.na(grade),!is.na(boro)) %>%
+  ggplot(aes(x = boro, y = grade, fill = grade), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Inspection grade by Boroughs")
+```
+
+```{r}
+inspection_sub %>%
+  filter(!is.na(grade),!is.na(boro)) %>%
+  filter(critical_flag == c("Critical", "Not Critical")) %>%
+  ggplot(aes(x = boro, y = critical_flag, fill = critical_flag), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Percent with critical flag by boroughs")
 ```
 
