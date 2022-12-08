@@ -5,7 +5,7 @@ account: sweetsugar
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7799139
-bundleId: 6611709
+bundleId: 6611913
 url: https://sweetsugar.shinyapps.io/recommender/
-when: 1670525301.31854
-lastSyncTime: 1670525301.31855
+when: 1670528262.27908
+lastSyncTime: 1670528262.27909

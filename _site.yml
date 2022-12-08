@@ -12,7 +12,7 @@ navbar:
     - text: "Project Report"
       href: report.html
     - text: "Shiny app"
-      href: https://sweetsugar.shinyapps.io/recommender/
+      href: https://sweetsugar.shinyapps.io/recommender
     - icon: fa-envelope fa-lg
       href: mailto:<js6177@cumc.columbia.edu>
     - icon: fa-github fa-lg

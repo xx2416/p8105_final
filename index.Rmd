@@ -1,13 +1,8 @@
 ---
-<<<<<<< HEAD
 title: "Home"
-=======
-title: "Jiayi (Grace) Shi"
 output: 
   html_document:
     toc: true
     toc_float: true
     theme: flatly
->>>>>>> fa78053e5dd21b8e1d2bf335f93b542e6b2e62bd
 ---
-
