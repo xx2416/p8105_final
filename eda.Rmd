@@ -16,15 +16,14 @@ library(patchwork)
 
 
 ```{r include=FALSE}
-inspection_sub<-read.csv("data/inspection_sub_latest_date.csv") %>% 
+inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>% 
   janitor::clean_names()
-  
 ```
 
 ## boro vs cuisine
 ```{r echo = FALSE}
 boro_cuisine_bar<-
-inspection_sub %>% 
+inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro) %>% 
   mutate(cuisine_description=fct_infreq(cuisine_description)) %>% 
@@ -46,7 +45,7 @@ ggplotly(boro_cuisine_bar)
 
 ```{r}
 price_cuisine<-
-  inspection_sub %>% 
+  inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro,price) %>% 
   mutate(price=as.factor(price)) %>% 
@@ -70,7 +69,7 @@ ggplotly(price_cuisine)
 ## Price vs. borough
 ```{r}
 price_boro<-
-  inspection_sub %>% 
+  inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro,price) %>%
   mutate(boro = fct_infreq(boro),
@@ -84,7 +83,7 @@ ggplotly(price_boro)
 ## review number vs. rating score (exclude extreme outliers)
 ```{r}
 review_num_rating<-
-  inspection_sub %>% 
+  inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>% drop_na(boro,price,rating) %>%
   filter(!review_num<=100) %>%
   group_by(rating) %>%
@@ -211,19 +210,19 @@ top_10_vio %>%
 
 ```{r}
 ## Yelp Rating vs. price boxplot 
-inspection_sub %>% 
+inspection_raw %>% 
   filter(!is.na(price)) %>%
   ggplot(aes(x = price, y = rating, fill = price), data = .)+geom_boxplot()+labs(title = "Yelp Rating vs. Price")
 ```
 
 ```{r}
-inspection_sub %>%
+inspection_raw %>%
   filter(!is.na(grade),!is.na(boro)) %>%
   ggplot(aes(x = boro, y = grade, fill = grade), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Inspection grade by Boroughs")
 ```
 
 ```{r}
-inspection_sub %>%
+inspection_raw %>%
   filter(!is.na(grade),!is.na(boro)) %>%
   filter(critical_flag == c("Critical", "Not Critical")) %>%
   ggplot(aes(x = boro, y = critical_flag, fill = critical_flag), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Percent with critical flag by boroughs")
