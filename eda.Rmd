@@ -16,18 +16,14 @@ library(patchwork)
 
 
 ```{r include=FALSE}
-inspection_sub<-read.csv("data/inspection_sub.csv") %>% 
-  janitor::clean_names() %>% 
-  select(-boro_y,-building_y,-street_y,-zipcode_y,-location_point,-dba_y,-url,-phone) %>% 
-  rename(dba=dba_x,boro=boro_x,building=building_x,street=street_x,zipcode=zipcode_x) %>%
-  select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) 
-  
+inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>% 
+  janitor::clean_names()
 ```
 
 ## boro vs cuisine
 ```{r echo = FALSE}
 boro_cuisine_bar<-
-inspection_sub %>% 
+inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro) %>% 
   mutate(cuisine_description=fct_infreq(cuisine_description)) %>% 
@@ -46,9 +42,10 @@ inspection_sub %>%
 ggplotly(boro_cuisine_bar)
 ```
 ## price vs cuisine
+
 ```{r}
 price_cuisine<-
-  inspection_sub %>% 
+  inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro,price) %>% 
   mutate(price=as.factor(price)) %>% 
@@ -69,22 +66,109 @@ ggplotly(price_cuisine)
 
 ```
 
+## Price vs. borough
+```{r}
+price_boro<-
+  inspection_raw %>% 
+  select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
+  drop_na(boro,price) %>%
+  mutate(boro = fct_infreq(boro),
+         price=as.factor(price)) %>%
+  ggplot(aes(x = boro, fill = price)) + 
+  geom_bar()
+
+ggplotly(price_boro)
+```
+
+## review number vs. rating score (exclude extreme outliers)
+```{r}
+review_num_rating<-
+  inspection_raw %>% 
+  select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>% drop_na(boro,price,rating) %>%
+  filter(!review_num<=100) %>%
+  group_by(rating) %>%
+  summarize(sum_review=sum(review_num)) %>% 
+  ggplot(aes(y=sum_review,x=rating))+
+  geom_point()+
+  geom_smooth()+
+  labs(
+    x="Sum of review_numbers",
+    y="Rating"
+  )
+
+ggplotly(review_num_rating)
+```
+
+## top 10 violations vs. cuisine type
+```{r}
+
+vio_cuisine_bar<-
+  inspection_raw %>% 
+  filter(violation_description %in% top_10_vio$violation_description) %>%
+  group_by(violation_description,cuisine_description) %>% 
+  summarize(n_obs=n()) %>% 
+  filter(min_rank(desc(n_obs))<=5) %>%
+  left_join(top_10_vio) %>% 
+  select(abb_violation,cuisine_description,n_obs,rank) %>% 
+  ggplot(aes(x=cuisine_description
+             ,y=n_obs,fill=cuisine_description))+
+  geom_bar(position="dodge", stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
+  theme(axis.text.x = element_text(size = 4))+
+  labs(
+    x="top 5 cuisine types at top 10 most frequently appeared violation",
+    y="Number"
+  )+
+  facet_grid(~rank)
+  
+
+ggplotly(vio_cuisine_bar)
+```
+
+## grade associated with the inspection vs. boro / cuisine type
+```{r}
+grade_boro<-
+  inspection_raw %>% 
+  filter(grade %in% c("A","B","C")) %>%
+  mutate(boro=fct_infreq(boro)) %>% 
+  ggplot(aes(x = boro, fill = grade))+
+  geom_bar()+
+  labs(
+    x="Borough",
+    y="Number"
+  )
+
+top_10_cuisine<-
+  inspection_raw %>% 
+  filter(grade %in% c("A","B","C")) %>%
+  group_by(cuisine_description) %>% 
+  summarise(n_obs=n()) %>% 
+  filter(min_rank(desc(n_obs))<=10) 
+
+grade_cuisine<-
+  inspection_raw %>% 
+  filter(grade %in% c("A","B","C") & cuisine_description %in% top_10_cuisine$cuisine_description) %>% 
+  mutate(cuisine_description=fct_infreq(cuisine_description)) %>% 
+  ggplot(aes(x=cuisine_description,fill=grade))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
+  labs(
+    x="Cuisine",
+    y="Number"
+  )
+
+grade_boro/grade_cuisine
+```
+
 
 
 ## Xuesen 
-
 ```{r}
-inspection_sub = read.csv("data/inspection_sub.csv") %>% 
-  janitor::clean_names() %>% 
-  select(-boro_y,-building_y,-street_y,-zipcode_y,-location_point,-dba_y,-url,-phone) %>% 
-  rename(dba=dba_x,boro=boro_x,building=building_x,street=street_x,zipcode=zipcode_x) %>%
-  replace_na(list(grade = "N"))
-
 inspection_raw = read_csv("./data/inspection_sub_all_date.csv") %>%
   janitor::clean_names() %>%
   mutate(
     violation_description = as.factor(violation_description)
-  )
+  ) 
   
 top_10_vio = inspection_raw %>% 
   group_by(violation_description) %>%
@@ -126,19 +210,19 @@ top_10_vio %>%
 
 ```{r}
 ## Yelp Rating vs. price boxplot 
-inspection_sub %>% 
+inspection_raw %>% 
   filter(!is.na(price)) %>%
   ggplot(aes(x = price, y = rating, fill = price), data = .)+geom_boxplot()+labs(title = "Yelp Rating vs. Price")
 ```
 
 ```{r}
-inspection_sub %>%
+inspection_raw %>%
   filter(!is.na(grade),!is.na(boro)) %>%
   ggplot(aes(x = boro, y = grade, fill = grade), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Inspection grade by Boroughs")
 ```
 
 ```{r}
-inspection_sub %>%
+inspection_raw %>%
   filter(!is.na(grade),!is.na(boro)) %>%
   filter(critical_flag == c("Critical", "Not Critical")) %>%
   ggplot(aes(x = boro, y = critical_flag, fill = critical_flag), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Percent with critical flag by boroughs")
