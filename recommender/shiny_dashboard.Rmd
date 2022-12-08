@@ -1,0 +1,170 @@
+---
+title: "Restaurant Recommender"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(rmarkdown)
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(p8105.datasets)
+library(viridis)
+
+library(shiny)
+library(shinyWidgets)
+
+
+
+
+```
+
+```{r golbal}
+
+all_res_df = read_csv("shiny_data/inspection_sub_all_date.csv") %>%
+  nest(inspection_detail = action:critical_flag)
+
+latest_res_df = read_csv("shiny_data/inspection_sub_all_date.csv") %>%
+  nest(inspection_detail = action:critical_flag)
+
+cuisine_list = 
+  all_res_df %>% 
+  select(cuisine_description) %>% 
+  count(cuisine_description) %>% 
+  arrange(desc(n)) %>% 
+  slice(1:10) %>% 
+  select(cuisine_description) %>% 
+  add_row(cuisine_description = "Others") %>%
+  pull()
+
+price_list = c(
+  "$ <10",
+  "$$ 10-30",
+  "$$$ 31-60",
+  "$$$$ >60"
+)
+
+sort_list_1 = c(
+  "distance", 
+  "rating", 
+  "price",
+  "inspection date"
+)
+
+sort_list_2 = c(
+  "rating", 
+  "price",
+  "inspection date"
+)
+
+```
+
+User Input {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+```{r user_input}
+selectInput(
+  inputId = "boro_choice",
+  label = "Select borough",
+  choices = all_res_df %>% distinct(boro) %>% pull()
+)
+
+textInput(
+  inputId = "street", 
+  label = "Street (Optional)")
+
+selectInput(
+  inputId = "cuisince_choice",
+  label = "Select cuisine type", 
+  choice = cuisine_list
+)
+
+sliderInput(
+  "rating_range",
+  label = "Choose rating range",
+  min = 0.0, max = 5.0, value = c(4.0, 4.5), round = FALSE, step = 0.01)
+
+sliderTextInput(
+  "price_range",
+  label = "Choose price range" , 
+  choices = price_list, 
+  selected = price_list[c(2:3)]
+)
+
+sliderInput(
+  "inspection_range",
+  label = "Choose inspection score range",
+  min = 0, max = 100, value = c(50, 100)
+)
+
+sort_list = ifelse(
+  input$street == "",
+  sort_list_2, 
+  sort_list_1
+)
+
+selectInput(
+  inputId = "sort_choice",
+  label = "Sort",
+  choices = sort_list
+)
+
+submitButton(
+  text = "Search"
+)
+```
+
+Column {data-width= 700}
+-----------------------------------------------------------------------
+
+### table
+
+```{r}
+renderDataTable(
+  all_res_df  %>% 
+    filter(boro == input$boro_choice)
+)
+
+
+
+# renderText({ 
+#   c(input[["boro_choice"]], input[["boro_choice"]])
+# })
+
+# renderPlotly({ 
+#   nyc_airbnb %>%
+#   filter(
+#     borough == input[["boro_choice"]], 
+#     price %in% input[["price_range"]][1]:input[["price_range"]][2],
+#     room_type == input[["room_choice"]] )%>%
+#   mutate(text_label = str_c("Price: $", price, '\nRating: ', stars)) %>% 
+#   plot_ly(
+#     x = ~lat, y = ~long, type = "scatter", mode = "markers",
+#     alpha = 0.5, color = ~price, text = ~text_label)
+# })
+
+```
+
+Column {data-width=200}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+renderPrint({
+  input$street
+})
+```
+
+### Chart C
+
+```{r}
+# renderPrint({ 
+#   input[["room_choice"]]
+# })
+```
+
