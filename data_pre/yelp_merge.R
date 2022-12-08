@@ -42,17 +42,19 @@ inspection_all_date =
 
 inspection_all_date %>% write_excel_csv("./data/inspection_sub_all_date.csv")
 
-
-inspection_sig_date = 
-  inspection_all_date %>% 
-  nest(inspection_detail = action:critical_flag)
-
-inspection_sig_date %>% write_excel_csv("./data/inspection_sub_sig_date.csv")
+# 
+# inspection_sig_date = 
+#   inspection_all_date %>% 
+#   nest(inspection_detail = action:critical_flag)
+# 
+# inspection_sig_date %>% write_excel_csv("./data/inspection_sub_sig_date.csv")
 
 inspection_latest_date = 
-  inspection_sig_date %>% 
+  inspection_all_date %>% 
+  nest(inspection_detail = action:critical_flag) %>% 
   group_by(camis) %>% 
-  slice(which.max(as.Date(inspection_date))) 
+  slice(which.max(as.Date(inspection_date))) %>% 
+  unnest(inspection_detail)
 
 inspection_latest_date %>% write_excel_csv("./data/inspection_sub_latest_date.csv")
   
