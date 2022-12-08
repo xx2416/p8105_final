@@ -43,4 +43,8 @@ inspection_sub %>%
 
 ggplotly(boro_cuisine_bar)
 ```
+## price vs cuisine
+```{r}
+
+```
 
