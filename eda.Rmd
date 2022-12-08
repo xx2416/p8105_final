@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(plotly)
 library(ggridges)
+library(patchwork)
 ```
 
 
@@ -46,6 +47,25 @@ ggplotly(boro_cuisine_bar)
 ```
 ## price vs cuisine
 ```{r}
+price_cuisine<-
+  inspection_sub %>% 
+  select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
+  drop_na(boro,price) %>% 
+  mutate(price=as.factor(price)) %>% 
+  group_by(price)%>%
+  count(cuisine_description) %>%
+  mutate(cuisine_description=fct_reorder(cuisine_description,n)) %>%
+  filter(min_rank(desc(n))<=10) %>%
+  ggplot(aes(x=cuisine_description,y=n,fill=price))+
+  geom_bar(position="dodge", stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
+  theme(axis.text.x = element_text(size = 5))+
+  labs(
+    x="Cuisine type",
+    y="Number")+
+  facet_grid(~price)
+
+ggplotly(price_cuisine)
 
 ```
 
