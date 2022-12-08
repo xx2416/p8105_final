@@ -23,13 +23,15 @@ library(shinyWidgets)
 
 ```
 
-```{r golbal}
+```{r golbal, context = "data"}
 
 all_res_df = read_csv("shiny_data/inspection_sub_all_date.csv") %>%
-  nest(inspection_detail = action:critical_flag)
+  nest(inspection_detail = action:critical_flag) %>% 
+  mutate(price_count = str_count(price, fixed("$")))
 
-latest_res_df = read_csv("shiny_data/inspection_sub_all_date.csv") %>%
-  nest(inspection_detail = action:critical_flag)
+latest_res_df = read_csv("shiny_data/inspection_sub_latest_date.csv") %>%
+  nest(inspection_detail = action:critical_flag)%>% 
+  mutate(price_count = str_count(price, fixed("$")))
 
 cuisine_list = 
   all_res_df %>% 
@@ -77,6 +79,8 @@ textInput(
   inputId = "street", 
   label = "Street (Optional)")
 
+# reactive(input$street)
+
 selectInput(
   inputId = "cuisince_choice",
   label = "Select cuisine type", 
@@ -84,37 +88,38 @@ selectInput(
 )
 
 sliderInput(
-  "rating_range",
+  inputId = "rating_range",
   label = "Choose rating range",
-  min = 0.0, max = 5.0, value = c(4.0, 4.5), round = FALSE, step = 0.01)
+  min = 0.0, max = 5.0, value = c(3.0, 4.5), step = 0.1, round = -2
+)
 
 sliderTextInput(
-  "price_range",
+  inputId = "price_range",
   label = "Choose price range" , 
   choices = price_list, 
-  selected = price_list[c(2:3)]
+  selected = c(price_list[1], price_list[4])
 )
+
+
 
 sliderInput(
   "inspection_range",
   label = "Choose inspection score range",
-  min = 0, max = 100, value = c(50, 100)
+  min = 0, max = 100, value = c(0, 100)
 )
 
-sort_list = ifelse(
-  input$street == "",
-  sort_list_2, 
-  sort_list_1
-)
+# sort_list = ifelse(
+#   renderText(input$street) == "",
+#   0, 
+#   sort_list_2, 
+#   sort_list_1
+# )
 
-selectInput(
-  inputId = "sort_choice",
-  label = "Sort",
-  choices = sort_list
-)
 
-submitButton(
-  text = "Search"
+
+sort_list = sort_list_2
+actionButton(
+  "search_button", "Search"
 )
 ```
 
@@ -124,9 +129,25 @@ Column {data-width= 700}
 ### table
 
 ```{r}
+res_table = eventReactive(input$search_button,
+                            latest_res_df  %>% 
+    filter(boro == input$boro_choice, 
+           cuisine_description ==  input$cuisince_choice, 
+           rating %in% seq(input[["rating_range"]][1],input[["rating_range"]][2], 0.1), 
+           price_count %in% 
+             str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")), 
+           score %in% input$inspection_range[1]:input$inspection_range[2]) %>%
+    select(dba, building, street, rating, price, score) %>% 
+    arrange(desc(rating)) %>% 
+    rename(name = dba, inspection = score))
+
 renderDataTable(
-  all_res_df  %>% 
-    filter(boro == input$boro_choice)
+  res_table(),
+      options = list(
+        scrollX = TRUE,
+        scrollY = "500px", 
+        dom = "ft"
+      )
 )
 
 
@@ -155,16 +176,19 @@ Column {data-width=200}
 ### Chart B
 
 ```{r}
+str = eventReactive(input$search_button, str_count(input$price_range[1], fixed("$")):str_count(input$price_range[2], fixed("$")))
 renderPrint({
-  input$street
+  str()
 })
 ```
 
 ### Chart C
 
 ```{r}
-# renderPrint({ 
-#   input[["room_choice"]]
+# renderText({ 
+#   seq(input[["rating_range"]][1], input[["rating_range"]][2], 0.1)
 # })
+reactive(input$rating_range)
+
 ```
 
