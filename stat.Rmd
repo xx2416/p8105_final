@@ -107,19 +107,23 @@ grade_boro =
   pivot_wider(
     names_from = "grade",
     values_from = "n") %>%
-  replace(is.na(.), 0) %>% 
-  data.matrix() %>%
-  subset(select = -c(boro))
-
-rownames(grade_boro) <- c("Bronx", "Staten Island", "Queens", "Brooklyn", "Manhattan")
+  replace(is.na(.), 0) 
 
 # Display result.
 grade_boro %>% 
-  knitr::kable(caption = "Results Table")
+  knitr::kable(caption = "Results Table",
+               col.names = c("Borough", "A", "B", "C", "N", "Z"))
 ```
 
 ```{r}
+<<<<<<< HEAD
 # Perform chi-square test
+=======
+grade_boro =  grade_boro %>%  
+  data.matrix() %>%
+  subset(select = -c(boro))
+
+>>>>>>> a5212817e120ee5e6d620e2a031cffbf435405ca
 chisq.test(grade_boro)
 ```
 
@@ -143,7 +147,7 @@ price_grade = df %>%
 
 price_grade %>% 
   knitr::kable(caption = "Results Table",
-               col.names = c("price($)", "A", "B", "C", "N", "Z"))
+               col.names = c("Price($)", "A", "B", "C", "N", "Z"))
 
 price_grade = price_grade %>% 
   data.matrix() %>%
@@ -253,21 +257,22 @@ Rating has some association with cuisine type, inspection grade and price scale.
 
 ```{r}
 reg_df %>% 
-  ggplot(aes(y = rating, color = cuisine_description))+
+  ggplot(aes(y = rating, x = cuisine_description, color = cuisine_description))+
   geom_boxplot()
 
 reg_df %>%
-  ggplot(aes(y = rating, color = grade))+
+  ggplot(aes(y = rating, x= grade, color = grade))+
   geom_boxplot()
 
 reg_df %>%
   drop_na(price) %>% 
-  ggplot(aes(y = rating, color = price))+
+  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4")) %>% 
+  ggplot(aes(y = rating, x = price, color = price))+
   geom_boxplot()
 
 reg_df %>%
   mutate(boro = fct_reorder(boro, rating)) %>% 
-  ggplot(aes(y = rating, color = boro))+
+  ggplot(aes(y = rating, x = boro, color = boro))+
   geom_boxplot()
 ```
 
@@ -279,7 +284,7 @@ reg_df %>%
   geom_smooth(method="lm", se=F, aes(group = cuisine_description, color = cuisine_description))
 ```
 
-Score has little influence on rating, borough is not a confounder.
+Score has little influence on rating. Parallel lines indicate that borough is not a confounder.
 ```{r}
 reg_df %>% 
   ggplot(aes(x = score, y = rating, color = boro))+
