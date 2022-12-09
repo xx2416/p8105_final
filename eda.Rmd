@@ -4,16 +4,26 @@ output:
   html_document:
     toc: true
     toc_float: true
+    code_folding: hide
     theme: flatly
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(plotly)
 library(ggridges)
 library(patchwork)
+library(ggplot2)
+
+
+Sys.setenv("plotly_username"="theonlyviper66")
+Sys.setenv("plotly_api_key"="RXpSTZ2TUHpbh6D0Nr8r")
+Sys.setenv('MAPBOX_TOKEN' = 'pk.eyJ1IjoidGhlb25seXZpcGVyNjYiLCJhIjoiY2xiZWY3dmp6MGFyeTNwcXppdzRnYm1nbyJ9.G05d_geqdk2HTTdZRmOmzg')
+
 ```
 
+# Restaurant Review 
 
 ```{r include=FALSE}
 inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>% 
@@ -40,7 +50,9 @@ top_10_cuisine_nyc<-
 
 ggplotly(top_10_cuisine_nyc)
 ```
+
 From the plot above, the top 10 cuisine types across NYC include `American`, `Chinese`, `Coffee/Tea`, `Pizza`, `Bakery Products/Desserts`, `Mexican`, `Japanese`, `Italian`, `latin American`, `Caribbean`, which implies the racial diversity of NYC. `American`, `Chinese`, `Coffee/Tea` are the top 3 favorite cuisine types for NY citizens. We then inspect the top 10 frequently shown cuisine types in different boroughs. 
+
 ```{r echo = FALSE, warning=FALSE}
 boro_cuisine_bar<-
 inspection_raw %>% 
@@ -59,10 +71,9 @@ inspection_raw %>%
     x="Cuisine type",
     y="Number")+
   facet_grid(~boro)
-
 ggplotly(boro_cuisine_bar)
 ```
-From the plot above, the top 10 cuisine types across NYC include `American`, `Chinese`, `Coffee/Tea`, `Pizza`, `Mexican`, `Japanese`, `Italian`, `latin American`, `Caribbean`, which implies the racial diversity of NYC. The top 3 frequently cuisine types in `Manhattan` and `Brooklyn` are `American`, `Coffee/Tea`, and `Chinese`. 
+The top 3 frequently cuisine types in `Manhattan` and `Brooklyn` are `American`, `Coffee/Tea`, and `Chinese`. 
 
 
 ## price vs cuisine
@@ -85,13 +96,11 @@ price_cuisine<-
     x="Cuisine type",
     y="Number")+
   facet_grid(~price)
-
-
 ggplotly(price_cuisine)
-
 ```
 
 ## Price vs. borough
+
 ```{r}
 price_boro<-
   inspection_raw %>% 
@@ -101,11 +110,11 @@ price_boro<-
          price=as.factor(price)) %>%
   ggplot(aes(x = boro, fill = price)) + 
   geom_bar()
-
 ggplotly(price_boro)
 ```
 
 ## review number vs. rating score (exclude extreme outliers)
+
 ```{r}
 review_num_rating<-
   inspection_raw %>% 
@@ -120,133 +129,66 @@ review_num_rating<-
     x="Sum of review_numbers",
     y="Rating"
   )
-
 ggplotly(review_num_rating)
 ```
 
-## top_10 violation
-```{r}
-inspection_raw = read_csv("./data/inspection_sub_all_date.csv") %>%
-  janitor::clean_names() %>%
-  mutate(
-    violation_description = as.factor(violation_description)
-  ) 
-  
-top_10_vio = inspection_raw %>% 
-  group_by(violation_description) %>%
-  summarize(
-    n = n()
-  ) %>%
-  mutate(
-    rank = rank(-n, ties.method = "first")
-  ) %>% 
-  filter(rank <=10) %>%
-  arrange(desc(n)) %>% mutate(
-    rank = as.factor(rank)
-  ) %>%
-  mutate(
-    abb_violation = fct_recode(
-      rank,
-      "Non-food contact surface improperly constructed" = "1",
-      "Food contact surface not properly cleaned" = "2",
-      "Unacceptable materials" = "3",
-      "Facility not vermin proof" = "4", 
-      "Not free of harborage" = "5",
-      "Evidence of mice or live mice present" = "6",
-      "Filth flies or food/refuse/sewage with FRSA  flies"  = "7",
-      "Cold CT food held above 41 F" = "8",
-      "Cold food item held above 41 F" = "9",
-     "Evidence of mice or live mice in establishment’s food or non-food areas" = "10"
-        )
-  )
 
-
-
-top_10_vio %>%
-  ggplot(aes(x = rank, y = n, fill = n), data = .)+geom_bar(stat="identity")+labs(x = "violation type", y = "frequency", caption = "Exact violation type and associated frquency is shown in the following table")
-  
-top_10_vio %>% 
-  select(abb_violation, n) %>%
-  knitr::kable()
-```
-## top 10 violations vs. cuisine type
-```{r}
-
-vio_cuisine_bar<-
-  inspection_raw %>% 
-  filter(violation_description %in% top_10_vio$violation_description) %>%
-  group_by(violation_description,cuisine_description) %>% 
-  summarize(n_obs=n()) %>% 
-  filter(min_rank(desc(n_obs))<=5) %>%
-  left_join(top_10_vio) %>% 
-  select(abb_violation,cuisine_description,n_obs,rank) %>% 
-  ggplot(aes(x=cuisine_description
-             ,y=n_obs,fill=cuisine_description))+
-  geom_bar(position="dodge", stat="identity")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
-  theme(axis.text.x = element_text(size = 4))+
-  labs(
-    x="top 5 cuisine types at top 10 most frequently appeared violation",
-    y="Number"
-  )+
-  facet_grid(~rank)
-  
-
-ggplotly(vio_cuisine_bar)
-```
-
-## grade associated with the inspection vs. boro / cuisine type
-```{r}
-grade_boro<-
-  inspection_raw %>% 
-  filter(grade %in% c("A","B","C")) %>%
-  mutate(boro=fct_infreq(boro)) %>% 
-  ggplot(aes(x = boro, fill = grade))+
-  geom_bar()+
-  labs(
-    x="Borough",
-    y="Number"
-  )
-
-top_10_cuisine<-
-  inspection_raw %>% 
-  filter(grade %in% c("A","B","C")) %>%
-  group_by(cuisine_description) %>% 
-  summarise(n_obs=n()) %>% 
-  filter(min_rank(desc(n_obs))<=10) 
-
-grade_cuisine<-
-  inspection_raw %>% 
-  filter(grade %in% c("A","B","C") & cuisine_description %in% top_10_cuisine$cuisine_description) %>% 
-  mutate(cuisine_description=fct_infreq(cuisine_description)) %>% 
-  ggplot(aes(x=cuisine_description,fill=grade))+
-  geom_bar()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
-  labs(
-    x="Cuisine",
-    y="Number"
-  )
-
-grade_boro/grade_cuisine
-```
+## Review Scores & Price  
 
 ```{r}
-## Yelp Rating vs. price boxplot 
 inspection_raw %>% 
   filter(!is.na(price)) %>%
   ggplot(aes(x = price, y = rating, fill = price), data = .)+geom_boxplot()+labs(title = "Yelp Rating vs. Price")
+
+inspection_raw %>% 
+  filter(!is.na(price)) %>%
+  ggplot(aes(y = rating, fill = price), data = .)+geom_density()+labs(title = "Density Plot")+facet_grid(~price)
 ```
+
+There seems to be a positive relationship between the cost of dining and yelp rating of NYC restaurants. The distribution of restaurant review scores appears to be right-skewed, probably due to the presence of outliers with a much lower value compared to the majority of the data. 
+
+## Geolocation of Restaurants by Price 
+
+This map displays the geographical locations of the restaurants in the dataset. The map is interactive and is split on the costs of dining.   
 
 ```{r}
-inspection_raw %>%
-  filter(!is.na(grade),!is.na(boro)) %>%
-  ggplot(aes(x = boro, y = grade, fill = grade), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Inspection grade by Boroughs")
+price_rating_map = inspection_raw %>%
+  mutate(text_label = str_c("Price: ", price, "\nRating: ", rating)) %>% 
+  drop_na(price) %>%
+  plot_mapbox(
+    lat = ~latitude,
+    lon = ~longitude,
+    mode = "markers",
+    split = ~price,
+    mode = "markers",
+    hovertext = ~text_label) %>%
+  layout(
+    mapbox = list(
+      style = 'dark',
+      zoom =12.5,
+      center = list(lat = 40.71, lon = -73.98))) 
+price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
 ```
+
+In general, Manhattan has the largest number of restaurants and a much denser distribution compared to other boroughs. The proportion of the least and second least expensive restaurants are much higher compared to the proportions of more expensive dining places in Bronx, Queens, Brooklyn, and Staten Island. In addition, the majority of the restaurants that fall into the most expensive category are located in Manhattan.  
+
+## cuisine map
 
 ```{r}
-inspection_raw %>%
-  filter(!is.na(grade),!is.na(boro)) %>%
-  filter(critical_flag == c("Critical", "Not Critical")) %>%
-  ggplot(aes(x = boro, y = critical_flag, fill = critical_flag), data =.) + geom_bar(stat = "identity", position="stack") + labs(title = "Percent with critical flag by boroughs")
+price_rating_map = inspection_raw %>%
+  mutate(text_label = str_c("Cuisine", cuisine_description)) %>% 
+  drop_na(price) %>%
+  plot_mapbox(
+    lat = ~latitude,
+    lon = ~longitude,
+    mode = "markers",
+    split = ~cuisine_description,
+    mode = "markers",
+    hovertext = ~text_label) %>%
+  layout(
+    mapbox = list(
+      style = 'dark',
+      zoom =12.5,
+      center = list(lat = 40.71, lon = -73.98))) 
+price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
 ```
-
