@@ -2,3 +2,18 @@
 title: "Project report"
 ---
 
+## Motivation
+
+## Initial Questions
+
+## Related Work
+
+## Data
+
+## Data Processing and Cleaning
+
+## Exploratory analysis
+
+## Statistical Analysis
+
+## Shiny app
