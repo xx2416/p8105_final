@@ -17,10 +17,10 @@ library(viridis)
 
 library(shiny)
 library(shinyWidgets)
-
-
-
-
+library(jsonlite)
+library(geosphere)
+library(urltools)
+library(leaflet)
 ```
 
 ```{r golbal, context = "data"}
@@ -31,7 +31,8 @@ all_res_df = read_csv("shiny_data/inspection_sub_all_date.csv") %>%
 
 latest_res_df = read_csv("shiny_data/inspection_sub_latest_date.csv") %>%
   nest(inspection_detail = action:critical_flag)%>% 
-  mutate(price_count = str_count(price, fixed("$")))
+  mutate(price_count = str_count(price, fixed("$"))) %>% 
+  drop_na()
 
 cuisine_list = 
   all_res_df %>% 
@@ -90,7 +91,7 @@ selectInput(
 sliderInput(
   inputId = "rating_range",
   label = "Choose rating range",
-  min = 0.0, max = 5.0, value = c(3.0, 4.5), step = 0.1, round = -2
+  min = 0.0, max = 5.0, value = c(1.0, 5.0), step = 0.1, round = -2
 )
 
 sliderTextInput(
@@ -108,14 +109,6 @@ sliderInput(
   min = 0, max = 100, value = c(0, 100)
 )
 
-# sort_list = ifelse(
-#   renderText(input$street) == "",
-#   0, 
-#   sort_list_2, 
-#   sort_list_1
-# )
-
-
 
 sort_list = sort_list_2
 actionButton(
@@ -126,60 +119,95 @@ actionButton(
 Column {data-width= 700}
 -----------------------------------------------------------------------
 
-### table
+### Result
 
 ```{r}
-res_table = eventReactive(input$search_button,
-                            latest_res_df  %>% 
+get_coord <- function(url) {
+  
+  tryCatch({
+    json_output <- fromJSON(url(url))$features
+    coord <- json_output$geometry[2]
+    return(unlist(coord[1,]))
+  }, 
+  
+  error=function(e){
+    return(c(0, 0))
+  })
+  
+}
+
+target_coord = eventReactive(
+  input$search_button, 
+  get_coord(paste0("https://geosearch.planninglabs.nyc/v1/search?text=", url_encode(input$street), "&size=1"))
+)
+
+
+get_dist <- function(coord1, coord2) {
+  dist = ifelse(coord1 == c(0, 0), "NA" , round(distm(coord1, coord2, fun = distHaversine)[,1]/1609, digits = 1) %>% as.character())
+  return(dist[1])
+}
+
+res_table = 
+  eventReactive(
+    input$search_button,
+    latest_res_df  %>% 
     filter(boro == input$boro_choice, 
-           cuisine_description ==  input$cuisince_choice, 
-           rating %in% seq(input[["rating_range"]][1],input[["rating_range"]][2], 0.1), 
-           price_count %in% 
-             str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")), 
-           score %in% input$inspection_range[1]:input$inspection_range[2]) %>%
-    select(dba, building, street, rating, price, score) %>% 
-    arrange(desc(rating)) %>% 
-    rename(name = dba, inspection = score))
+      cuisine_description ==  input$cuisince_choice, 
+      rating %in% seq(input[["rating_range"]][1],input[["rating_range"]][2],0.1),
+      price_count %in% str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")), 
+      score %in% input$inspection_range[1]:input$inspection_range[2])%>% 
+      mutate(
+        coord = map2(longitude, latitude, ~c(.x, .y)), 
+        distance = map(coord, ~get_dist(target_coord(), .x)[1])
+        ) 
+)
+ 
 
 renderDataTable(
-  res_table(),
+  res_table() %>%
+    select(dba, building, street, rating, price, score, distance) %>% 
+    arrange(desc(rating)) %>% 
+    rename(name = dba, inspection = score) ,
       options = list(
         scrollX = TRUE,
-        scrollY = "500px", 
-        dom = "ft"
+        scrollY = "500px"
       )
 )
 
 
-
-# renderText({ 
-#   c(input[["boro_choice"]], input[["boro_choice"]])
-# })
-
-# renderPlotly({ 
-#   nyc_airbnb %>%
-#   filter(
-#     borough == input[["boro_choice"]], 
-#     price %in% input[["price_range"]][1]:input[["price_range"]][2],
-#     room_type == input[["room_choice"]] )%>%
-#   mutate(text_label = str_c("Price: $", price, '\nRating: ', stars)) %>% 
-#   plot_ly(
-#     x = ~lat, y = ~long, type = "scatter", mode = "markers",
-#     alpha = 0.5, color = ~price, text = ~text_label)
-# })
 
 ```
 
 Column {data-width=200}
 -----------------------------------------------------------------------
 
-### Chart B
+### Map
 
 ```{r}
-str = eventReactive(input$search_button, str_count(input$price_range[1], fixed("$")):str_count(input$price_range[2], fixed("$")))
-renderPrint({
-  str()
-})
+res_map = 
+  eventReactive(
+    input$search_button,
+    latest_res_df  %>% 
+    filter(boro == input$boro_choice, 
+      cuisine_description ==  input$cuisince_choice, 
+      rating %in% seq(input[["rating_range"]][1],input[["rating_range"]][2],0.1),
+      price_count %in% str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")), 
+      score %in% input$inspection_range[1]:input$inspection_range[2])%>% 
+      mutate(
+        coord = map2(longitude, latitude, ~c(.x, .y)), 
+        distance = map(coord, ~get_dist(target_coord(), .x)[1]), 
+        info = str_c(dba, " (", rating,", ", price,  ")\n", building, " ", street)
+        ) 
+)
+
+renderLeaflet({
+    leaflet(res_map()) %>%
+      # addProviderTiles(providers$Stamen.TonerLite,
+      #   options = providerTileOptions(noWrap = TRUE)
+      # ) %>%
+    addTiles() %>% addCircleMarkers(lng=~longitude, lat=~latitude, label = ~dba, popup=~ info, radius = 3, color = "red", fillOpacity = ~rating)
+  })
+
 ```
 
 ### Chart C
