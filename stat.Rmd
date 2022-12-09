@@ -36,7 +36,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Dataset Overview
 
-In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest.
+In this first step, we wrangle the data to be analyzable and provide a brief overview of our dataset and our variables of interest.
 
 ```{r}
 library(readr)
@@ -86,7 +86,10 @@ We observe that,
 
 ## Exploratory Data Analysis
 
-We first perform chi-square tests and proportion test to get a sense of the data that we are dealing with. Specifically, we ask the following questions: is there a relationship between boroughs and restaurant's inspection grades? Is there a relationship between price and restaurant's inspection grades? More specifically, is price range of the restaurant a factor in 
+We first perform chi-square tests and proportion test to get a sense of the data that we are dealing with. Specifically, we ask the following questions: 
+* is there a relationship between boroughs and restaurant's inspection grades? 
+* Is there a relationship between price and restaurant's inspection grades? 
+* More specifically, is price range of the restaurant a factor in the inspection grades that a particular restaurant receives?
 
 
 ### Chi-square Test
@@ -197,7 +200,7 @@ Now, we perform regression analysis from our data treating "rating" as the respo
 
 ### Regression Diagnostics and Data Transformation
 
-#### Response Transformation
+#### Data Transformation
 
 We first test the normality assumption of the response variable, "rating".
 
@@ -212,9 +215,6 @@ qqnorm(df$rating)
 ```
 
 Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>3000).
-
-
-#### Predictor Transformation
 
 Now, we test for the normality assumption of predictors. In particular, we find that the distribution for variable "review_num" is positively skewed. As such, we perform log transformation on this variable.
 
@@ -267,15 +267,13 @@ reg_df = reg_df %>%
 ```
 
 
-
 #### Prognosis of Significant Predictors
 
 In this section, we speculate the potentially statistically significant predictors for response variable "rating". We use boxplots to visualize the effects of categorical variables like cuisine type, inspection grade, and price scales; and use scatterplots for continuous distributions like score and review number.
 
-
 ##### Categorical Independent Variables
 
-Now, we visualize the effects of categorical variables cuisine type, inspection grade, nad price scales on rating. In particular, we have found that rating has some association with cuisine type, inspection grade and price scale.
+Firstly, we visualize the effects of categorical variables cuisine type, inspection grade, and price scales on rating. In particular, we have found that rating has some association with cuisine type, inspection grade and price scale.
 
 ```{r}
 reg_df %>% 
@@ -298,10 +296,13 @@ reg_df %>%
   geom_boxplot()
 ```
 
-##### Contiuous Independent Variables
+As shown in the boxplots above, when considering the most populated cuisine types, restaurants that serve coffee/tea tend to receive the highest ratings. Furthermore, though restaurants that receive A or B for grade inspection have similar median rating, restaurants receiving C for grade inspection have a slightly lower median rating compared to those that received A or B. Finally, there seems to be an association between price range and rating as higher priced restaurants tend to receive better ratings.
 
+##### Continuous Independent Variables
 
-#### Interaction of Variables
+Now, we consider the effects of continuous independent variables.
+
+#### Interaction
 
 There is interaction between score and cuisine type:
 
@@ -313,6 +314,7 @@ reg_df %>%
 ```
 
 Score has little influence on rating. Parallel lines indicate that borough is not a confounder.
+
 ```{r}
 reg_df %>% 
   ggplot(aes(x = score, y = rating, color = boro))+
@@ -320,9 +322,10 @@ reg_df %>%
   geom_smooth(method="lm", se=F, aes(group = boro, color = boro))
 ```
 
+#### Multicollinearity of Dependent Variables
 
 ```{r}
-model = lm(rating ~ cuisine_description*score+boro+review_num+price, data = reg_df)
+model = lm(rating ~ cuisine_description*score + boro + review_num + price, data = reg_df)
 summary(model)
 ```
 
