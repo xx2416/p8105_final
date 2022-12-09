@@ -62,6 +62,7 @@ price_cuisine<-
     y="Number")+
   facet_grid(~price)
 
+
 ggplotly(price_cuisine)
 
 ```
@@ -99,6 +100,51 @@ review_num_rating<-
 ggplotly(review_num_rating)
 ```
 
+## top_10 violation
+```{r}
+inspection_raw = read_csv("./data/inspection_sub_all_date.csv") %>%
+  janitor::clean_names() %>%
+  mutate(
+    violation_description = as.factor(violation_description)
+  ) 
+  
+top_10_vio = inspection_raw %>% 
+  group_by(violation_description) %>%
+  summarize(
+    n = n()
+  ) %>%
+  mutate(
+    rank = rank(-n, ties.method = "first")
+  ) %>% 
+  filter(rank <=10) %>%
+  arrange(desc(n)) %>% mutate(
+    rank = as.factor(rank)
+  ) %>%
+  mutate(
+    abb_violation = fct_recode(
+      rank,
+      "Non-food contact surface improperly constructed" = "1",
+      "Food contact surface not properly cleaned" = "2",
+      "Unacceptable materials" = "3",
+      "Facility not vermin proof" = "4", 
+      "Not free of harborage" = "5",
+      "Evidence of mice or live mice present" = "6",
+      "Filth flies or food/refuse/sewage with FRSA  flies"  = "7",
+      "Cold CT food held above 41 F" = "8",
+      "Cold food item held above 41 F" = "9",
+     "Evidence of mice or live mice in establishment’s food or non-food areas" = "10"
+        )
+  )
+
+
+
+top_10_vio %>%
+  ggplot(aes(x = rank, y = n, fill = n), data = .)+geom_bar(stat="identity")+labs(x = "violation type", y = "frequency", caption = "Exact violation type and associated frquency is shown in the following table")
+  
+top_10_vio %>% 
+  select(abb_violation, n) %>%
+  knitr::kable()
+```
 ## top 10 violations vs. cuisine type
 ```{r}
 
@@ -158,54 +204,6 @@ grade_cuisine<-
   )
 
 grade_boro/grade_cuisine
-```
-
-
-
-## Xuesen 
-```{r}
-inspection_raw = read_csv("./data/inspection_sub_all_date.csv") %>%
-  janitor::clean_names() %>%
-  mutate(
-    violation_description = as.factor(violation_description)
-  ) 
-  
-top_10_vio = inspection_raw %>% 
-  group_by(violation_description) %>%
-  summarize(
-    n = n()
-  ) %>%
-  mutate(
-    rank = rank(-n, ties.method = "first")
-  ) %>% 
-  filter(rank <=10) %>%
-  arrange(desc(n)) %>% mutate(
-    rank = as.factor(rank)
-  ) %>%
-  mutate(
-    abb_violation = fct_recode(
-      rank,
-      "Non-food contact surface improperly constructed" = "1",
-      "Food contact surface not properly cleaned" = "2",
-      "Unacceptable materials" = "3",
-      "Facility not vermin proof" = "4", 
-      "Not free of harborage" = "5",
-      "Evidence of mice or live mice present" = "6",
-      "Filth flies or food/refuse/sewage with FRSA  flies"  = "7",
-      "Cold CT food held above 41 F" = "8",
-      "Cold food item held above 41 F" = "9",
-     "Evidence of mice or live mice in establishment’s food or non-food areas" = "10"
-        )
-  )
-
-
-
-top_10_vio %>%
-  ggplot(aes(x = rank, y = n, fill = n), data = .)+geom_bar(stat="identity")+labs(x = "violation type", y = "frequency", caption = "Exact violation type and associated frquency is shown in the following table")
-  
-top_10_vio %>% 
-  select(abb_violation, n) %>%
-  knitr::kable()
 ```
 
 ```{r}
