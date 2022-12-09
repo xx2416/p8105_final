@@ -2,14 +2,21 @@
 title: "Statistical Analysis"
 author: "Jiayi Shi"
 date: "2022-12-09"
-output: github_document
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(patchwork)
 library(gtsummary)
 
 knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
@@ -31,6 +38,7 @@ scale_fill_discrete = scale_fill_viridis_d
 library(readr)
 dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
+  distinct(camis, .keep_all = TRUE) %>% 
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, "A"))
@@ -39,12 +47,23 @@ df = read_csv("data/inspection_sub_latest_date.csv") %>%
 
 ```{r}
 df %>% 
-  select(boro, score, grade, rating, review_num, price) %>% 
+  select(boro, grade, price) %>% 
+  mutate(boro = fct_infreq(boro)) %>% 
+  tbl_summary(
+    by = boro,
+    missing_text = "(Missing)", 
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)"
+      )) %>% 
+  bold_labels() %>%   
+  italicize_levels() 
+
+df %>% 
+  select(score,rating, review_num) %>% 
   tbl_summary(
     missing_text = "(Missing)", 
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})", 
-      all_categorical() ~ "{n} ({p}%)"
+      all_continuous() ~ "{mean} ({sd})"
       )) %>% 
   bold_labels() %>%   
   italicize_levels() 
@@ -93,13 +112,15 @@ price_grade = df %>%
     values_from = n 
   ) %>% 
   replace(is.na(.), 0) %>% 
-  data.matrix() %>%
-  subset(select = -c(price))
-
-rownames(price_grade) <- c("$", "$$", "$$$", "$$$$")
+  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4"))
 
 price_grade %>% 
-  knitr::kable(caption = "Results Table")
+  knitr::kable(caption = "Results Table",
+               col.names = c("price($)", "A", "B", "C", "N", "Z"))
+
+price_grade = price_grade %>% 
+  data.matrix() %>%
+  subset(select = -c(price))
 
 chisq.test(price_grade)
 ```
@@ -128,7 +149,7 @@ prop.test(join$n, join$total)
  # select(price, prop)
 ```
 
-From the test result, we can see that the p-value is less than 0.05,  
+From the test result, we can see that the p-value is greater than 0.05,  
 
 ## Regression model
 
@@ -143,7 +164,7 @@ df %>%
 qqnorm(df$rating)
 ```
 
-Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>5000).
+Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>3000).
 
 * Predictor transfomation
 
@@ -237,6 +258,20 @@ reg_df %>%
 ```{r}
 model = lm(rating ~ cuisine_description*score+boro+review_num+price, data = reg_df)
 summary(model)
+```
+
+10-fold cross validation:
+```{r}
+library(caret)
+set.seed(1)
+train = trainControl(method = "cv", number = 10)
+model = train(rating ~ cuisine_description*score+boro+review_num+price, 
+              data = reg_df,
+              trControl = train,
+              method = 'lm',
+              na.action = na.pass)
+model$finalModel
+print(model)
 ```
 
 Elastic Net
