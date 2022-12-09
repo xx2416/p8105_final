@@ -15,6 +15,8 @@ library(patchwork)
 library(gtsummary)
 
 knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
@@ -93,13 +95,13 @@ grade_boro %>%
   knitr::kable(caption = "Results Table")
 ```
 
-```{r warning=FALSE}
+```{r}
 chisq.test(grade_boro)
 ```
 
 Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. 
 
-```{r warning=FALSE}
+```{r}
 price_grade = df %>% 
   select(boro, score, grade, rating, review_num, price) %>%
   drop_na(price, grade) %>% 
