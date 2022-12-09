@@ -30,14 +30,40 @@ inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>%
   janitor::clean_names()
 ```
 
+<<<<<<< HEAD
 ## boro vs cuisine
 
 ```{r echo = FALSE}
+=======
+## Top 10 cuisine in the whole NYC and by boro
+As a real international metropolitan, There is a total of 80 different cuisine types in NYC based on our dataset and we firstly plot the 10 most frequently shown cuisine types in NYC.
+```{r echo = FALSE, warning=FALSE}
+top_10_cuisine_nyc<-
+  inspection_raw %>% 
+  drop_na(boro) %>%
+  group_by(cuisine_description) %>% 
+  summarise(n=n()) %>% 
+  filter(min_rank(desc(n))<=10) %>%
+  mutate(cuisine_description=fct_reorder(cuisine_description,n,.desc=TRUE)) %>% 
+  ggplot(aes(x=cuisine_description,y=n,fill=cuisine_description))+
+  geom_bar(position="dodge", stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))+
+  labs(
+    x="cuisine type",
+    y="Number"
+  )
+
+ggplotly(top_10_cuisine_nyc)
+```
+From the plot above, the top 10 cuisine types across NYC include `American`, `Chinese`, `Coffee/Tea`, `Pizza`, `Bakery Products/Desserts`, `Mexican`, `Japanese`, `Italian`, `latin American`, `Caribbean`, which implies the racial diversity of NYC. `American`, `Chinese`, `Coffee/Tea` are the top 3 favorite cuisine types for NY citizens. We then inspect the top 10 frequently shown cuisine types in different boroughs. 
+```{r echo = FALSE, warning=FALSE}
+>>>>>>> 0f248cd98f862d2d798868fdb2696711c6938442
 boro_cuisine_bar<-
 inspection_raw %>% 
   select(dba,boro,cuisine_description,critical_flag,score,grade,grade_date,inspection_type,latitude,longitude,rating,review_num,price) %>%
   drop_na(boro) %>% 
-  mutate(cuisine_description=fct_infreq(cuisine_description)) %>% 
+  mutate(cuisine_description=fct_infreq(cuisine_description),
+         boro=fct_infreq(boro)) %>% 
   group_by(boro,cuisine_description) %>%
   summarize(n_obs=n()) %>% 
   filter(min_rank(desc(n_obs)) <= 10) %>%
@@ -51,6 +77,11 @@ inspection_raw %>%
   facet_grid(~boro)
 ggplotly(boro_cuisine_bar)
 ```
+<<<<<<< HEAD
+=======
+From the plot above, the top 10 cuisine types across NYC include `American`, `Chinese`, `Coffee/Tea`, `Pizza`, `Mexican`, `Japanese`, `Italian`, `latin American`, `Caribbean`, which implies the racial diversity of NYC. The top 3 frequently cuisine types in `Manhattan` and `Brooklyn` are `American`, `Coffee/Tea`, and `Chinese`. 
+
+>>>>>>> 0f248cd98f862d2d798868fdb2696711c6938442
 
 ## price vs cuisine
 
