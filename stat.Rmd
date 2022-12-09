@@ -202,23 +202,19 @@ Now, we perform regression analysis from our data treating "rating" as the respo
 
 #### Data Transformation
 
-We first test the normality assumption of the response variable, "rating".
+We first test the normality assumption of the response variable, "rating". We see from the below histogram that it is negatively skewed. Though sample size is large, to avoid confounding, we need to square-transform the rating variable. Furthermore, after checking the dependent variable review_num, we've found the data to be positively skewed. We remedy the problem by log-transforming it.
 
 ```{r}
+# Histogram for response variable rating
 df %>% 
   select(boro, cuisine_description, score, grade, rating, review_num, price) %>% 
   ggplot(aes(x = rating))+
   geom_histogram(aes(y = ..density..), bins = 30, color = "black", fill = "grey") +
   geom_density()
 
+# QQ plot
 qqnorm(df$rating)
-```
 
-Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>3000).
-
-Now, we test for the normality assumption of predictors. In particular, we find that the distribution for variable "review_num" is positively skewed. As such, we perform log transformation on this variable.
-
-```{r}
 top_cuisine = df %>%
   count(cuisine_description) %>% 
   arrange(-n) %>% 
@@ -229,10 +225,13 @@ reg_df = df %>%
   select(boro, cuisine_description, score, grade, rating, review_num, price) %>%
   filter(cuisine_description %in% top_cuisine) %>% 
   filter(grade %in% c("A", "B", "C"))
-  
 
 dlookr::find_skewness(reg_df)
+```
 
+Comparing the residual vs. fitted value plot of rating and review_num before and after transformation of review_num, we see now that the transformed data does not significantly violate the assumptions of linearity, equal error variance, and no outlier assumptions.
+
+```{r}
 par(mfrow = c(2, 2))
 plot(rating ~ review_num, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
 review = lm(rating ~ review_num, data = reg_df)
@@ -249,7 +248,9 @@ plot(fitted(review), resid(review), col = "dodgerblue",
      pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
 abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 title(main = "After transformation")
+```
 
+```{r}
 plot(rating ~ score, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
 rating_score = lm(rating ~ score, data = reg_df)
 abline(rating_score, col = "darkorange", lwd = 2)
@@ -260,10 +261,11 @@ abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 
 
 ```{r}
-# Log transform review numbers
+# Log transform review_num, square transform rating
 reg_df = reg_df %>% 
   select(rating, everything()) %>% 
-  mutate(review_num = log(review_num))
+  mutate(review_num = log(review_num),
+         rating = rating^2)
 ```
 
 
