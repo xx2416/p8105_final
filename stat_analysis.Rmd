@@ -130,7 +130,12 @@ left_join(price_grade, total) %>%
 
 ```
 
+
+
 ## Regression model
+
+
+### Regression Diagnostics
 
 To perform any regression model, we first perform test of normality on the response variable, ratings. We first plot a histogram on the data, from which we can see that the response variable is not exactly normally distributed and slightly skewed to the left. We confirm this deviation from normality by conducting the Kolmogorov-Smirnov test for normality. To adjust for this factor, we transform the rating variable by squaring it. As we may see in the histogram, the square-adjusted variable is approximately normal.
 
@@ -145,6 +150,7 @@ ks.test(df$rating, 'pnorm')
 hist(df$rating^2)
 ```
 
+Now, we perform diagnostic tests required for regression models.
 
 ```{r}
 
@@ -156,7 +162,7 @@ df %>%
   select(boro, score, grade, rating, review_num, price) %>%
   summary()
 
-lm(rating ~ grade*price, data = df)
+lm(rating ~ ., data = df)
 ```
 
 
