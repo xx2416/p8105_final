@@ -13,7 +13,7 @@
 
 <title>Statistical Analysis</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -181,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -190,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -258,17 +251,33 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="eda.html">Exploratory Analysis</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Eda about restaurants in NYC</li>
+    <li>
+      <a href="eda.html"></a>
+    </li>
+    <li>
+      <a></a>
+    </li>
+    <li>
+      <a href="map.html"></a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="stat_analysis.html">Statistical Analysis</a>
 </li>
 <li>
-  <a href="report.html">Project report</a>
+  <a href="report.html">Project Report</a>
 </li>
 <li>
-  <a href="shiny.html">Shiny app</a>
+  <a href="https://sweetsugar.shinyapps.io/recommender">Shiny app</a>
 </li>
 <li>
   <a href="mailto:&lt;js6177@cumc.columbia.edu&gt;">
@@ -296,7 +305,744 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>library(readr)
+dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
+<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+## e.g.:
+##   dat &lt;- vroom(...)
+##   problems(dat)</code></pre>
+<pre><code>## Rows: 54562 Columns: 32
+## ── Column specification ──────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (17): dba, boro, building, street, cuisine_description, action, violati...
+## dbl  (12): camis, zipcode, phone, score, latitude, longitude, community_boar...
+## date  (3): inspection_date, grade_date, record_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>df = read_csv(&quot;data/inspection_sub_latest_date.csv&quot;) %&gt;%
+  mutate(price = fct_recode(price, `1`=&quot;$&quot;, `2`=&quot;$$&quot;, `3`=&quot;$$$&quot;, `4`=&quot;$$$$&quot;),
+         boro = fct_reorder(boro, rating),
+         grade = fct_relevel(grade, &quot;A&quot;)) </code></pre>
+<pre><code>## Rows: 20181 Columns: 32
+## ── Column specification ──────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (18): dba, boro, building, street, phone, cuisine_description, grade, i...
+## dbl  (11): camis, zipcode, score, latitude, longitude, community_board, bin,...
+## date  (3): inspection_date, grade_date, record_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;% 
+  tbl_summary(
+    missing_text = &quot;(Missing)&quot;, 
+    statistic = list(
+      all_continuous() ~ &quot;{mean} ({sd})&quot;, 
+      all_categorical() ~ &quot;{n} ({p}%)&quot;
+      )) %&gt;% 
+  bold_labels() %&gt;%   
+  italicize_levels() </code></pre>
+<div id="wxwpcaxhqj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
 
+#wxwpcaxhqj .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wxwpcaxhqj .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wxwpcaxhqj .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wxwpcaxhqj .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wxwpcaxhqj .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wxwpcaxhqj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wxwpcaxhqj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wxwpcaxhqj .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wxwpcaxhqj .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wxwpcaxhqj .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wxwpcaxhqj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wxwpcaxhqj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wxwpcaxhqj .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wxwpcaxhqj .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wxwpcaxhqj .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wxwpcaxhqj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wxwpcaxhqj .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wxwpcaxhqj .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wxwpcaxhqj .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wxwpcaxhqj .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wxwpcaxhqj .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wxwpcaxhqj .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wxwpcaxhqj .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wxwpcaxhqj .gt_left {
+  text-align: left;
+}
+
+#wxwpcaxhqj .gt_center {
+  text-align: center;
+}
+
+#wxwpcaxhqj .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wxwpcaxhqj .gt_font_normal {
+  font-weight: normal;
+}
+
+#wxwpcaxhqj .gt_font_bold {
+  font-weight: bold;
+}
+
+#wxwpcaxhqj .gt_font_italic {
+  font-style: italic;
+}
+
+#wxwpcaxhqj .gt_super {
+  font-size: 65%;
+}
+
+#wxwpcaxhqj .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#wxwpcaxhqj .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wxwpcaxhqj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wxwpcaxhqj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wxwpcaxhqj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wxwpcaxhqj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wxwpcaxhqj .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Characteristic&lt;/strong&gt;"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;N = 20,181&lt;/strong&gt;&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>N = 20,181</strong><sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">boro</td>
+<td headers="stat_0" class="gt_row gt_center"></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Bronx</td>
+<td headers="stat_0" class="gt_row gt_center">1,400 (6.9%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Staten Island</td>
+<td headers="stat_0" class="gt_row gt_center">725 (3.6%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Queens</td>
+<td headers="stat_0" class="gt_row gt_center">4,546 (23%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Brooklyn</td>
+<td headers="stat_0" class="gt_row gt_center">5,391 (27%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Manhattan</td>
+<td headers="stat_0" class="gt_row gt_center">8,119 (40%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">score</td>
+<td headers="stat_0" class="gt_row gt_center">24 (16)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td headers="stat_0" class="gt_row gt_center">169</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">grade</td>
+<td headers="stat_0" class="gt_row gt_center"></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    A</td>
+<td headers="stat_0" class="gt_row gt_center">6,815 (55%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    B</td>
+<td headers="stat_0" class="gt_row gt_center">507 (4.1%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    C</td>
+<td headers="stat_0" class="gt_row gt_center">286 (2.3%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    N</td>
+<td headers="stat_0" class="gt_row gt_center">2,508 (20%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Z</td>
+<td headers="stat_0" class="gt_row gt_center">2,333 (19%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td headers="stat_0" class="gt_row gt_center">7,732</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">rating</td>
+<td headers="stat_0" class="gt_row gt_center">3.63 (0.76)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">review_num</td>
+<td headers="stat_0" class="gt_row gt_center">218 (488)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">price</td>
+<td headers="stat_0" class="gt_row gt_center"></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    1</td>
+<td headers="stat_0" class="gt_row gt_center">6,906 (35%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    2</td>
+<td headers="stat_0" class="gt_row gt_center">11,117 (57%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    3</td>
+<td headers="stat_0" class="gt_row gt_center">1,244 (6.4%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    4</td>
+<td headers="stat_0" class="gt_row gt_center">191 (1.0%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td headers="stat_0" class="gt_row gt_center">723</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><sup class="gt_footnote_marks">1</sup> n (%); Mean (SD)</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+<div id="chi-square-test" class="section level2">
+<h2>Chi-square Test</h2>
+<p>We try to determine whether there is a relationship between boroughs
+and restaurants’ inspection grades. Our hypothesis is that there is no
+difference in the number of restaurants across the five grades across
+the five boroughs in NYC. We will perform the chi-square test to verify
+our assumption.</p>
+<p><span class="math inline">\(H0\)</span>: the expected number of
+restaurants in each grades are the same across all boroughs.</p>
+<p><span class="math inline">\(H1\)</span>: the expected number of
+restaurants in each grades are not same across all boroughs.</p>
+<pre class="r"><code>grade_boro = 
+  df %&gt;% 
+  drop_na(grade) %&gt;% 
+  count(boro, grade) %&gt;% 
+  pivot_wider(
+    names_from = &quot;grade&quot;,
+    values_from = &quot;n&quot;) %&gt;%
+  replace(is.na(.), 0) %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(boro))
+
+rownames(grade_boro) &lt;- c(&quot;Bronx&quot;, &quot;Staten Island&quot;, &quot;Queens&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;)
+
+grade_boro %&gt;% 
+  knitr::kable(caption = &quot;Results Table&quot;)</code></pre>
+<table>
+<caption>Results Table</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">C</th>
+<th align="right">N</th>
+<th align="right">Z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bronx</td>
+<td align="right">431</td>
+<td align="right">30</td>
+<td align="right">53</td>
+<td align="right">169</td>
+<td align="right">96</td>
+</tr>
+<tr class="even">
+<td align="left">Staten Island</td>
+<td align="right">363</td>
+<td align="right">17</td>
+<td align="right">0</td>
+<td align="right">106</td>
+<td align="right">49</td>
+</tr>
+<tr class="odd">
+<td align="left">Queens</td>
+<td align="right">1449</td>
+<td align="right">125</td>
+<td align="right">79</td>
+<td align="right">544</td>
+<td align="right">381</td>
+</tr>
+<tr class="even">
+<td align="left">Brooklyn</td>
+<td align="right">1880</td>
+<td align="right">171</td>
+<td align="right">52</td>
+<td align="right">607</td>
+<td align="right">690</td>
+</tr>
+<tr class="odd">
+<td align="left">Manhattan</td>
+<td align="right">2692</td>
+<td align="right">164</td>
+<td align="right">102</td>
+<td align="right">1082</td>
+<td align="right">1117</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>chisq.test(grade_boro)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  grade_boro
+## X-squared = 251.11, df = 16, p-value &lt; 2.2e-16</code></pre>
+<p>Interpretation: The result of chi-square shows that p-value is less
+than 0.05, so we reject the null hypothesis at 95% significant level and
+conclude that the inspection grades of restaurants are significantly
+different by boroughs.</p>
+</div>
+<div id="proportion-test" class="section level2">
+<h2>Proportion Test</h2>
+<p>Now, we want to see whether receiving grade A is equally common among
+restaurants of all four price scales. To do this, we will conduct a
+proportion test.</p>
+<pre class="r"><code>total = df %&gt;% 
+  group_by(price) %&gt;% 
+  summarise(total = n())
+
+n_a = df %&gt;% 
+  count(price, grade) %&gt;% 
+  filter(grade == &quot;A&quot;)
+
+join = left_join(total, n_a) %&gt;% drop_na()</code></pre>
+<pre><code>## Joining, by = &quot;price&quot;</code></pre>
+<pre class="r"><code>prop.test(join$n, join$total)</code></pre>
+<pre><code>## 
+##  4-sample test for equality of proportions without continuity correction
+## 
+## data:  join$n out of join$total
+## X-squared = 94.095, df = 3, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## sample estimates:
+##    prop 1    prop 2    prop 3    prop 4 
+## 0.3763394 0.3124944 0.3344051 0.4764398</code></pre>
+<pre class="r"><code>#join = join %&gt;% 
+ # mutate(prop = n/total) %&gt;% 
+ # select(price, prop)</code></pre>
+<p>From the test result, we can see that the p-value is less than
+0.05,</p>
+<pre class="r"><code>total = df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;%
+  drop_na(price, grade) %&gt;% 
+  group_by(price) %&gt;%
+  summarise(sum = n())
+
+price_grade = df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;%
+  drop_na(price, grade) %&gt;% 
+  group_by(price, grade) %&gt;% 
+  summarise(n = n())</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;price&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre class="r"><code>left_join(price_grade, total) %&gt;% 
+  mutate(prop = n/sum) %&gt;% 
+  pivot_wider(
+    names_from = grade,
+    values_from = prop 
+  ) %&gt;% 
+  replace(is.na(.), 0) %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(price))</code></pre>
+<pre><code>## Joining, by = &quot;price&quot;</code></pre>
+<pre><code>##          n  sum         A          B          C         N          Z
+##  [1,] 2599 4392 0.5917577 0.00000000 0.00000000 0.0000000 0.00000000
+##  [2,]  234 4392 0.0000000 0.05327869 0.00000000 0.0000000 0.00000000
+##  [3,]  123 4392 0.0000000 0.00000000 0.02800546 0.0000000 0.00000000
+##  [4,]  588 4392 0.0000000 0.00000000 0.00000000 0.1338798 0.00000000
+##  [5,]  848 4392 0.0000000 0.00000000 0.00000000 0.0000000 0.19307832
+##  [6,] 3474 6667 0.5210739 0.00000000 0.00000000 0.0000000 0.00000000
+##  [7,]  239 6667 0.0000000 0.03584821 0.00000000 0.0000000 0.00000000
+##  [8,]  158 6667 0.0000000 0.00000000 0.02369882 0.0000000 0.00000000
+##  [9,] 1477 6667 0.0000000 0.00000000 0.00000000 0.2215389 0.00000000
+## [10,] 1319 6667 0.0000000 0.00000000 0.00000000 0.0000000 0.19784011
+## [11,]  416  803 0.5180573 0.00000000 0.00000000 0.0000000 0.00000000
+## [12,]   13  803 0.0000000 0.01618929 0.00000000 0.0000000 0.00000000
+## [13,]    4  803 0.0000000 0.00000000 0.00498132 0.0000000 0.00000000
+## [14,]  272  803 0.0000000 0.00000000 0.00000000 0.3387298 0.00000000
+## [15,]   98  803 0.0000000 0.00000000 0.00000000 0.0000000 0.12204234
+## [16,]   91  129 0.7054264 0.00000000 0.00000000 0.0000000 0.00000000
+## [17,]   34  129 0.0000000 0.00000000 0.00000000 0.2635659 0.00000000
+## [18,]    4  129 0.0000000 0.00000000 0.00000000 0.0000000 0.03100775</code></pre>
+</div>
+<div id="regression-model" class="section level2">
+<h2>Regression model</h2>
+<p>To perform any regression model, we first perform test of normality
+on the response variable, ratings. We first plot a histogram on the
+data, from which we can see that the response variable is not exactly
+normally distributed and slightly skewed to the left. We confirm this
+deviation from normality by conducting the Kolmogorov-Smirnov test for
+normality. To adjust for this factor, we transform the rating variable
+by squaring it. As we may see in the histogram, the square-adjusted
+variable is approximately normal.</p>
+<pre class="r"><code># plot histogram
+hist(df$rating)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<pre class="r"><code># Kolmogorov-Smirnov test
+ks.test(df$rating, &#39;pnorm&#39;)</code></pre>
+<pre><code>## Warning in ks.test.default(df$rating, &quot;pnorm&quot;): ties should not be present for
+## the Kolmogorov-Smirnov test</code></pre>
+<pre><code>## 
+##  Asymptotic one-sample Kolmogorov-Smirnov test
+## 
+## data:  df$rating
+## D = 0.94445, p-value &lt; 2.2e-16
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code># plot histogram for square-transformed data
+hist(df$rating^2)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-7-2.png" width="90%" /></p>
+<pre class="r"><code>df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;%
+  summary()</code></pre>
+<pre><code>##             boro          score        grade          rating     
+##  Bronx        :1400   Min.   : 0.00   A   :6815   Min.   :1.000  
+##  Staten Island: 725   1st Qu.:12.00   B   : 507   1st Qu.:3.200  
+##  Queens       :4546   Median :22.00   C   : 286   Median :3.800  
+##  Brooklyn     :5391   Mean   :23.68   N   :2508   Mean   :3.634  
+##  Manhattan    :8119   3rd Qu.:32.00   Z   :2333   3rd Qu.:4.200  
+##                       Max.   :95.00   NA&#39;s:7732   Max.   :5.000  
+##                       NA&#39;s   :169                                
+##    review_num       price      
+##  Min.   :    1.0   1   : 6906  
+##  1st Qu.:   21.0   2   :11117  
+##  Median :   73.0   3   : 1244  
+##  Mean   :  217.9   4   :  191  
+##  3rd Qu.:  227.0   NA&#39;s:  723  
+##  Max.   :14333.0               
+## </code></pre>
+<pre class="r"><code>lm(rating ~ grade*price, data = df)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = rating ~ grade * price, data = df)
+## 
+## Coefficients:
+##   (Intercept)         gradeB         gradeC         gradeN         gradeZ  
+##        3.2680         0.4119         0.6385         0.4016         0.2378  
+##        price2         price3         price4  gradeB:price2  gradeC:price2  
+##        0.4999         0.6815         0.5968        -0.5706        -1.1381  
+## gradeN:price2  gradeZ:price2  gradeB:price3  gradeC:price3  gradeN:price3  
+##       -0.3112        -0.3937        -1.2461        -0.2880        -0.4015  
+## gradeZ:price3  gradeB:price4  gradeC:price4  gradeN:price4  gradeZ:price4  
+##       -0.6353             NA             NA         0.1689         0.1974</code></pre>
+</div>
 
 
 

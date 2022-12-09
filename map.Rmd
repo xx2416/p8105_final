@@ -27,7 +27,7 @@ inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>%
 ```
 
 ## Heat map
-```{r}
+```{r echo = FALSE}
 flag_density = 
   inspection_raw %>% 
   filter(

@@ -15,7 +15,7 @@
 
 <title>P8105_Final Project Proposal</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -183,8 +183,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -192,16 +192,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -250,11 +243,7 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-<<<<<<< HEAD
       <a class="navbar-brand" href="index.html">Home</a>
-=======
-      <a class="navbar-brand" href="index.html">Grace Website</a>
->>>>>>> fa78053e5dd21b8e1d2bf335f93b542e6b2e62bd
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -264,24 +253,33 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-<<<<<<< HEAD
-  <a href="eda.html">Exploratory Analysis</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Eda about restaurants in NYC</li>
+    <li>
+      <a href="eda.html"></a>
+    </li>
+    <li>
+      <a></a>
+    </li>
+    <li>
+      <a href="map.html"></a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="stat_analysis.html">Statistical Analysis</a>
 </li>
 <li>
-  <a href="report.html">Project report</a>
+  <a href="report.html">Project Report</a>
 </li>
 <li>
-  <a href="shiny.html">Shiny app</a>
-=======
-  <a href="about.html">About Me</a>
-</li>
-<li>
-  <a href="dashboard.html">Dashboard</a>
->>>>>>> fa78053e5dd21b8e1d2bf335f93b542e6b2e62bd
+  <a href="https://sweetsugar.shinyapps.io/recommender">Shiny app</a>
 </li>
 <li>
   <a href="mailto:&lt;js6177@cumc.columbia.edu&gt;">
@@ -289,15 +287,12 @@ $(document).ready(function () {
      
   </a>
 </li>
-<<<<<<< HEAD
 <li>
   <a href="https://github.com/xx2416/p8105_final">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
-=======
->>>>>>> fa78053e5dd21b8e1d2bf335f93b542e6b2e62bd
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
