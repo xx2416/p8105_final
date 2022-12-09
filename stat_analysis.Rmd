@@ -1,6 +1,7 @@
 ---
 title: "Statistical Analysis"
 ---
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(patchwork)
@@ -130,6 +131,25 @@ left_join(price_grade, total) %>%
 ```
 
 ## Regression model
+
+To perform any regression model, we first perform test of normality on the response variable, ratings. We first plot a histogram on the data, from which we can see that the response variable is not exactly normally distributed and slightly skewed to the left. We confirm this deviation from normality by conducting the Kolmogorov-Smirnov test for normality. To adjust for this factor, we transform the rating variable by squaring it. As we may see in the histogram, the square-adjusted variable is approximately normal.
+
+```{r}
+# plot histogram
+hist(df$rating)
+
+# Kolmogorov-Smirnov test
+ks.test(df$rating, 'pnorm')
+
+# plot histogram for square-transformed data
+hist(df$rating^2)
+```
+
+
+```{r}
+
+```
+
 
 ```{r}
 df %>% 
