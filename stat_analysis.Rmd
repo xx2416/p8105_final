@@ -34,7 +34,7 @@ In this first step, we wrangle the data such that it is usable and provide a bri
 library(readr)
 dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  distinct(dba, .keep_all = TRUE) %>% # s.t. each row contains info for one restaurant
+  distinct(camis, .keep_all = TRUE) %>%  # s.t. each row contains info for one restaurant
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, "A"))
@@ -145,7 +145,7 @@ prop.test(join$n, join$total)
 #join = join %>% 
  # mutate(prop = n/total) %>% 
  # select(price, prop)
-
+```
 
 ## Regression model
 
