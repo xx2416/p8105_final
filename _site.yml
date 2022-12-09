@@ -3,24 +3,24 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Home"
-      href: index.html
-    - text: "Exploratory Analysis"
-      menu: 
-      - text: "Eda about restaurants in NYC"
-      - href: eda.html
-      - tect: "Location of restaurants in NYC"
-      - href: map.html
-    - text: "Statistical Analysis"
-      href: stat_analysis.html
-    - text: "Project Report"
-      href: report.html
-    - text: "Shiny app"
-      href: https://sweetsugar.shinyapps.io/recommender
-    - icon: fa-envelope fa-lg
-      href: mailto:<js6177@cumc.columbia.edu>
-    - icon: fa-github fa-lg
-      href: https://github.com/xx2416/p8105_final
+  - text: "Home"
+    href: index.html
+  - text: "Exploratory Analysis"  
+    menu: 
+    - text: "Eda about restaurants in NYC"
+      href: eda.html
+    - tect: "Location of restaurants in NYC"
+      href: map.html
+  - text: "Statistical Analysis"
+    href: stat_analysis.html
+  - text: "Project Report"
+    href: report.html
+  - text: "Shiny app"
+    href: https://sweetsugar.shinyapps.io/recommender
+  - icon: fa-envelope fa-lg
+    href: mailto:<js6177@cumc.columbia.edu>
+  - icon: fa-github fa-lg
+    href: https://github.com/xx2416/p8105_final
       
 output:
   html_document:
