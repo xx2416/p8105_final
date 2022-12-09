@@ -9,11 +9,7 @@ navbar:
     menu: 
     - text: "Yelp Review Data"
       href: eda.html
-<<<<<<< HEAD
     - text: "NYC Inspection Data"
-=======
-    - text: "Location of restaurants in NYC"
->>>>>>> 0f248cd98f862d2d798868fdb2696711c6938442
       href: map.html
   - text: "Statistical Analysis"
     href: stat_analysis.html
