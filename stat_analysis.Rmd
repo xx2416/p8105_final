@@ -25,15 +25,22 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
+
+## Dataset Overview
+
+In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest.
+
 ```{r}
 library(readr)
 dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  mutate(price = fct_recode(price, `1`="$", `2`="$$", `3`="$$$", `4`="$$$$"),
+  distinct(dba, .keep_all = TRUE) %>% # s.t. each row contains info for one restaurant
+  mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
-         grade = fct_relevel(grade, "A")) 
-
+         grade = fct_relevel(grade, "A"))
 ```
+
+Now, we provide a table summary of all variables involved.
 
 ```{r}
 df %>% 
@@ -47,6 +54,8 @@ df %>%
   bold_labels() %>%   
   italicize_levels() 
 ```
+
+As such, we can see that Manhattan has the most re
 
 ## Chi-square Test
 
@@ -130,7 +139,15 @@ left_join(price_grade, total) %>%
 
 ```
 
+
+
 ## Regression model
+
+We first wrangle the data such that each restaurant only represent one row in the dataset.
+
+
+
+### Regression Diagnostics
 
 To perform any regression model, we first perform test of normality on the response variable, ratings. We first plot a histogram on the data, from which we can see that the response variable is not exactly normally distributed and slightly skewed to the left. We confirm this deviation from normality by conducting the Kolmogorov-Smirnov test for normality. To adjust for this factor, we transform the rating variable by squaring it. As we may see in the histogram, the square-adjusted variable is approximately normal.
 
@@ -145,19 +162,14 @@ ks.test(df$rating, 'pnorm')
 hist(df$rating^2)
 ```
 
-
-```{r}
-
-```
-
+Now, we perform diagnostic tests required for regression models.
 
 ```{r}
 df %>% 
   select(boro, score, grade, rating, review_num, price) %>%
   summary()
 
-lm(rating ~ grade*price, data = df)
+lm(rating^2 ~ , data = df)
 ```
 
-
-
+### Choosing the "Best" Model

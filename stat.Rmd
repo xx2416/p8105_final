@@ -6,6 +6,7 @@ Output:
   html_notebook:
     code_folding: hide
 ---
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(patchwork)
