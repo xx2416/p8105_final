@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Complete Violation Descriptions</title>
+
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="eda.html">Yelp Review Data</a>
+    </li>
+    <li>
+      <a href="map.html">NYC Inspection Data</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="stat_analysis.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="report.html">Project Report</a>
+</li>
+<li>
+  <a href="https://sweetsugar.shinyapps.io/recommender">Shiny app</a>
+</li>
+<li>
+  <a href="mailto:&lt;js6177@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/xx2416/p8105_final">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Complete Violation Descriptions</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)
+
+all_vio_descr = read_csv(&quot;./data/inspection_sub_latest_date.csv&quot;) %&gt;% 
+  janitor::clean_names()%&gt;% 
+   mutate(
+    violation_description = as.factor(violation_description)
+  ) %&gt;%
+  group_by(violation_description) %&gt;%
+  summarize(
+    n = n()
+  ) %&gt;%
+  mutate(
+    rank = rank(-n, ties.method = &quot;first&quot;)
+  ) %&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## Rows: 20181 Columns: 32
+## ── Column specification ──────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (18): dba, boro, building, street, phone, cuisine_description, grade, i...
+## dbl  (11): camis, zipcode, score, latitude, longitude, community_board, bin,...
+## date  (3): inspection_date, grade_date, record_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>all_vio_descr %&gt;%
+  select(violation_description,n)%&gt;%
+  knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="99%" />
+<col width="0%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">violation_description</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Non-food contact surface or equipment made of
+unacceptable material, not kept clean, or not properly sealed, raised,
+spaced or movable to allow accessibility for cleaning on all sides,
+above and underneath the unit.</td>
+<td align="right">2854</td>
+</tr>
+<tr class="even">
+<td align="left">Establishment is not free of harborage or conditions
+conducive to rodents, insects or other pests.</td>
+<td align="right">2498</td>
+</tr>
+<tr class="odd">
+<td align="left">Food contact surface not properly washed, rinsed and
+sanitized after each use and following any activity when contamination
+may have occurred.</td>
+<td align="right">1504</td>
+</tr>
+<tr class="even">
+<td align="left">Filth flies or food/refuse/sewage associated with
+(FRSA) flies or other nuisance pests in establishment’s food and/or
+non-food areas. FRSA flies include house flies, blow flies, bottle
+flies, flesh flies, drain flies, Phorid flies and fruit flies.</td>
+<td align="right">1445</td>
+</tr>
+<tr class="odd">
+<td align="left">Cold TCS food item held above 41 °F; smoked or
+processed fish held above 38 °F; intact raw eggs held above 45 °F; or
+reduced oxygen packaged (ROP) TCS foods held above required temperatures
+except during active necessary preparation.</td>
+<td align="right">1395</td>
+</tr>
+<tr class="even">
+<td align="left">Evidence of mice or live mice in establishment’s food
+or non-food areas.</td>
+<td align="right">1270</td>
+</tr>
+<tr class="odd">
+<td align="left">Food, supplies, and equipment not protected from
+potential source of contamination during storage, preparation,
+transportation, display or service.</td>
+<td align="right">1126</td>
+</tr>
+<tr class="even">
+<td align="left">Anti-siphonage or back-flow prevention device not
+provided where required; equipment or floor not properly drained; sewage
+disposal system in disrepair or not functioning properly. Condensation
+or liquid waste improperly disposed of.</td>
+<td align="right">1064</td>
+</tr>
+<tr class="odd">
+<td align="left">Hot TCS food item not held at or above 140 °F.</td>
+<td align="right">969</td>
+</tr>
+<tr class="even">
+<td align="left">Food Protection Certificate (FPC) not held by manager
+or supervisor of food operations.</td>
+<td align="right">576</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw, cooked or prepared food is adulterated,
+contaminated, cross-contaminated, or not discarded in accordance with
+HACCP plan.</td>
+<td align="right">507</td>
+</tr>
+<tr class="even">
+<td align="left">Live roaches in facility’s food or non-food area.</td>
+<td align="right">467</td>
+</tr>
+<tr class="odd">
+<td align="left">Personal cleanliness is inadequate. Outer garment
+soiled with possible contaminant. Effective hair restraint not worn
+where required. Jewelry is worn on hands or arms. Fingernail polish worn
+or fingernails not kept clean and trimmed.</td>
+<td align="right">451</td>
+</tr>
+<tr class="even">
+<td align="left">Pesticide not properly labeled or used by unlicensed
+individual. Pesticide, other toxic chemical improperly used/stored.
+Unprotected, unlocked bait station used.</td>
+<td align="right">411</td>
+</tr>
+<tr class="odd">
+<td align="left">Dishwashing and ware washing: Cleaning and sanitizing
+of tableware, including dishes, utensils, and equipment deficient.</td>
+<td align="right">363</td>
+</tr>
+<tr class="even">
+<td align="left">Sanitized equipment or utensil, including in-use food
+dispensing utensil, improperly used or stored.</td>
+<td align="right">322</td>
+</tr>
+<tr class="odd">
+<td align="left">Wiping cloths not stored clean and dry, or in a
+sanitizing solution, between uses.</td>
+<td align="right">300</td>
+</tr>
+<tr class="even">
+<td align="left">No hand washing facility in or adjacent to toilet room
+or within 25 feet of a food preparation, food service or ware washing
+area. Hand washing facility not accessible, obstructed or used for
+non-hand washing purposes. No hot and cold running water or water at
+inadequate pressure. No soap or acceptable hand-drying device.</td>
+<td align="right">297</td>
+</tr>
+<tr class="odd">
+<td align="left">Design, construction, materials used or maintenance of
+food contact surface improper. Surface not easily cleanable, sanitized
+and maintained.</td>
+<td align="right">246</td>
+</tr>
+<tr class="even">
+<td align="left">After cooking or removal from hot holding, TCS food not
+cooled by an approved method whereby the internal temperature is reduced
+from 140 °F to 70 °F or less within 2 hours, and from 70 °F to 41 °F or
+less within 4 additional hours.</td>
+<td align="right">227</td>
+</tr>
+<tr class="odd">
+<td align="left">Evidence of rats or live rats in establishment’s food
+or non-food areas.</td>
+<td align="right">188</td>
+</tr>
+<tr class="even">
+<td align="left">Single service article not provided. Single service
+article reused or not protected from contamination when transported,
+stored, dispensed. Drinking straws not completely enclosed in wrapper or
+dispensed from a sanitary device.</td>
+<td align="right">180</td>
+</tr>
+<tr class="odd">
+<td align="left">Thawing procedure improper.</td>
+<td align="right">174</td>
+</tr>
+<tr class="even">
+<td align="left">Properly scaled and calibrated thermometer or
+thermocouple not provided or not readily accessible in food preparation
+and hot/cold holding areas to measure temperatures of TCS foods during
+cooking, cooling, reheating, and holding.</td>
+<td align="right">148</td>
+</tr>
+<tr class="odd">
+<td align="left">Accurate thermometer not provided or properly located
+in refrigerated, cold storage or hot holding equipment</td>
+<td align="right">128</td>
+</tr>
+<tr class="even">
+<td align="left">Food worker/food vendor does not use utensil or other
+barrier to eliminate bare hand contact with food that will not receive
+adequate additional heat treatment.</td>
+<td align="right">91</td>
+</tr>
+<tr class="odd">
+<td align="left">Toilet facility not maintained or provided with toilet
+paper, waste receptacle or self-closing door.</td>
+<td align="right">85</td>
+</tr>
+<tr class="even">
+<td align="left">Tobacco or electronic cigarette use, eating, or
+drinking from open container in food preparation, food storage or
+dishwashing area.</td>
+<td align="right">80</td>
+</tr>
+<tr class="odd">
+<td align="left">Mechanical or natural ventilation not provided,
+inadequate, improperly installed, in disrepair or fails to prevent and
+control excessive build-up of grease, heat, steam condensation, vapors,
+odors, smoke or fumes.</td>
+<td align="right">78</td>
+</tr>
+<tr class="even">
+<td align="left">Garbage receptacle not pest or water resistant, with
+tight-fitting lids, and covered except while in active use. Garbage
+receptacle and cover not cleaned after emptying and prior to reuse.
+Garbage, refuse and other solid and liquid waste not collected, stored,
+removed and disposed of so as to prevent a nuisance.</td>
+<td align="right">77</td>
+</tr>
+<tr class="odd">
+<td align="left">Insufficient or no hot holding, cold storage or cold
+holding equipment provided to maintain Time/Temperature Control for
+Safety Foods (TCS) at required temperatures</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="left">Wash hands sign not posted near or above hand washing
+sink.</td>
+<td align="right">42</td>
+</tr>
+<tr class="odd">
+<td align="left">Contract with a pest management professional not in
+place. Record of extermination activities not kept on premises.</td>
+<td align="right">41</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="right">39</td>
+</tr>
+<tr class="odd">
+<td align="left">Food, prohibited, from unapproved or unknown source,
+home canned or home prepared. Animal slaughtered, butchered or dressed
+(eviscerated, skinned) in establishment. Reduced Oxygen Packaged (ROP)
+fish not frozen before processing. ROP food prepared on premises
+transported to another site.</td>
+<td align="right">38</td>
+</tr>
+<tr class="even">
+<td align="left">“Choking first aid” poster not posted. “Alcohol and
+pregnancy” warning sign not posted. Resuscitation equipment: exhaled air
+resuscitation masks (adult &amp; pediatric), latex gloves, sign not
+posted.</td>
+<td align="right">37</td>
+</tr>
+<tr class="odd">
+<td align="left">Lighting inadequate; permanent lighting not provided in
+food preparation areas, ware washing areas, and storage rooms.
+Shatterproof bulb or shield to prevent broken glass from falling into
+food or onto surfaces, not installed.</td>
+<td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">Written Standard Operating Procedure (SOP) approved by
+the Department for refillable, reusable containers not available at the
+time of inspection. Container construction improper</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">Hot TCS food item that has been cooked and cooled is
+being held for service without first being reheated to 165º F or above
+within 2 hours.</td>
+<td align="right">25</td>
+</tr>
+<tr class="even">
+<td align="left">Live animal other than fish in tank or service animal
+present in facility’s food or non-food area.</td>
+<td align="right">25</td>
+</tr>
+<tr class="odd">
+<td align="left">Swollen, leaking, rusted or otherwise damaged canned
+food to be returned to distributor not segregated from intact product
+and clearly labeled DO NOT USE</td>
+<td align="right">25</td>
+</tr>
+<tr class="even">
+<td align="left">TCS food removed from cold holding or prepared from or
+combined with ingredients at room temperature not cooled by an approved
+method to 41 °F or below within 4 hours.</td>
+<td align="right">24</td>
+</tr>
+<tr class="odd">
+<td align="left">Current letter grade or Grade Pending card not
+posted</td>
+<td align="right">22</td>
+</tr>
+<tr class="even">
+<td align="left">Food allergy information poster not conspicuously
+posted where food is being prepared or processed by food workers.</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">Juice packaged on premises with no or incomplete label,
+no warning statement</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">Time/Temperature Control for Safety (TCS) food not
+cooked to required minimum internal temperature. • Poultry, poultry
+parts, ground and comminuted poultry, all stuffing containing poultry,
+meats, fish or ratites to or above 165 °F for 15 seconds with no
+interruption of the cooking process • Ground meat, and food containing
+ground and comminuted meat, to or above 158 °F for 15 seconds with no
+interruption of the cooking process, except per individual customer
+request• Pork, any food containing pork to or above 150 °F for 15
+seconds• Mechanically tenderized or injected meats to or above 155 °F.•
+Whole meat roasts and beef steak to or above required temperature and
+time except per individual customer request• Raw animal foods cooked in
+microwave to or above165 °F, covered, rotated or stirred • All other
+foods to or above 140 °F for 15 seconds; shell eggs to or above 145 °F
+for 15 seconds except per individual customer request.</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">Food adulterated or misbranded. Adulterated or
+misbranded food possessed, being manufactured, produced, packed, sold,
+offered for sale, delivered or given away</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">Shellfish not from approved source, not or improperly
+tagged/labeled; tags not retained for 90 days.</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">Flavored tobacco products sold, offered for sale</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">Nuisance created or allowed to exist. Facility not free
+from unsafe, hazardous, offensive or annoying condition.</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">Food, food preparation area, food storage area, or
+other area used by employees or patrons, contaminated by sewage or
+liquid waste.</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">Sewage disposal system is not provided, improper,
+inadequate or unapproved.</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">Caloric content not posted on menus, menu boards or
+food tags, in a food service establishment that is 1 of 15 or more
+outlets operating the same type of business nationally under common
+ownership or control, or as a franchise or doing business under the same
+name, for each menu item that is served in portions, the size and
+content of which are standardized.</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">Design, construction, materials used or maintenance of
+food contact surface improper. Surface not easily cleanable, sanitized
+and maintained. Culinary sink or other acceptable method not provided
+for washing food.</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">Harmful noxious gas or vapor detected. Carbon Monoxide
+(CO) level exceeds nine (9) ppm</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">Toilet facility not provided for employees or for
+patrons when required. Shared patron-employee toilet accessed through
+kitchen, food prep or storage area or utensil washing area.</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">Toxic chemical or pesticide improperly stored or used
+such that food contamination may occur.</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">Additional nutritional information statement not
+posted, or additional nutritional information not provided</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">Lighting fixture located over, by or within food
+storage, preparation, service or display facility, and facility where
+utensils and equipment are cleaned and stored, which may shatter due to
+extreme heat, temperature changes or accidental contact; not fitted with
+shatterproof bulb or shielded and encased, with end caps or other
+device.</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">Meat, fish, molluscan shellfish, unpasteurized raw
+shell eggs, poultry or other TCS offered or served raw or undercooked
+and written notice not provided to consumer.</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">Failure to make a good faith effort to inform smokers
+or electronic cigarette users of Smoke-Free Air Act (“SFAA”)
+prohibitions</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Food containing a prohibited substance held, kept,
+offered, prepared, processed, packaged, or served.</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Food Protection Certificate not available for
+inspection</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Food worker/food vendor does not wash hands thoroughly
+after using the toilet, or after coughing, sneezing, smoking, eating,
+preparing raw foods or otherwise contaminating hands or does not change
+gloves when required; Worker fails to refrain from smoking or being
+fully clothed in clean outer garments.</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">HACCP plan not approved or approved HACCP plan not
+maintained on premises.</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">The original nutrition fact labels or ingredient label
+for a cooking oil, shortening or margarine or food item sold in bulk, or
+acceptable manufacturer’s documentation not maintained on site.</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Required succinct nutritional statements not posted on
+menu(s) for adults and children (2,000 calories per day for adults)</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Smoking or electronic cigarette use allowed in
+prohibited area</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">Food service operation occurring in room or area used
+as living or sleeping quarters.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Sign prohibiting smoking or using electronic cigarettes
+not conspicuously posted.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Unclean or cracked whole eggs or unpasteurized liquid,
+frozen or powdered eggs kept or used.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Workplace SFAA policy not prominently posted in
+workplace.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">A food containing artificial trans-fat, with 0.5 grams
+or more of trans fat per serving, is being stored, distributed, held for
+service, used in preparation of a menu item, or served.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Ashtray present in smoke-free area.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Commercially processed pre-cooked TCS in hermetically
+sealed containers and precooked TCS in intact packages from non-retail
+food processing establishments not heated to 140 °F within 2 hours of
+removal from container or package.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Current letter grade or “Grade Pending” card not
+conspicuously posted or visible to passersby</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Duties of an officer of the Department interfered with
+or obstructed.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Expanded Polystyrene (EPS) single service article not
+designated as a recyclable material.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Failure to display required signage about plastic straw
+availability.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Food allergy information poster not posted in language
+understood by all food workers.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Food not labeled in accordance with the approved HACCP
+plan</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">No or inadequate potable water supply. Water or ice not
+potable or from unapproved source. Bottled water not NY State certified.
+Cross connection in potable water supply system.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Original label for smoking products sold or offered for
+sale.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Permit not conspicuously displayed.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Providing single-use, non-compostable plastic straws to
+customers without customer request (including providing such straws at a
+self-serve station)</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Sign prohibiting entry of persons under 21 years of age
+not posted at public entryway to Non-Tobacco Hookah Establishment
+(NTHE)</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Unapproved outdoor, street or sidewalk cooking.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Warning sign re dangers of hookah smoking not posted at
+or on each public entryway to Non-Tobacco Hookah Establishment (NTHE)
+patron</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Warning sign re dangers of hookah smoking not posted in
+each room or area of Non-Tobacco Hookah Establishment (NTHE) where
+smoking is allowed</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -13,7 +13,7 @@
 
 <title>Statistical Analysis</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -303,12 +303,12 @@ $(document).ready(function () {
 
 <pre class="r"><code>library(readr)
 dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
-<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
+<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame
+## for details, e.g.:
 ##   dat &lt;- vroom(...)
 ##   problems(dat)</code></pre>
 <pre><code>## Rows: 54562 Columns: 32
-## ── Column specification ──────────────────────────────────────────────────────
+## ── Column specification ──────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (17): dba, boro, building, street, cuisine_description, action, violati...
 ## dbl  (12): camis, zipcode, phone, score, latitude, longitude, community_boar...
@@ -321,7 +321,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, &quot;A&quot;)) </code></pre>
 <pre><code>## Rows: 20181 Columns: 32
-## ── Column specification ──────────────────────────────────────────────────────
+## ── Column specification ──────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (18): dba, boro, building, street, phone, cuisine_description, grade, i...
 ## dbl  (11): camis, zipcode, score, latitude, longitude, community_board, bin,...
@@ -947,8 +947,8 @@ price_grade = df %&gt;%
   drop_na(price, grade) %&gt;% 
   group_by(price, grade) %&gt;% 
   summarise(n = n())</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;price&#39;. You can override using the
-## `.groups` argument.</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;price&#39;. You can override
+## using the `.groups` argument.</code></pre>
 <pre class="r"><code>left_join(price_grade, total) %&gt;% 
   mutate(prop = n/sum) %&gt;% 
   pivot_wider(

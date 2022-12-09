@@ -1,0 +1,36 @@
+---
+title: "Complete Violation Descriptions"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+all_vio_descr = read_csv("./data/inspection_sub_latest_date.csv") %>% 
+  janitor::clean_names()%>% 
+   mutate(
+    violation_description = as.factor(violation_description)
+  ) %>%
+  group_by(violation_description) %>%
+  summarize(
+    n = n()
+  ) %>%
+  mutate(
+    rank = rank(-n, ties.method = "first")
+  ) %>%
+  arrange(desc(n))
+
+all_vio_descr %>%
+  select(violation_description,n)%>%
+  knitr::kable()
+```
+
