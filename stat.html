@@ -31,7 +31,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -228,7 +232,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -238,6 +308,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -303,6 +383,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Statistical Analysis</h1>
@@ -325,7 +413,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>df = read_csv(&quot;data/inspection_sub_latest_date.csv&quot;) %&gt;%
-  distinct(dba, .keep_all = TRUE) %&gt;% 
+  distinct(camis, .keep_all = TRUE) %&gt;% 
   mutate(price = fct_recode(price, &quot;1&quot; = &quot;$&quot;, &quot;2&quot; = &quot;$$&quot;, &quot;3&quot; = &quot;$$$&quot;, &quot;4&quot; = &quot;$$$$&quot;),
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, &quot;A&quot;))</code></pre>
@@ -349,12 +437,12 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
       )) %&gt;% 
   bold_labels() %&gt;%   
   italicize_levels() </code></pre>
-<div id="pgtsrmwqss" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ednnatrtha" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#pgtsrmwqss .gt_table {
+#ednnatrtha .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -379,7 +467,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_heading {
+#ednnatrtha .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -391,7 +479,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_title {
+#ednnatrtha .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -403,7 +491,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-width: 0;
 }
 
-#pgtsrmwqss .gt_subtitle {
+#ednnatrtha .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -415,13 +503,13 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-width: 0;
 }
 
-#pgtsrmwqss .gt_bottom_border {
+#ednnatrtha .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_col_headings {
+#ednnatrtha .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -436,7 +524,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_col_heading {
+#ednnatrtha .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -456,7 +544,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#pgtsrmwqss .gt_column_spanner_outer {
+#ednnatrtha .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -468,15 +556,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 4px;
 }
 
-#pgtsrmwqss .gt_column_spanner_outer:first-child {
+#ednnatrtha .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pgtsrmwqss .gt_column_spanner_outer:last-child {
+#ednnatrtha .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pgtsrmwqss .gt_column_spanner {
+#ednnatrtha .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -488,7 +576,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   width: 100%;
 }
 
-#pgtsrmwqss .gt_group_heading {
+#ednnatrtha .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -513,7 +601,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: middle;
 }
 
-#pgtsrmwqss .gt_empty_group_heading {
+#ednnatrtha .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -528,15 +616,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: middle;
 }
 
-#pgtsrmwqss .gt_from_md > :first-child {
+#ednnatrtha .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pgtsrmwqss .gt_from_md > :last-child {
+#ednnatrtha .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pgtsrmwqss .gt_row {
+#ednnatrtha .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -555,7 +643,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#pgtsrmwqss .gt_stub {
+#ednnatrtha .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -568,7 +656,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#pgtsrmwqss .gt_stub_row_group {
+#ednnatrtha .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -582,11 +670,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: top;
 }
 
-#pgtsrmwqss .gt_row_group_first td {
+#ednnatrtha .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pgtsrmwqss .gt_summary_row {
+#ednnatrtha .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -596,16 +684,16 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#pgtsrmwqss .gt_first_summary_row {
+#ednnatrtha .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_first_summary_row.thick {
+#ednnatrtha .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pgtsrmwqss .gt_last_summary_row {
+#ednnatrtha .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -615,7 +703,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_grand_summary_row {
+#ednnatrtha .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -625,7 +713,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#pgtsrmwqss .gt_first_grand_summary_row {
+#ednnatrtha .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -635,11 +723,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_striped {
+#ednnatrtha .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pgtsrmwqss .gt_table_body {
+#ednnatrtha .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -648,7 +736,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_footnotes {
+#ednnatrtha .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -662,7 +750,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_footnote {
+#ednnatrtha .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -671,7 +759,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#pgtsrmwqss .gt_sourcenotes {
+#ednnatrtha .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -685,7 +773,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#pgtsrmwqss .gt_sourcenote {
+#ednnatrtha .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -693,64 +781,64 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#pgtsrmwqss .gt_left {
+#ednnatrtha .gt_left {
   text-align: left;
 }
 
-#pgtsrmwqss .gt_center {
+#ednnatrtha .gt_center {
   text-align: center;
 }
 
-#pgtsrmwqss .gt_right {
+#ednnatrtha .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pgtsrmwqss .gt_font_normal {
+#ednnatrtha .gt_font_normal {
   font-weight: normal;
 }
 
-#pgtsrmwqss .gt_font_bold {
+#ednnatrtha .gt_font_bold {
   font-weight: bold;
 }
 
-#pgtsrmwqss .gt_font_italic {
+#ednnatrtha .gt_font_italic {
   font-style: italic;
 }
 
-#pgtsrmwqss .gt_super {
+#ednnatrtha .gt_super {
   font-size: 65%;
 }
 
-#pgtsrmwqss .gt_footnote_marks {
+#ednnatrtha .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#pgtsrmwqss .gt_asterisk {
+#ednnatrtha .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pgtsrmwqss .gt_indent_1 {
+#ednnatrtha .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pgtsrmwqss .gt_indent_2 {
+#ednnatrtha .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pgtsrmwqss .gt_indent_3 {
+#ednnatrtha .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pgtsrmwqss .gt_indent_4 {
+#ednnatrtha .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pgtsrmwqss .gt_indent_5 {
+#ednnatrtha .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -759,11 +847,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Manhattan</strong>, N = 1,985<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Brooklyn</strong>, N = 1,424<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Queens</strong>, N = 1,087<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Bronx</strong>, N = 331<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Staten Island</strong>, N = 171<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Manhattan</strong>, N = 2,422<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Brooklyn</strong>, N = 1,671<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Queens</strong>, N = 1,302<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Bronx</strong>, N = 424<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Staten Island</strong>, N = 234<sup class="gt_footnote_marks">1</sup></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
@@ -774,41 +862,41 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
 <td class="gt_row gt_center"></td>
 <td class="gt_row gt_center"></td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    A</td>
-<td class="gt_row gt_center">1,002 (69%)</td>
-<td class="gt_row gt_center">747 (71%)</td>
-<td class="gt_row gt_center">524 (70%)</td>
-<td class="gt_row gt_center">137 (66%)</td>
-<td class="gt_row gt_center">105 (76%)</td></tr>
+<td class="gt_row gt_center">1,280 (71%)</td>
+<td class="gt_row gt_center">913 (74%)</td>
+<td class="gt_row gt_center">666 (74%)</td>
+<td class="gt_row gt_center">194 (71%)</td>
+<td class="gt_row gt_center">148 (77%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    B</td>
-<td class="gt_row gt_center">35 (2.4%)</td>
-<td class="gt_row gt_center">35 (3.3%)</td>
-<td class="gt_row gt_center">26 (3.5%)</td>
-<td class="gt_row gt_center">5 (2.4%)</td>
-<td class="gt_row gt_center">1 (0.7%)</td></tr>
+<td class="gt_row gt_center">41 (2.3%)</td>
+<td class="gt_row gt_center">39 (3.1%)</td>
+<td class="gt_row gt_center">29 (3.2%)</td>
+<td class="gt_row gt_center">6 (2.2%)</td>
+<td class="gt_row gt_center">4 (2.1%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    C</td>
-<td class="gt_row gt_center">15 (1.0%)</td>
-<td class="gt_row gt_center">8 (0.8%)</td>
-<td class="gt_row gt_center">11 (1.5%)</td>
-<td class="gt_row gt_center">8 (3.8%)</td>
+<td class="gt_row gt_center">16 (0.9%)</td>
+<td class="gt_row gt_center">8 (0.6%)</td>
+<td class="gt_row gt_center">12 (1.3%)</td>
+<td class="gt_row gt_center">8 (2.9%)</td>
 <td class="gt_row gt_center">0 (0%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    N</td>
-<td class="gt_row gt_center">195 (13%)</td>
-<td class="gt_row gt_center">119 (11%)</td>
-<td class="gt_row gt_center">100 (13%)</td>
-<td class="gt_row gt_center">36 (17%)</td>
-<td class="gt_row gt_center">22 (16%)</td></tr>
+<td class="gt_row gt_center">225 (13%)</td>
+<td class="gt_row gt_center">126 (10%)</td>
+<td class="gt_row gt_center">109 (12%)</td>
+<td class="gt_row gt_center">37 (14%)</td>
+<td class="gt_row gt_center">27 (14%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    Z</td>
-<td class="gt_row gt_center">210 (14%)</td>
-<td class="gt_row gt_center">142 (14%)</td>
-<td class="gt_row gt_center">84 (11%)</td>
-<td class="gt_row gt_center">22 (11%)</td>
-<td class="gt_row gt_center">10 (7.2%)</td></tr>
+<td class="gt_row gt_center">233 (13%)</td>
+<td class="gt_row gt_center">156 (13%)</td>
+<td class="gt_row gt_center">90 (9.9%)</td>
+<td class="gt_row gt_center">27 (9.9%)</td>
+<td class="gt_row gt_center">12 (6.3%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td class="gt_row gt_center">528</td>
-<td class="gt_row gt_center">373</td>
-<td class="gt_row gt_center">342</td>
-<td class="gt_row gt_center">123</td>
-<td class="gt_row gt_center">33</td></tr>
+<td class="gt_row gt_center">627</td>
+<td class="gt_row gt_center">429</td>
+<td class="gt_row gt_center">396</td>
+<td class="gt_row gt_center">152</td>
+<td class="gt_row gt_center">43</td></tr>
     <tr><td class="gt_row gt_left" style="font-weight: bold;">price</td>
 <td class="gt_row gt_center"></td>
 <td class="gt_row gt_center"></td>
@@ -816,33 +904,33 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
 <td class="gt_row gt_center"></td>
 <td class="gt_row gt_center"></td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    1</td>
-<td class="gt_row gt_center">430 (22%)</td>
-<td class="gt_row gt_center">479 (35%)</td>
-<td class="gt_row gt_center">380 (37%)</td>
-<td class="gt_row gt_center">125 (42%)</td>
-<td class="gt_row gt_center">47 (29%)</td></tr>
+<td class="gt_row gt_center">653 (28%)</td>
+<td class="gt_row gt_center">668 (41%)</td>
+<td class="gt_row gt_center">542 (44%)</td>
+<td class="gt_row gt_center">209 (53%)</td>
+<td class="gt_row gt_center">92 (41%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    2</td>
-<td class="gt_row gt_center">1,215 (63%)</td>
-<td class="gt_row gt_center">799 (59%)</td>
-<td class="gt_row gt_center">604 (59%)</td>
-<td class="gt_row gt_center">162 (54%)</td>
-<td class="gt_row gt_center">105 (65%)</td></tr>
+<td class="gt_row gt_center">1,420 (60%)</td>
+<td class="gt_row gt_center">856 (53%)</td>
+<td class="gt_row gt_center">655 (53%)</td>
+<td class="gt_row gt_center">171 (44%)</td>
+<td class="gt_row gt_center">123 (55%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    3</td>
-<td class="gt_row gt_center">235 (12%)</td>
-<td class="gt_row gt_center">75 (5.5%)</td>
-<td class="gt_row gt_center">34 (3.3%)</td>
-<td class="gt_row gt_center">9 (3.0%)</td>
-<td class="gt_row gt_center">8 (4.9%)</td></tr>
+<td class="gt_row gt_center">240 (10%)</td>
+<td class="gt_row gt_center">76 (4.7%)</td>
+<td class="gt_row gt_center">34 (2.7%)</td>
+<td class="gt_row gt_center">9 (2.3%)</td>
+<td class="gt_row gt_center">8 (3.6%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    4</td>
-<td class="gt_row gt_center">49 (2.5%)</td>
-<td class="gt_row gt_center">10 (0.7%)</td>
-<td class="gt_row gt_center">8 (0.8%)</td>
-<td class="gt_row gt_center">2 (0.7%)</td>
-<td class="gt_row gt_center">2 (1.2%)</td></tr>
+<td class="gt_row gt_center">49 (2.1%)</td>
+<td class="gt_row gt_center">10 (0.6%)</td>
+<td class="gt_row gt_center">9 (0.7%)</td>
+<td class="gt_row gt_center">2 (0.5%)</td>
+<td class="gt_row gt_center">2 (0.9%)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td class="gt_row gt_center">56</td>
+<td class="gt_row gt_center">60</td>
 <td class="gt_row gt_center">61</td>
-<td class="gt_row gt_center">61</td>
+<td class="gt_row gt_center">62</td>
 <td class="gt_row gt_center">33</td>
 <td class="gt_row gt_center">9</td></tr>
   </tbody>
@@ -863,12 +951,12 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
       )) %&gt;% 
   bold_labels() %&gt;%   
   italicize_levels() </code></pre>
-<div id="qooeuifsqz" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="luiqdrbjsd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#qooeuifsqz .gt_table {
+#luiqdrbjsd .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -893,7 +981,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_heading {
+#luiqdrbjsd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -905,7 +993,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_title {
+#luiqdrbjsd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -917,7 +1005,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-width: 0;
 }
 
-#qooeuifsqz .gt_subtitle {
+#luiqdrbjsd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -929,13 +1017,13 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-width: 0;
 }
 
-#qooeuifsqz .gt_bottom_border {
+#luiqdrbjsd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_col_headings {
+#luiqdrbjsd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -950,7 +1038,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_col_heading {
+#luiqdrbjsd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -970,7 +1058,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#qooeuifsqz .gt_column_spanner_outer {
+#luiqdrbjsd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -982,15 +1070,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 4px;
 }
 
-#qooeuifsqz .gt_column_spanner_outer:first-child {
+#luiqdrbjsd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qooeuifsqz .gt_column_spanner_outer:last-child {
+#luiqdrbjsd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qooeuifsqz .gt_column_spanner {
+#luiqdrbjsd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1002,7 +1090,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   width: 100%;
 }
 
-#qooeuifsqz .gt_group_heading {
+#luiqdrbjsd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1027,7 +1115,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: middle;
 }
 
-#qooeuifsqz .gt_empty_group_heading {
+#luiqdrbjsd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1042,15 +1130,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: middle;
 }
 
-#qooeuifsqz .gt_from_md > :first-child {
+#luiqdrbjsd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qooeuifsqz .gt_from_md > :last-child {
+#luiqdrbjsd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qooeuifsqz .gt_row {
+#luiqdrbjsd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1069,7 +1157,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#qooeuifsqz .gt_stub {
+#luiqdrbjsd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1082,7 +1170,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#qooeuifsqz .gt_stub_row_group {
+#luiqdrbjsd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1096,11 +1184,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: top;
 }
 
-#qooeuifsqz .gt_row_group_first td {
+#luiqdrbjsd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qooeuifsqz .gt_summary_row {
+#luiqdrbjsd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1110,16 +1198,16 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#qooeuifsqz .gt_first_summary_row {
+#luiqdrbjsd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_first_summary_row.thick {
+#luiqdrbjsd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qooeuifsqz .gt_last_summary_row {
+#luiqdrbjsd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1129,7 +1217,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_grand_summary_row {
+#luiqdrbjsd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1139,7 +1227,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#qooeuifsqz .gt_first_grand_summary_row {
+#luiqdrbjsd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1149,11 +1237,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_striped {
+#luiqdrbjsd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qooeuifsqz .gt_table_body {
+#luiqdrbjsd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1162,7 +1250,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_footnotes {
+#luiqdrbjsd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1176,7 +1264,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_footnote {
+#luiqdrbjsd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -1185,7 +1273,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#qooeuifsqz .gt_sourcenotes {
+#luiqdrbjsd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1199,7 +1287,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qooeuifsqz .gt_sourcenote {
+#luiqdrbjsd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1207,64 +1295,64 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#qooeuifsqz .gt_left {
+#luiqdrbjsd .gt_left {
   text-align: left;
 }
 
-#qooeuifsqz .gt_center {
+#luiqdrbjsd .gt_center {
   text-align: center;
 }
 
-#qooeuifsqz .gt_right {
+#luiqdrbjsd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qooeuifsqz .gt_font_normal {
+#luiqdrbjsd .gt_font_normal {
   font-weight: normal;
 }
 
-#qooeuifsqz .gt_font_bold {
+#luiqdrbjsd .gt_font_bold {
   font-weight: bold;
 }
 
-#qooeuifsqz .gt_font_italic {
+#luiqdrbjsd .gt_font_italic {
   font-style: italic;
 }
 
-#qooeuifsqz .gt_super {
+#luiqdrbjsd .gt_super {
   font-size: 65%;
 }
 
-#qooeuifsqz .gt_footnote_marks {
+#luiqdrbjsd .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#qooeuifsqz .gt_asterisk {
+#luiqdrbjsd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qooeuifsqz .gt_indent_1 {
+#luiqdrbjsd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qooeuifsqz .gt_indent_2 {
+#luiqdrbjsd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qooeuifsqz .gt_indent_3 {
+#luiqdrbjsd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qooeuifsqz .gt_indent_4 {
+#luiqdrbjsd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qooeuifsqz .gt_indent_5 {
+#luiqdrbjsd .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1273,18 +1361,18 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>N = 4,998</strong><sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>N = 6,053</strong><sup class="gt_footnote_marks">1</sup></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr><td class="gt_row gt_left" style="font-weight: bold;">score</td>
-<td class="gt_row gt_center">18 (14)</td></tr>
+<td class="gt_row gt_center">17 (13)</td></tr>
     <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td class="gt_row gt_center">100</td></tr>
+<td class="gt_row gt_center">130</td></tr>
     <tr><td class="gt_row gt_left" style="font-weight: bold;">rating</td>
-<td class="gt_row gt_center">3.78 (0.68)</td></tr>
+<td class="gt_row gt_center">3.62 (0.79)</td></tr>
     <tr><td class="gt_row gt_left" style="font-weight: bold;">review_num</td>
-<td class="gt_row gt_center">232 (485)</td></tr>
+<td class="gt_row gt_center">209 (459)</td></tr>
   </tbody>
   
   <tfoot class="gt_footnotes">
@@ -1335,43 +1423,43 @@ grade_boro %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">Bronx</td>
-<td align="right">137</td>
-<td align="right">5</td>
+<td align="right">194</td>
+<td align="right">6</td>
 <td align="right">8</td>
-<td align="right">36</td>
-<td align="right">22</td>
+<td align="right">37</td>
+<td align="right">27</td>
 </tr>
 <tr class="even">
 <td align="left">Staten Island</td>
-<td align="right">105</td>
-<td align="right">1</td>
+<td align="right">148</td>
+<td align="right">4</td>
 <td align="right">0</td>
-<td align="right">22</td>
-<td align="right">10</td>
+<td align="right">27</td>
+<td align="right">12</td>
 </tr>
 <tr class="odd">
 <td align="left">Queens</td>
-<td align="right">524</td>
-<td align="right">26</td>
-<td align="right">11</td>
-<td align="right">100</td>
-<td align="right">84</td>
+<td align="right">666</td>
+<td align="right">29</td>
+<td align="right">12</td>
+<td align="right">109</td>
+<td align="right">90</td>
 </tr>
 <tr class="even">
 <td align="left">Brooklyn</td>
-<td align="right">747</td>
-<td align="right">35</td>
+<td align="right">913</td>
+<td align="right">39</td>
 <td align="right">8</td>
-<td align="right">119</td>
-<td align="right">142</td>
+<td align="right">126</td>
+<td align="right">156</td>
 </tr>
 <tr class="odd">
 <td align="left">Manhattan</td>
-<td align="right">1002</td>
-<td align="right">35</td>
-<td align="right">15</td>
-<td align="right">195</td>
-<td align="right">210</td>
+<td align="right">1280</td>
+<td align="right">41</td>
+<td align="right">16</td>
+<td align="right">225</td>
+<td align="right">233</td>
 </tr>
 </tbody>
 </table>
@@ -1381,7 +1469,7 @@ grade_boro %&gt;%
 ##  Pearson&#39;s Chi-squared test
 ## 
 ## data:  grade_boro
-## X-squared = 38.716, df = 16, p-value = 0.001195</code></pre>
+## X-squared = 36.127, df = 16, p-value = 0.002779</code></pre>
 <p>Interpretation: The result of chi-square shows that p-value is less
 than 0.05, so we reject the null hypothesis at 95% significant level and
 conclude that the inspection grades of restaurants are significantly
@@ -1396,19 +1484,17 @@ different by boroughs.</p>
     values_from = n 
   ) %&gt;% 
   replace(is.na(.), 0) %&gt;% 
-  data.matrix() %&gt;%
-  subset(select = -c(price))</code></pre>
+  mutate(price = fct_recode(price, &quot;&lt;10&quot;=&quot;1&quot;, &quot;11-30&quot;=&quot;2&quot;, &quot;31-60&quot;=&quot;3&quot;, &quot;&gt;60&quot;=&quot;4&quot;))</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;price&#39;. You can override using the
 ## `.groups` argument.</code></pre>
-<pre class="r"><code>rownames(price_grade) &lt;- c(&quot;&lt;10$&quot;, &quot;11$-30$&quot;, &quot;31$-60$&quot;, &quot;&gt;60$&quot;)
-
-price_grade %&gt;% 
-  knitr::kable(caption = &quot;Results Table&quot;)</code></pre>
+<pre class="r"><code>price_grade %&gt;% 
+  knitr::kable(caption = &quot;Results Table&quot;,
+               col.names = c(&quot;price($)&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;N&quot;, &quot;Z&quot;))</code></pre>
 <table>
 <caption>Results Table</caption>
 <thead>
 <tr class="header">
-<th align="left"></th>
+<th align="left">price($)</th>
 <th align="right">A</th>
 <th align="right">B</th>
 <th align="right">C</th>
@@ -1418,32 +1504,32 @@ price_grade %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">&lt;10$</td>
-<td align="right">757</td>
-<td align="right">46</td>
-<td align="right">18</td>
-<td align="right">103</td>
-<td align="right">161</td>
+<td align="left">&lt;10</td>
+<td align="right">1228</td>
+<td align="right">54</td>
+<td align="right">19</td>
+<td align="right">124</td>
+<td align="right">193</td>
 </tr>
 <tr class="even">
-<td align="left">11<span class="math inline">\(-30\)</span></td>
-<td align="right">1416</td>
-<td align="right">48</td>
-<td align="right">22</td>
-<td align="right">278</td>
-<td align="right">267</td>
+<td align="left">11-30</td>
+<td align="right">1623</td>
+<td align="right">57</td>
+<td align="right">23</td>
+<td align="right">307</td>
+<td align="right">284</td>
 </tr>
 <tr class="odd">
-<td align="left">31<span class="math inline">\(-60\)</span></td>
-<td align="right">191</td>
+<td align="left">31-60</td>
+<td align="right">194</td>
 <td align="right">3</td>
 <td align="right">1</td>
-<td align="right">53</td>
-<td align="right">22</td>
+<td align="right">54</td>
+<td align="right">23</td>
 </tr>
 <tr class="even">
-<td align="left">&gt;60$</td>
-<td align="right">43</td>
+<td align="left">&gt;60</td>
+<td align="right">44</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">9</td>
@@ -1451,13 +1537,17 @@ price_grade %&gt;%
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>chisq.test(price_grade)</code></pre>
+<pre class="r"><code>price_grade = price_grade %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(price))
+
+chisq.test(price_grade)</code></pre>
 <pre><code>## Warning in chisq.test(price_grade): Chi-squared approximation may be incorrect</code></pre>
 <pre><code>## 
 ##  Pearson&#39;s Chi-squared test
 ## 
 ## data:  price_grade
-## X-squared = 52.447, df = 12, p-value = 5.166e-07</code></pre>
+## X-squared = 65.421, df = 12, p-value = 2.278e-09</code></pre>
 <p>Interpretation: The result of chi-square shows that p-value is less
 than 0.05, so we reject the null hypothesis at 95% significant level and
 conclude that the inspection grades of restaurants are significantly
@@ -1483,11 +1573,11 @@ join = left_join(total, n_a) %&gt;% drop_na()</code></pre>
 ##  4-sample test for equality of proportions without continuity correction
 ## 
 ## data:  join$n out of join$total
-## X-squared = 7.0161, df = 3, p-value = 0.07139
+## X-squared = 23.36, df = 3, p-value = 3.397e-05
 ## alternative hypothesis: two.sided
 ## sample estimates:
 ##    prop 1    prop 2    prop 3    prop 4 
-## 0.5181383 0.4908146 0.5290859 0.6056338</code></pre>
+## 0.5674677 0.5032558 0.5286104 0.6111111</code></pre>
 <pre class="r"><code>#join = join %&gt;% 
  # mutate(prop = n/total) %&gt;% 
  # select(price, prop)</code></pre>
@@ -1598,34 +1688,34 @@ summary(model)</code></pre>
 ##     price, data = reg_df)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -2.95854 -0.35730  0.07522  0.45832  1.53066 
+##     Min      1Q  Median      3Q     Max 
+## -2.8327 -0.4447  0.0802  0.5036  1.6914 
 ## 
 ## Coefficients:
 ##                                      Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                          3.619349   0.125224  28.903  &lt; 2e-16 ***
-## cuisine_descriptionChinese          -0.338116   0.107048  -3.159  0.00163 ** 
-## cuisine_descriptionCoffee/Tea        0.349770   0.105737   3.308  0.00097 ***
-## cuisine_descriptionPizza            -0.130140   0.121709  -1.069  0.28518    
-## score                               -0.012431   0.005317  -2.338  0.01958 *  
-## boroStaten Island                    0.128106   0.131025   0.978  0.32843    
-## boroQueens                           0.178944   0.103113   1.735  0.08295 .  
-## boroBrooklyn                         0.297255   0.099475   2.988  0.00287 ** 
-## boroManhattan                        0.217468   0.100970   2.154  0.03147 *  
-## review_num                          -0.006815   0.013125  -0.519  0.60369    
-## price2                               0.078986   0.044687   1.768  0.07742 .  
-## price3                               0.183873   0.090489   2.032  0.04240 *  
-## price4                               0.163006   0.175042   0.931  0.35193    
-## cuisine_descriptionChinese:score     0.011285   0.008506   1.327  0.18487    
-## cuisine_descriptionCoffee/Tea:score -0.002098   0.009537  -0.220  0.82590    
-## cuisine_descriptionPizza:score       0.013779   0.009404   1.465  0.14312    
+## (Intercept)                          3.238716   0.124746  25.962  &lt; 2e-16 ***
+## cuisine_descriptionChinese          -0.179756   0.115510  -1.556  0.11990    
+## cuisine_descriptionCoffee/Tea        0.115594   0.103312   1.119  0.26339    
+## cuisine_descriptionPizza            -0.211880   0.128355  -1.651  0.09903 .  
+## score                               -0.005979   0.005818  -1.028  0.30429    
+## boroStaten Island                    0.237826   0.131738   1.805  0.07126 .  
+## boroQueens                           0.260726   0.102750   2.537  0.01128 *  
+## boroBrooklyn                         0.435706   0.098791   4.410 1.12e-05 ***
+## boroManhattan                        0.299366   0.099385   3.012  0.00264 ** 
+## review_num                           0.013804   0.013816   0.999  0.31790    
+## price2                               0.150177   0.045558   3.296  0.00101 ** 
+## price3                               0.324539   0.099172   3.272  0.00109 ** 
+## price4                               0.291255   0.196017   1.486  0.13755    
+## cuisine_descriptionChinese:score     0.005813   0.009369   0.620  0.53508    
+## cuisine_descriptionCoffee/Tea:score -0.003744   0.009505  -0.394  0.69372    
+## cuisine_descriptionPizza:score       0.017067   0.010254   1.665  0.09625 .  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.6531 on 1094 degrees of freedom
-##   (49 observations deleted due to missingness)
-## Multiple R-squared:  0.1018, Adjusted R-squared:  0.08949 
-## F-statistic: 8.267 on 15 and 1094 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 0.7359 on 1317 degrees of freedom
+##   (53 observations deleted due to missingness)
+## Multiple R-squared:  0.05485,    Adjusted R-squared:  0.04409 
+## F-statistic: 5.095 on 15 and 1317 DF,  p-value: 6.518e-10</code></pre>
 <p>10-fold cross validation:</p>
 <pre class="r"><code>library(caret)</code></pre>
 <pre><code>## Warning: package &#39;caret&#39; was built under R version 4.2.2</code></pre>
@@ -1649,34 +1739,34 @@ model$finalModel</code></pre>
 ## 
 ## Coefficients:
 ##                           (Intercept)             cuisine_descriptionChinese  
-##                              3.619349                              -0.338116  
+##                              3.238716                              -0.179756  
 ##       `cuisine_descriptionCoffee/Tea`               cuisine_descriptionPizza  
-##                              0.349770                              -0.130140  
+##                              0.115594                              -0.211880  
 ##                                 score                    `boroStaten Island`  
-##                             -0.012431                               0.128106  
+##                             -0.005979                               0.237826  
 ##                            boroQueens                           boroBrooklyn  
-##                              0.178944                               0.297255  
+##                              0.260726                               0.435706  
 ##                         boroManhattan                             review_num  
-##                              0.217468                              -0.006815  
+##                              0.299366                               0.013804  
 ##                                price2                                 price3  
-##                              0.078986                               0.183873  
+##                              0.150177                               0.324539  
 ##                                price4     `cuisine_descriptionChinese:score`  
-##                              0.163006                               0.011285  
+##                              0.291255                               0.005813  
 ## `cuisine_descriptionCoffee/Tea:score`       `cuisine_descriptionPizza:score`  
-##                             -0.002098                               0.013779</code></pre>
+##                             -0.003744                               0.017067</code></pre>
 <pre class="r"><code>print(model)</code></pre>
 <pre><code>## Linear Regression 
 ## 
-## 1159 samples
+## 1386 samples
 ##    5 predictor
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 1044, 1043, 1042, 1042, 1044, 1044, ... 
+## Summary of sample sizes: 1248, 1249, 1246, 1248, 1249, 1247, ... 
 ## Resampling results:
 ## 
 ##   RMSE       Rsquared    MAE      
-##   0.6552474  0.08644057  0.5098479
+##   0.7404936  0.03838339  0.5845776
 ## 
 ## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
 <p>Elastic Net</p>
@@ -1708,14 +1798,16 @@ get_best_result = function(caret_fit) {
 }
 
 get_best_result(elnet_int)</code></pre>
-<pre><code>##   alpha     lambda      RMSE  Rsquared       MAE     RMSESD RsquaredSD
-## 1   0.5 0.01133025 0.6513376 0.1044305 0.5053224 0.03475528  0.0544117
+<pre><code>##   alpha     lambda      RMSE   Rsquared       MAE     RMSESD RsquaredSD
+## 1   0.5 0.01293484 0.7339794 0.05763406 0.5795953 0.02780232 0.04084439
 ##        MAESD
-## 1 0.02856097</code></pre>
+## 1 0.02175662</code></pre>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -1747,7 +1839,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

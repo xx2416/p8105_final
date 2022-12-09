@@ -2,9 +2,11 @@
 title: "Statistical Analysis"
 author: "Jiayi Shi"
 date: "2022-12-09"
-Output:
+output:
   html_document:
     code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -34,7 +36,7 @@ scale_fill_discrete = scale_fill_viridis_d
 library(readr)
 dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  distinct(dba, .keep_all = TRUE) %>% 
+  distinct(camis, .keep_all = TRUE) %>% 
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, "A"))
@@ -108,13 +110,15 @@ price_grade = df %>%
     values_from = n 
   ) %>% 
   replace(is.na(.), 0) %>% 
-  data.matrix() %>%
-  subset(select = -c(price))
-
-rownames(price_grade) <- c("<10$", "11-30$", "31-60$", ">60$")
+  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4"))
 
 price_grade %>% 
-  knitr::kable(caption = "Results Table")
+  knitr::kable(caption = "Results Table",
+               col.names = c("price($)", "A", "B", "C", "N", "Z"))
+
+price_grade = price_grade %>% 
+  data.matrix() %>%
+  subset(select = -c(price))
 
 chisq.test(price_grade)
 ```
