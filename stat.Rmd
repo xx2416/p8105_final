@@ -2,7 +2,9 @@
 title: "Statistical Analysis"
 author: "Jiayi Shi"
 date: "2022-12-09"
-output: github_document
+Output:
+  html_notebook:
+    code_folding: hide
 ---
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -40,12 +42,23 @@ df = read_csv("data/inspection_sub_latest_date.csv") %>%
 
 ```{r}
 df %>% 
-  select(boro, score, grade, rating, review_num, price) %>% 
+  select(boro, grade, price) %>% 
+  mutate(boro = fct_infreq(boro)) %>% 
+  tbl_summary(
+    by = boro,
+    missing_text = "(Missing)", 
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)"
+      )) %>% 
+  bold_labels() %>%   
+  italicize_levels() 
+
+df %>% 
+  select(score,rating, review_num) %>% 
   tbl_summary(
     missing_text = "(Missing)", 
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})", 
-      all_categorical() ~ "{n} ({p}%)"
+      all_continuous() ~ "{mean} ({sd})"
       )) %>% 
   bold_labels() %>%   
   italicize_levels() 
