@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jiayi Shi" />
+
+<meta name="date" content="2022-12-09" />
+
+<title>Statistical Analysis</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="eda.html">Eda about restaurants in NYC</a>
+    </li>
+    <li>
+      <a href="map.html"></a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="stat_analysis.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="report.html">Project Report</a>
+</li>
+<li>
+  <a href="https://sweetsugar.shinyapps.io/recommender">Shiny app</a>
+</li>
+<li>
+  <a href="mailto:&lt;js6177@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/xx2416/p8105_final">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Statistical Analysis</h1>
+<h4 class="author">Jiayi Shi</h4>
+<h4 class="date">2022-12-09</h4>
+
+</div>
+
+
+<pre class="r"><code>library(readr)
+dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)
+df = read_csv(&quot;data/inspection_sub_latest_date.csv&quot;) %&gt;%
+  distinct(camis, .keep_all = TRUE) %&gt;% 
+  mutate(price = fct_recode(price, &quot;1&quot; = &quot;$&quot;, &quot;2&quot; = &quot;$$&quot;, &quot;3&quot; = &quot;$$$&quot;, &quot;4&quot; = &quot;$$$$&quot;),
+         boro = fct_reorder(boro, rating),
+         grade = fct_relevel(grade, &quot;A&quot;))</code></pre>
+<pre class="r"><code>df %&gt;% 
+  select(boro, grade, price) %&gt;% 
+  mutate(boro = fct_infreq(boro)) %&gt;% 
+  tbl_summary(
+    by = boro,
+    missing_text = &quot;(Missing)&quot;, 
+    statistic = list(
+      all_categorical() ~ &quot;{n} ({p}%)&quot;
+      )) %&gt;% 
+  bold_labels() %&gt;%   
+  italicize_levels() </code></pre>
+<div id="dxovkobiwo" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#dxovkobiwo .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#dxovkobiwo .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#dxovkobiwo .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#dxovkobiwo .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#dxovkobiwo .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#dxovkobiwo .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#dxovkobiwo .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#dxovkobiwo .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dxovkobiwo .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dxovkobiwo .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#dxovkobiwo .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#dxovkobiwo .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#dxovkobiwo .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxovkobiwo .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#dxovkobiwo .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#dxovkobiwo .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxovkobiwo .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#dxovkobiwo .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxovkobiwo .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#dxovkobiwo .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxovkobiwo .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dxovkobiwo .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxovkobiwo .gt_left {
+  text-align: left;
+}
+
+#dxovkobiwo .gt_center {
+  text-align: center;
+}
+
+#dxovkobiwo .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#dxovkobiwo .gt_font_normal {
+  font-weight: normal;
+}
+
+#dxovkobiwo .gt_font_bold {
+  font-weight: bold;
+}
+
+#dxovkobiwo .gt_font_italic {
+  font-style: italic;
+}
+
+#dxovkobiwo .gt_super {
+  font-size: 65%;
+}
+
+#dxovkobiwo .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#dxovkobiwo .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#dxovkobiwo .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#dxovkobiwo .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#dxovkobiwo .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#dxovkobiwo .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#dxovkobiwo .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Manhattan</strong>, N = 2,422<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Brooklyn</strong>, N = 1,671<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Queens</strong>, N = 1,302<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Bronx</strong>, N = 424<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>Staten Island</strong>, N = 234<sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">grade</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    A</td>
+<td class="gt_row gt_center">1,280 (71%)</td>
+<td class="gt_row gt_center">913 (74%)</td>
+<td class="gt_row gt_center">666 (74%)</td>
+<td class="gt_row gt_center">194 (71%)</td>
+<td class="gt_row gt_center">148 (77%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    B</td>
+<td class="gt_row gt_center">41 (2.3%)</td>
+<td class="gt_row gt_center">39 (3.1%)</td>
+<td class="gt_row gt_center">29 (3.2%)</td>
+<td class="gt_row gt_center">6 (2.2%)</td>
+<td class="gt_row gt_center">4 (2.1%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    C</td>
+<td class="gt_row gt_center">16 (0.9%)</td>
+<td class="gt_row gt_center">8 (0.6%)</td>
+<td class="gt_row gt_center">12 (1.3%)</td>
+<td class="gt_row gt_center">8 (2.9%)</td>
+<td class="gt_row gt_center">0 (0%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    N</td>
+<td class="gt_row gt_center">225 (13%)</td>
+<td class="gt_row gt_center">126 (10%)</td>
+<td class="gt_row gt_center">109 (12%)</td>
+<td class="gt_row gt_center">37 (14%)</td>
+<td class="gt_row gt_center">27 (14%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    Z</td>
+<td class="gt_row gt_center">233 (13%)</td>
+<td class="gt_row gt_center">156 (13%)</td>
+<td class="gt_row gt_center">90 (9.9%)</td>
+<td class="gt_row gt_center">27 (9.9%)</td>
+<td class="gt_row gt_center">12 (6.3%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td class="gt_row gt_center">627</td>
+<td class="gt_row gt_center">429</td>
+<td class="gt_row gt_center">396</td>
+<td class="gt_row gt_center">152</td>
+<td class="gt_row gt_center">43</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">price</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    1</td>
+<td class="gt_row gt_center">653 (28%)</td>
+<td class="gt_row gt_center">668 (41%)</td>
+<td class="gt_row gt_center">542 (44%)</td>
+<td class="gt_row gt_center">209 (53%)</td>
+<td class="gt_row gt_center">92 (41%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    2</td>
+<td class="gt_row gt_center">1,420 (60%)</td>
+<td class="gt_row gt_center">856 (53%)</td>
+<td class="gt_row gt_center">655 (53%)</td>
+<td class="gt_row gt_center">171 (44%)</td>
+<td class="gt_row gt_center">123 (55%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    3</td>
+<td class="gt_row gt_center">240 (10%)</td>
+<td class="gt_row gt_center">76 (4.7%)</td>
+<td class="gt_row gt_center">34 (2.7%)</td>
+<td class="gt_row gt_center">9 (2.3%)</td>
+<td class="gt_row gt_center">8 (3.6%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    4</td>
+<td class="gt_row gt_center">49 (2.1%)</td>
+<td class="gt_row gt_center">10 (0.6%)</td>
+<td class="gt_row gt_center">9 (0.7%)</td>
+<td class="gt_row gt_center">2 (0.5%)</td>
+<td class="gt_row gt_center">2 (0.9%)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td class="gt_row gt_center">60</td>
+<td class="gt_row gt_center">61</td>
+<td class="gt_row gt_center">62</td>
+<td class="gt_row gt_center">33</td>
+<td class="gt_row gt_center">9</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="6"><sup class="gt_footnote_marks">1</sup> n (%)</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+<pre class="r"><code>df %&gt;% 
+  select(score,rating, review_num) %&gt;% 
+  tbl_summary(
+    missing_text = &quot;(Missing)&quot;, 
+    statistic = list(
+      all_continuous() ~ &quot;{mean} ({sd})&quot;
+      )) %&gt;% 
+  bold_labels() %&gt;%   
+  italicize_levels() </code></pre>
+<div id="zhahbckbgt" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#zhahbckbgt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#zhahbckbgt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#zhahbckbgt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#zhahbckbgt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#zhahbckbgt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#zhahbckbgt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#zhahbckbgt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#zhahbckbgt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zhahbckbgt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zhahbckbgt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#zhahbckbgt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#zhahbckbgt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#zhahbckbgt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zhahbckbgt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#zhahbckbgt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#zhahbckbgt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zhahbckbgt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#zhahbckbgt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zhahbckbgt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#zhahbckbgt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zhahbckbgt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zhahbckbgt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zhahbckbgt .gt_left {
+  text-align: left;
+}
+
+#zhahbckbgt .gt_center {
+  text-align: center;
+}
+
+#zhahbckbgt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#zhahbckbgt .gt_font_normal {
+  font-weight: normal;
+}
+
+#zhahbckbgt .gt_font_bold {
+  font-weight: bold;
+}
+
+#zhahbckbgt .gt_font_italic {
+  font-style: italic;
+}
+
+#zhahbckbgt .gt_super {
+  font-size: 65%;
+}
+
+#zhahbckbgt .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#zhahbckbgt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#zhahbckbgt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#zhahbckbgt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#zhahbckbgt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#zhahbckbgt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#zhahbckbgt .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col"><strong>N = 6,053</strong><sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">score</td>
+<td class="gt_row gt_center">17 (13)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td class="gt_row gt_center">130</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">rating</td>
+<td class="gt_row gt_center">3.62 (0.79)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">review_num</td>
+<td class="gt_row gt_center">209 (459)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><sup class="gt_footnote_marks">1</sup> Mean (SD)</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+<div id="chi-square-test" class="section level2">
+<h2>Chi-square Test</h2>
+<p>We try to determine whether there is a relationship between boroughs
+and restaurants’ inspection grades. Our hypothesis is that there is no
+difference in the number of restaurants across the five grades across
+the five boroughs in NYC. We will perform the chi-square test to verify
+our assumption.</p>
+<p><span class="math inline">\(H0\)</span>: the expected number of
+restaurants in each grades are the same across all boroughs.</p>
+<p><span class="math inline">\(H1\)</span>: the expected number of
+restaurants in each grades are not same across all boroughs.</p>
+<pre class="r"><code>grade_boro = 
+  df %&gt;% 
+  drop_na(grade) %&gt;% 
+  count(boro, grade) %&gt;% 
+  pivot_wider(
+    names_from = &quot;grade&quot;,
+    values_from = &quot;n&quot;) %&gt;%
+  replace(is.na(.), 0) %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(boro))
+
+rownames(grade_boro) &lt;- c(&quot;Bronx&quot;, &quot;Staten Island&quot;, &quot;Queens&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;)
+
+grade_boro %&gt;% 
+  knitr::kable(caption = &quot;Results Table&quot;)</code></pre>
+<table>
+<caption>Results Table</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">C</th>
+<th align="right">N</th>
+<th align="right">Z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bronx</td>
+<td align="right">194</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">37</td>
+<td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">Staten Island</td>
+<td align="right">148</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">27</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">Queens</td>
+<td align="right">666</td>
+<td align="right">29</td>
+<td align="right">12</td>
+<td align="right">109</td>
+<td align="right">90</td>
+</tr>
+<tr class="even">
+<td align="left">Brooklyn</td>
+<td align="right">913</td>
+<td align="right">39</td>
+<td align="right">8</td>
+<td align="right">126</td>
+<td align="right">156</td>
+</tr>
+<tr class="odd">
+<td align="left">Manhattan</td>
+<td align="right">1280</td>
+<td align="right">41</td>
+<td align="right">16</td>
+<td align="right">225</td>
+<td align="right">233</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>chisq.test(grade_boro)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  grade_boro
+## X-squared = 36.127, df = 16, p-value = 0.002779</code></pre>
+<p>Interpretation: The result of chi-square shows that p-value is less
+than 0.05, so we reject the null hypothesis at 95% significant level and
+conclude that the inspection grades of restaurants are significantly
+different by boroughs.</p>
+<pre class="r"><code>price_grade = df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;%
+  drop_na(price, grade) %&gt;% 
+  group_by(price, grade) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n 
+  ) %&gt;% 
+  replace(is.na(.), 0) %&gt;% 
+  mutate(price = fct_recode(price, &quot;&lt;10&quot;=&quot;1&quot;, &quot;11-30&quot;=&quot;2&quot;, &quot;31-60&quot;=&quot;3&quot;, &quot;&gt;60&quot;=&quot;4&quot;))
+
+price_grade %&gt;% 
+  knitr::kable(caption = &quot;Results Table&quot;,
+               col.names = c(&quot;price($)&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;N&quot;, &quot;Z&quot;))</code></pre>
+<table>
+<caption>Results Table</caption>
+<thead>
+<tr class="header">
+<th align="left">price($)</th>
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">C</th>
+<th align="right">N</th>
+<th align="right">Z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">&lt;10</td>
+<td align="right">1228</td>
+<td align="right">54</td>
+<td align="right">19</td>
+<td align="right">124</td>
+<td align="right">193</td>
+</tr>
+<tr class="even">
+<td align="left">11-30</td>
+<td align="right">1623</td>
+<td align="right">57</td>
+<td align="right">23</td>
+<td align="right">307</td>
+<td align="right">284</td>
+</tr>
+<tr class="odd">
+<td align="left">31-60</td>
+<td align="right">194</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">54</td>
+<td align="right">23</td>
+</tr>
+<tr class="even">
+<td align="left">&gt;60</td>
+<td align="right">44</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">9</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>price_grade = price_grade %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(price))
+
+chisq.test(price_grade)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  price_grade
+## X-squared = 65.421, df = 12, p-value = 2.278e-09</code></pre>
+<p>Interpretation: The result of chi-square shows that p-value is less
+than 0.05, so we reject the null hypothesis at 95% significant level and
+conclude that the inspection grades of restaurants are significantly
+different by price scales of restaurants.</p>
+</div>
+<div id="proportion-test" class="section level2">
+<h2>Proportion Test</h2>
+<p>Now, we want to see whether receiving grade A is equally common among
+restaurants of all four price scales. To do this, we will conduct a
+proportion test.</p>
+<pre class="r"><code>total = df %&gt;% 
+  group_by(price) %&gt;% 
+  summarise(total = n())
+
+n_a = df %&gt;% 
+  count(price, grade) %&gt;% 
+  filter(grade == &quot;A&quot;)
+
+join = left_join(total, n_a) %&gt;% drop_na()
+prop.test(join$n, join$total)</code></pre>
+<pre><code>## 
+##  4-sample test for equality of proportions without continuity correction
+## 
+## data:  join$n out of join$total
+## X-squared = 23.36, df = 3, p-value = 3.397e-05
+## alternative hypothesis: two.sided
+## sample estimates:
+##    prop 1    prop 2    prop 3    prop 4 
+## 0.5674677 0.5032558 0.5286104 0.6111111</code></pre>
+<pre class="r"><code>#join = join %&gt;% 
+ # mutate(prop = n/total) %&gt;% 
+ # select(price, prop)</code></pre>
+<p>From the test result, we can see that the p-value is greater than
+0.05,</p>
+</div>
+<div id="regression-model" class="section level2">
+<h2>Regression model</h2>
+<ul>
+<li>Response Transformation</li>
+</ul>
+<pre class="r"><code>df %&gt;% 
+  select(boro, cuisine_description, score, grade, rating, review_num, price) %&gt;% 
+  ggplot(aes(x = rating))+
+  geom_histogram(aes(y = ..density..), bins = 30, color = &quot;black&quot;, fill = &quot;grey&quot;) +
+  geom_density()</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<pre class="r"><code>qqnorm(df$rating)</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-7-2.png" width="90%" /></p>
+<p>Although the response variable <code>rating</code> is not normally
+distributed, linear regression remains a statistically sound technique
+since the sample size is large enough (i.e.&gt;3000).</p>
+<ul>
+<li>Predictor transfomation</li>
+</ul>
+<pre class="r"><code>top_cuisine = df %&gt;%
+  count(cuisine_description) %&gt;% 
+  arrange(-n) %&gt;% 
+  top_n(4) %&gt;% 
+  pull(cuisine_description)
+
+reg_df = df %&gt;% 
+  select(boro, cuisine_description, score, grade, rating, review_num, price) %&gt;%
+  filter(cuisine_description %in% top_cuisine) %&gt;% 
+  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;))
+  
+
+dlookr::find_skewness(reg_df)</code></pre>
+<pre><code>## [1] 3 5 6</code></pre>
+<pre class="r"><code>par(mfrow = c(2, 2))
+plot(rating ~ review_num, data = reg_df, col = &quot;dodgerblue&quot;, pch = 20, cex = 1.5)
+review = lm(rating ~ review_num, data = reg_df)
+abline(review, col = &quot;darkorange&quot;, lwd = 2)
+plot(fitted(review), resid(review), col = &quot;dodgerblue&quot;,
+     pch = 20, cex = 1.5, xlab = &quot;Fitted&quot;, ylab = &quot;Residuals&quot;)
+abline(h = 0, lty = 2, col = &quot;darkorange&quot;, lwd = 2)
+title(main = &quot;Before transformation&quot;)
+
+plot(rating ~ log(review_num), data = reg_df, col = &quot;dodgerblue&quot;, pch = 20, cex = 1.5)
+review = lm(rating ~ log(review_num), data = reg_df)
+abline(review, col = &quot;darkorange&quot;, lwd = 2)
+plot(fitted(review), resid(review), col = &quot;dodgerblue&quot;,
+     pch = 20, cex = 1.5, xlab = &quot;Fitted&quot;, ylab = &quot;Residuals&quot;)
+abline(h = 0, lty = 2, col = &quot;darkorange&quot;, lwd = 2)
+title(main = &quot;After transformation&quot;)</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<pre class="r"><code>plot(rating ~ score, data = reg_df, col = &quot;dodgerblue&quot;, pch = 20, cex = 1.5)
+rating_score = lm(rating ~ score, data = reg_df)
+abline(rating_score, col = &quot;darkorange&quot;, lwd = 2)
+plot(fitted(rating_score), resid(rating_score), col = &quot;dodgerblue&quot;,
+     pch = 20, cex = 1.5, xlab = &quot;Fitted&quot;, ylab = &quot;Residuals&quot;)
+abline(h = 0, lty = 2, col = &quot;darkorange&quot;, lwd = 2)</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
+<p>Log transform review numbers:</p>
+<pre class="r"><code>reg_df = reg_df %&gt;% 
+  select(rating, everything()) %&gt;% 
+  mutate(review_num = log(review_num))</code></pre>
+<p>Rating has some association with cuisine type, inspection grade and
+price scale.</p>
+<pre class="r"><code>reg_df %&gt;% 
+  ggplot(aes(y = rating, color = cuisine_description))+
+  geom_boxplot()</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<pre class="r"><code>reg_df %&gt;%
+  ggplot(aes(y = rating, color = grade))+
+  geom_boxplot()</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-10-2.png" width="90%" /></p>
+<pre class="r"><code>reg_df %&gt;%
+  drop_na(price) %&gt;% 
+  ggplot(aes(y = rating, color = price))+
+  geom_boxplot()</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-10-3.png" width="90%" /></p>
+<pre class="r"><code>reg_df %&gt;%
+  mutate(boro = fct_reorder(boro, rating)) %&gt;% 
+  ggplot(aes(y = rating, color = boro))+
+  geom_boxplot()</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-10-4.png" width="90%" /></p>
+<p>There is interaction between score and cuisine type:</p>
+<pre class="r"><code>reg_df %&gt;% 
+  ggplot(aes(x = score, y = rating, color = cuisine_description))+
+  geom_point()+
+  geom_smooth(method=&quot;lm&quot;, se=F, aes(group = cuisine_description, color = cuisine_description))</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>Score has little influence on rating, borough is not a
+confounder.</p>
+<pre class="r"><code>reg_df %&gt;% 
+  ggplot(aes(x = score, y = rating, color = boro))+
+  geom_point()+
+  geom_smooth(method=&quot;lm&quot;, se=F, aes(group = boro, color = boro))</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<pre class="r"><code>model = lm(rating ~ cuisine_description*score+boro+review_num+price, data = reg_df)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = rating ~ cuisine_description * score + boro + review_num + 
+##     price, data = reg_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.8327 -0.4447  0.0802  0.5036  1.6914 
+## 
+## Coefficients:
+##                                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                          3.238716   0.124746  25.962  &lt; 2e-16 ***
+## cuisine_descriptionChinese          -0.179756   0.115510  -1.556  0.11990    
+## cuisine_descriptionCoffee/Tea        0.115594   0.103312   1.119  0.26339    
+## cuisine_descriptionPizza            -0.211880   0.128355  -1.651  0.09903 .  
+## score                               -0.005979   0.005818  -1.028  0.30429    
+## boroStaten Island                    0.237826   0.131738   1.805  0.07126 .  
+## boroQueens                           0.260726   0.102750   2.537  0.01128 *  
+## boroBrooklyn                         0.435706   0.098791   4.410 1.12e-05 ***
+## boroManhattan                        0.299366   0.099385   3.012  0.00264 ** 
+## review_num                           0.013804   0.013816   0.999  0.31790    
+## price2                               0.150177   0.045558   3.296  0.00101 ** 
+## price3                               0.324539   0.099172   3.272  0.00109 ** 
+## price4                               0.291255   0.196017   1.486  0.13755    
+## cuisine_descriptionChinese:score     0.005813   0.009369   0.620  0.53508    
+## cuisine_descriptionCoffee/Tea:score -0.003744   0.009505  -0.394  0.69372    
+## cuisine_descriptionPizza:score       0.017067   0.010254   1.665  0.09625 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.7359 on 1317 degrees of freedom
+##   (53 observations deleted due to missingness)
+## Multiple R-squared:  0.05485,    Adjusted R-squared:  0.04409 
+## F-statistic: 5.095 on 15 and 1317 DF,  p-value: 6.518e-10</code></pre>
+<p>10-fold cross validation:</p>
+<pre class="r"><code>library(caret)
+set.seed(1)
+train = trainControl(method = &quot;cv&quot;, number = 10)
+model = train(rating ~ cuisine_description*score+boro+review_num+price, 
+              data = reg_df,
+              trControl = train,
+              method = &#39;lm&#39;,
+              na.action = na.pass)
+model$finalModel</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = .outcome ~ ., data = dat)
+## 
+## Coefficients:
+##                           (Intercept)             cuisine_descriptionChinese  
+##                              3.238716                              -0.179756  
+##       `cuisine_descriptionCoffee/Tea`               cuisine_descriptionPizza  
+##                              0.115594                              -0.211880  
+##                                 score                    `boroStaten Island`  
+##                             -0.005979                               0.237826  
+##                            boroQueens                           boroBrooklyn  
+##                              0.260726                               0.435706  
+##                         boroManhattan                             review_num  
+##                              0.299366                               0.013804  
+##                                price2                                 price3  
+##                              0.150177                               0.324539  
+##                                price4     `cuisine_descriptionChinese:score`  
+##                              0.291255                               0.005813  
+## `cuisine_descriptionCoffee/Tea:score`       `cuisine_descriptionPizza:score`  
+##                             -0.003744                               0.017067</code></pre>
+<pre class="r"><code>print(model)</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 1386 samples
+##    5 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1248, 1249, 1246, 1248, 1249, 1247, ... 
+## Resampling results:
+## 
+##   RMSE       Rsquared    MAE      
+##   0.7404936  0.03838339  0.5845776
+## 
+## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
+<p>Elastic Net</p>
+<pre class="r"><code>library(glmnet)
+library(caret)
+set.seed(2)
+cv_10 = trainControl(method = &quot;cv&quot;, number = 10)
+x = model.matrix(~ ., dplyr::select(reg_df, -rating))[,-1]
+y = reg_df$rating
+elnet_int = train(
+  rating ~ . ^ 2, data = reg_df %&gt;% drop_na(),
+  method = &quot;glmnet&quot;,
+  trControl = cv_10,
+  tuneLength = 10
+)
+
+get_best_result = function(caret_fit) {
+  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
+  best_result = caret_fit$results[best, ]
+  rownames(best_result) = NULL
+  best_result
+}
+
+get_best_result(elnet_int)</code></pre>
+<pre><code>##   alpha     lambda      RMSE   Rsquared       MAE     RMSESD RsquaredSD
+## 1   0.5 0.01293484 0.7339794 0.05763406 0.5795953 0.02780232 0.04084439
+##        MAESD
+## 1 0.02175662</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

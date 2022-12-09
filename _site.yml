@@ -9,7 +9,7 @@ navbar:
     menu: 
     - text: "Eda about restaurants in NYC"
       href: eda.html
-    - tect: "Location of restaurants in NYC"
+    - text: "Location of restaurants in NYC"
       href: map.html
   - text: "Statistical Analysis"
     href: stat_analysis.html
