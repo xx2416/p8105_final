@@ -25,6 +25,11 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
+
+## Dataset Overview
+
+In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest.
+
 ```{r}
 library(readr)
 dt = read_csv("data/inspection_sub_all_date.csv")
@@ -32,7 +37,6 @@ df = read_csv("data/inspection_sub_latest_date.csv") %>%
   mutate(price = fct_recode(price, `1`="$", `2`="$$", `3`="$$$", `4`="$$$$"),
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, "A")) 
-
 ```
 
 ```{r}
@@ -134,6 +138,12 @@ left_join(price_grade, total) %>%
 
 ## Regression model
 
+We first wrangle the data such that each restaurant only represent one row in the dataset.
+
+```{r}
+# pivot_
+
+```
 
 ### Regression Diagnostics
 
@@ -152,9 +162,6 @@ hist(df$rating^2)
 
 Now, we perform diagnostic tests required for regression models.
 
-```{r}
-
-```
 
 
 ```{r}
@@ -162,8 +169,7 @@ df %>%
   select(boro, score, grade, rating, review_num, price) %>%
   summary()
 
-lm(rating ~ ., data = df)
+lm(rating^2 ~ , data = df)
 ```
 
-
-
+### Choosing the "Best" Model
