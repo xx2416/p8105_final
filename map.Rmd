@@ -29,8 +29,7 @@ inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>%
 
 
 ## Top 10 violations
-
-There are a total of 169 distinct types of violations documented for NYC restaurants, and one restaurant may have fallen into more than one category. The following graph lists the 10 most common violations of NYC restaurants, followed by a table that exhibits the abbreviated violation descriptions and the corresponding frequencies. A complete description for all violations could be found [here](full_vio_descr.html). 
+There are a total of 169 distinct types of violations documented for NYC restaurants, and one restaurant may have fallen into more than one category. The following graph lists the 10 most common violations of NYC restaurants, followed by a table that exhibits the abbreviated violation descriptions and the corresponding frequencies. A complete description for all violations could be found [here](full_vio_descr.html).
 
 ```{r}
 top_10_vio = inspection_raw %>%
