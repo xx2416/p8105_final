@@ -213,6 +213,7 @@ qqnorm(df$rating)
 
 Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>3000).
 
+
 #### Predictor Transformation
 
 Now, we test for the normality assumption of predictors. In particular, we find that the distribution for variable "review_num" is positively skewed. As such, we perform log transformation on this variable.
