@@ -1,0 +1,91 @@
+---
+title: "map"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(httr)
+library(plotly)
+library(knitr)
+```
+
+```{r include=FALSE}
+Sys.setenv("plotly_username"="theonlyviper66")
+Sys.setenv("plotly_api_key"="RXpSTZ2TUHpbh6D0Nr8r")
+Sys.setenv('MAPBOX_TOKEN' = 'pk.eyJ1IjoidGhlb25seXZpcGVyNjYiLCJhIjoiY2xiZWY3dmp6MGFyeTNwcXppdzRnYm1nbyJ9.G05d_geqdk2HTTdZRmOmzg')
+```
+
+```{r include=FALSE}
+inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>% 
+  janitor::clean_names()
+```
+
+## Heat map
+```{r echo = FALSE}
+flag_density = 
+  inspection_raw %>% 
+  filter(
+    critical_flag == "Critical") %>% 
+  plot_ly(
+    lon = ~longitude, 
+    lat = ~latitude,  
+    type = 'densitymapbox',
+    radius = 3) %>% 
+  layout(
+    mapbox = 
+      list(
+        style = 'streets',
+        zoom = 10.5,
+        center = list(lat = 40.71, lon = -73.98)),
+      title = "Density Heatmap of Restaurants with Critical Flag")
+flag_density %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
+```
+
+## price_rating map
+```{r}
+price_rating_map = inspection_raw %>%
+  mutate(text_label = str_c("Price: ", price, "\nRating: ", rating)) %>% 
+  drop_na(price) %>%
+  plot_mapbox(
+    lat = ~latitude,
+    lon = ~longitude,
+    mode = "markers",
+    split = ~price,
+    mode = "markers",
+    hovertext = ~text_label) %>%
+  layout(
+    mapbox = list(
+      style = 'dark',
+      zoom =12.5,
+      center = list(lat = 40.71, lon = -73.98))) 
+
+price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
+```
+
+## cuisine map
+```{r}
+price_rating_map = inspection_raw %>%
+  mutate(text_label = str_c("Cuisine", cuisine_description)) %>% 
+  drop_na(price) %>%
+  plot_mapbox(
+    lat = ~latitude,
+    lon = ~longitude,
+    mode = "markers",
+    split = ~cuisine_description,
+    mode = "markers",
+    hovertext = ~text_label) %>%
+  layout(
+    mapbox = list(
+      style = 'dark',
+      zoom =12.5,
+      center = list(lat = 40.71, lon = -73.98))) 
+
+price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
+```
+

@@ -6,7 +6,11 @@ navbar:
     - text: "Home"
       href: index.html
     - text: "Exploratory Analysis"
-      href: eda.html
+      menu: 
+      - text: "Eda about restaurants in NYC"
+      - href: eda.html
+      - tect: "Location of restaurants in NYC"
+      - href: map.html
     - text: "Statistical Analysis"
       href: stat_analysis.html
     - text: "Project Report"
