@@ -240,6 +240,20 @@ model = lm(rating ~ cuisine_description*score+boro+review_num+price, data = reg_
 summary(model)
 ```
 
+10-fold cross validation:
+```{r}
+library(caret)
+set.seed(1)
+train = trainControl(method = "cv", number = 10)
+model = train(rating ~ cuisine_description*score+boro+review_num+price, 
+              data = reg_df,
+              trControl = train,
+              method = 'lm',
+              na.action = na.pass)
+model$finalModel
+print(model)
+```
+
 Elastic Net
 ```{r}
 library(glmnet)
