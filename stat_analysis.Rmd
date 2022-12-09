@@ -55,9 +55,22 @@ df %>%
   italicize_levels() 
 ```
 
-As such, we can see that Manhattan has the most re
+* We can see that Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
+* The "score" variable has 100 missing values with mean 18 and standard deviation 14.
+* The "grade" variable has 1,399 missing values with most of the restaurants receiving As (70% of all restaurants).
+* Each restaurant has average rating 3.78 with standard deviation 0.68.
+* Each restaurant has on average 232 reviews with standard deviation 485.
+* The most common price range for restaurants is between \$11-\$30 (60%), followed by under \$10 (31%).
 
-## Chi-square Test
+
+## Exploratory Data Analysis
+
+We first perform chi-square tests and proportion test to get a sense of the data that we are dealing with. Specifically, we ask the following questions: is there a relationship between boroughs and restaurant's inspection grades? 
+
+
+### Chi-square Test
+
+#### Inspection Grades and Boroughs
 
 We try to determine whether there is a relationship between boroughs and restaurants' inspection grades. Our hypothesis is that there is no difference in the number of restaurants across the five grades across the five boroughs in NYC. We will perform the chi-square test to verify our assumption.
 
@@ -81,14 +94,36 @@ rownames(grade_boro) <- c("Bronx", "Staten Island", "Queens", "Brooklyn", "Manha
 
 grade_boro %>% 
   knitr::kable(caption = "Results Table")
-```
 
-```{r}
+# chi-square test.
 chisq.test(grade_boro)
 ```
 
 Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. 
 
+```{r}
+price_grade = df %>% 
+  select(boro, score, grade, rating, review_num, price) %>%
+  drop_na(price, grade) %>% 
+  group_by(price, grade) %>% 
+  summarise(n = n()) %>% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n 
+  ) %>% 
+  replace(is.na(.), 0) %>% 
+  data.matrix() %>%
+  subset(select = -c(price))
+
+rownames(price_grade) <- c("$", "$$", "$$$", "$$$$")
+
+price_grade %>% 
+  knitr::kable(caption = "Results Table")
+
+chisq.test(price_grade)
+```
+
+Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by price scales of restaurants.
 
 
 ## Proportion Test
@@ -110,35 +145,6 @@ prop.test(join$n, join$total)
 #join = join %>% 
  # mutate(prop = n/total) %>% 
  # select(price, prop)
-```
-
-From the test result, we can see that the p-value is less than 0.05,  
-
-```{r}
-total = df %>% 
-  select(boro, score, grade, rating, review_num, price) %>%
-  drop_na(price, grade) %>% 
-  group_by(price) %>%
-  summarise(sum = n())
-
-price_grade = df %>% 
-  select(boro, score, grade, rating, review_num, price) %>%
-  drop_na(price, grade) %>% 
-  group_by(price, grade) %>% 
-  summarise(n = n())
-
-left_join(price_grade, total) %>% 
-  mutate(prop = n/sum) %>% 
-  pivot_wider(
-    names_from = grade,
-    values_from = prop 
-  ) %>% 
-  replace(is.na(.), 0) %>% 
-  data.matrix() %>%
-  subset(select = -c(price))
-
-```
-
 
 
 ## Regression model
