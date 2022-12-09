@@ -116,14 +116,11 @@ grade_boro %>%
 ```
 
 ```{r}
-<<<<<<< HEAD
 # Perform chi-square test
-=======
 grade_boro =  grade_boro %>%  
   data.matrix() %>%
   subset(select = -c(boro))
 
->>>>>>> a5212817e120ee5e6d620e2a031cffbf435405ca
 chisq.test(grade_boro)
 ```
 
@@ -131,6 +128,12 @@ Interpretation: The result of chi-square shows that p-value is less than 0.05, s
 
 
 #### Price and Inspection Grade
+
+Next, we focus on whether inspection grade received is different among different groups of price range. 
+
+$H0$: There is no difference in the inspection grade received among the four different groups of price range.
+
+$H1$: There is a difference in the inspecion grade received among the four different groups of price range.
 
 ```{r}
 price_grade = df %>% 
@@ -185,12 +188,19 @@ prop.test(join$n, join$total)
  # select(price, prop)
 ```
 
-Since p-value = 0.07 > 0.05, at confidence level of 95%, we fail to reject the null hypothesis, and conclude that we do not have enough evidence to claim that the proportion of restaurants receiving A is different among four datasets.
+Since p-value  0.07 > 0.05, at confidence level of 95%, we fail to reject the null hypothesis, and conclude that we do not have enough evidence to claim that the proportion of restaurants receiving A is different among four datasets.
 
 
 ## Regression model
 
-* Response Transformation
+Now, we perform regression analysis from our data treating "rating" as the response variable of interest.
+
+### Regression Diagnostics and Data Transformation
+
+#### Response Transformation
+
+We first test the normality assumption of the response variable, "rating".
+
 ```{r}
 df %>% 
   select(boro, cuisine_description, score, grade, rating, review_num, price) %>% 
@@ -203,7 +213,9 @@ qqnorm(df$rating)
 
 Although the response variable `rating` is not normally distributed, linear regression remains a statistically sound technique since the sample size is large enough (i.e.>3000).
 
-* Predictor transfomation
+#### Predictor Transformation
+
+Now, we test for the normality assumption of predictors. In particular, we find that the distribution for variable "review_num" is positively skewed. As such, we perform log transformation on this variable.
 
 ```{r}
 top_cuisine = df %>%
@@ -245,15 +257,24 @@ plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
 abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 ```
 
-Log transform review numbers:
 
 ```{r}
+# Log transform review numbers
 reg_df = reg_df %>% 
   select(rating, everything()) %>% 
   mutate(review_num = log(review_num))
 ```
 
-Rating has some association with cuisine type, inspection grade and price scale.
+
+
+#### Prognosis of Significant Predictors
+
+In this section, we speculate the potentially statistically significant predictors for response variable "rating". We use boxplots to visualize the effects of categorical variables like cuisine type, inspection grade, and price scales; and use scatterplots for continuous distributions like score and review number.
+
+
+##### Categorical Independent Variables
+
+Now, we visualize the effects of categorical variables cuisine type, inspection grade, nad price scales on rating. In particular, we have found that rating has some association with cuisine type, inspection grade and price scale.
 
 ```{r}
 reg_df %>% 
@@ -276,7 +297,13 @@ reg_df %>%
   geom_boxplot()
 ```
 
+##### Contiuous Independent Variables
+
+
+#### Interaction of Variables
+
 There is interaction between score and cuisine type:
+
 ```{r}
 reg_df %>% 
   ggplot(aes(x = score, y = rating, color = cuisine_description))+
