@@ -3,7 +3,7 @@ title: "Statistical Analysis"
 author: "Jiayi Shi"
 date: "2022-12-09"
 Output:
-  html_notebook:
+  html_document:
     code_folding: hide
 ---
 
@@ -111,7 +111,7 @@ price_grade = df %>%
   data.matrix() %>%
   subset(select = -c(price))
 
-rownames(price_grade) <- c("$", "$$", "$$$", "$$$$")
+rownames(price_grade) <- c("<10$", "11-30$", "31-60$", ">60$")
 
 price_grade %>% 
   knitr::kable(caption = "Results Table")
