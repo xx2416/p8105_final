@@ -13,7 +13,7 @@
 
 <title>Home</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -420,14 +420,8 @@ programs held by the NYC Health Department.</p>
 </div>
 <div id="datasets" class="section level2">
 <h2>Datasets</h2>
-<p>With this in mind, we first identified the first 20181distinct
-restaurant in NYC on <a
-href="https://www.yelp.com/search?find_desc=Restaurants&amp;find_loc=New+York%2C+NY">Yelp</a>
-and used the corresponding CSS html tags to pull the restaurant name,
-review scores, price, number of reviews, and location for each
-restaurant.</p>
-<p>Meanwhile, we cited NYC restaurant inspection data that is made
-available to the public on <a
+<p>With this in mind, we cited NYC restaurant inspection data that is
+made available to the public on <a
 href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">Opendata</a>
 This dataset contains detailed information on restaurant and college
 cafeteria inspection results, up to three years prior to the most recent
@@ -437,8 +431,15 @@ has over 230 thousand rows and 27 columns by December 1st, 2022. Some
 examples of the variables include: inspection score and corresponding
 letter grade, violation description, date, types of cuisine, and the
 borough in which the restaurant is located in, etc.</p>
-<p>Then, we merged the two dataset by an unique identifier ID for each
-restaurant. Here is a quick glance at the merged data set:</p>
+<p>After identifying the first 6053 distinct restaurant with latest
+inspection records, we extracted their name and location information to
+generate <a
+href="https://www.yelp.com/search?find_desc=Restaurants&amp;find_loc=New+York%2C+NY">Yelp</a>
+searching URLs, and used the corresponding CSS tags to pull the
+restaurant name, review scores, price, number of reviews, and location
+for each restaurant.</p>
+<p>Then, we joined the two datasets by an unique identifier ID for each
+restaurant. Here is a quick glance at the merged dataset:</p>
 <table>
 <colgroup>
 <col width="24%" />
@@ -528,6 +529,9 @@ restaurant. Here is a quick glance at the merged data set:</p>
 </div>
 <div id="objectives-main-questions" class="section level2">
 <h2>Objectives &amp; Main Questions</h2>
+</div>
+<div id="screencast" class="section level2">
+<h2>Screencast</h2>
 </div>
 <div id="the-upshots" class="section level2">
 <h2>The Upshot’s</h2>
