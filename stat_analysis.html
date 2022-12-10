@@ -10,10 +10,11 @@
 
 
 
+<meta name="date" content="2022-12-10" />
 
 <title>Statistical Analysis</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -29,7 +30,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -219,7 +224,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -229,6 +300,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -248,10 +329,7 @@ $(document).ready(function () {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li class="dropdown">
+        <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Exploratory Analysis
      
@@ -259,10 +337,10 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="eda.html">Eda about restaurants in NYC</a>
+      <a href="eda.html">Yelp Review Data</a>
     </li>
     <li>
-      <a href="map.html"></a>
+      <a href="map.html">NYC Inspection Data</a>
     </li>
   </ul>
 </li>
@@ -294,57 +372,83 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Statistical Analysis</h1>
+<h4 class="date">2022-12-10</h4>
 
 </div>
 
 
+<div id="dataset-overview" class="section level2">
+<h2>Dataset Overview</h2>
+<div id="data-wrangling" class="section level3">
+<h3>Data Wrangling</h3>
+<p>In this first step, we wrangle the data such that it is suitable for
+statistical analysis and provide an overview for the dataset of use. In
+particular, we create a new numeric variable, percent_critical, that
+accounts for the percentage of critical flags a given restaurant
+receives out of all violations. Moreover, we factorize categorical
+variables price, borough, and grade; before finally making distinct each
+restaurant such that each represent a unique row.</p>
 <pre class="r"><code>library(readr)
-dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
-<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame
-## for details, e.g.:
-##   dat &lt;- vroom(...)
-##   problems(dat)</code></pre>
-<pre><code>## Rows: 54562 Columns: 32
-## ── Column specification ──────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (17): dba, boro, building, street, cuisine_description, action, violati...
-## dbl  (12): camis, zipcode, phone, score, latitude, longitude, community_boar...
-## date  (3): inspection_date, grade_date, record_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>df = read_csv(&quot;data/inspection_sub_latest_date.csv&quot;) %&gt;%
-  mutate(price = fct_recode(price, `1`=&quot;$&quot;, `2`=&quot;$$&quot;, `3`=&quot;$$$&quot;, `4`=&quot;$$$$&quot;),
+# dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)
+df = read_csv(&quot;data/inspection_sub_latest_date.csv&quot;) %&gt;%
+  mutate(price = fct_recode(price, &quot;1&quot; = &quot;$&quot;, &quot;2&quot; = &quot;$$&quot;, &quot;3&quot; = &quot;$$$&quot;, &quot;4&quot; = &quot;$$$$&quot;),
          boro = fct_reorder(boro, rating),
-         grade = fct_relevel(grade, &quot;A&quot;)) </code></pre>
-<pre><code>## Rows: 20181 Columns: 32
-## ── Column specification ──────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (18): dba, boro, building, street, phone, cuisine_description, grade, i...
-## dbl  (11): camis, zipcode, score, latitude, longitude, community_board, bin,...
-## date  (3): inspection_date, grade_date, record_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+         grade = fct_relevel(grade, &quot;A&quot;)) %&gt;%
+  group_by(camis) %&gt;%
+  mutate(percent_critical = sum(critical_flag == &quot;Critical&quot;)/n())
+
+# Make distinction such that each restaurant is its unique row.
+df &lt;- df %&gt;% 
+  distinct(camis, .keep_all = TRUE) %&gt;%
+  ungroup() %&gt;% # select desired variables
+  select(dba, boro, grade, zipcode, cuisine_description, inspection_type, rating, review_num, price, percent_critical, score)
+
+# Display data
+head(df)</code></pre>
+<pre><code>## # A tibble: 6 × 11
+##   dba     boro  grade zipcode cuisi…¹ inspe…² rating revie…³ price perce…⁴ score
+##   &lt;chr&gt;   &lt;fct&gt; &lt;fct&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 WILKEN… Broo… A       11234 Sandwi… Cycle …    3.2      57 2       0         2
+## 2 P &amp; S … Manh… A       10025 Americ… Cycle …    4       605 2       0.333    12
+## 3 CARVEL  Stat… A       10305 Frozen… Cycle …    2.5      25 2       0.5       7
+## 4 KOSHER… Broo… A       11230 Jewish… Cycle …    4.1      68 1       0.333    13
+## 5 OLD TO… Manh… A       10003 Americ… Cycle …    3.6     410 2       0.333    13
+## 6 7B BAR  Manh… A       10009 Americ… Cycle …    3.4     211 1       0.667    10
+## # … with abbreviated variable names ¹​cuisine_description, ²​inspection_type,
+## #   ³​review_num, ⁴​percent_critical</code></pre>
+</div>
+<div id="summary-of-wrangled-data" class="section level3">
+<h3>Summary of Wrangled Data</h3>
+<p>Now, a brief summary of our dataset to use.</p>
 <pre class="r"><code>df %&gt;% 
-  select(boro, score, grade, rating, review_num, price) %&gt;% 
+  ungroup() %&gt;%
+  select(boro, grade, price) %&gt;% 
+  mutate(boro = fct_infreq(boro)) %&gt;% 
   tbl_summary(
+    by = boro,
     missing_text = &quot;(Missing)&quot;, 
     statistic = list(
-      all_continuous() ~ &quot;{mean} ({sd})&quot;, 
       all_categorical() ~ &quot;{n} ({p}%)&quot;
       )) %&gt;% 
   bold_labels() %&gt;%   
   italicize_levels() </code></pre>
-<div id="wxwpcaxhqj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="dmdnfnldtf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#wxwpcaxhqj .gt_table {
+#dmdnfnldtf .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -369,7 +473,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_heading {
+#dmdnfnldtf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -381,12 +485,12 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_caption {
+#dmdnfnldtf .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#wxwpcaxhqj .gt_title {
+#dmdnfnldtf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -398,7 +502,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-width: 0;
 }
 
-#wxwpcaxhqj .gt_subtitle {
+#dmdnfnldtf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -410,13 +514,13 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-width: 0;
 }
 
-#wxwpcaxhqj .gt_bottom_border {
+#dmdnfnldtf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_col_headings {
+#dmdnfnldtf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -431,7 +535,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_col_heading {
+#dmdnfnldtf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -451,7 +555,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#wxwpcaxhqj .gt_column_spanner_outer {
+#dmdnfnldtf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -463,15 +567,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 4px;
 }
 
-#wxwpcaxhqj .gt_column_spanner_outer:first-child {
+#dmdnfnldtf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#wxwpcaxhqj .gt_column_spanner_outer:last-child {
+#dmdnfnldtf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#wxwpcaxhqj .gt_column_spanner {
+#dmdnfnldtf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -483,7 +587,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   width: 100%;
 }
 
-#wxwpcaxhqj .gt_group_heading {
+#dmdnfnldtf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -509,7 +613,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   text-align: left;
 }
 
-#wxwpcaxhqj .gt_empty_group_heading {
+#dmdnfnldtf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -524,15 +628,15 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: middle;
 }
 
-#wxwpcaxhqj .gt_from_md > :first-child {
+#dmdnfnldtf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#wxwpcaxhqj .gt_from_md > :last-child {
+#dmdnfnldtf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#wxwpcaxhqj .gt_row {
+#dmdnfnldtf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -551,7 +655,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   overflow-x: hidden;
 }
 
-#wxwpcaxhqj .gt_stub {
+#dmdnfnldtf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -564,7 +668,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#wxwpcaxhqj .gt_stub_row_group {
+#dmdnfnldtf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -578,11 +682,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   vertical-align: top;
 }
 
-#wxwpcaxhqj .gt_row_group_first td {
+#dmdnfnldtf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#wxwpcaxhqj .gt_summary_row {
+#dmdnfnldtf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -592,16 +696,16 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#wxwpcaxhqj .gt_first_summary_row {
+#dmdnfnldtf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_first_summary_row.thick {
+#dmdnfnldtf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#wxwpcaxhqj .gt_last_summary_row {
+#dmdnfnldtf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -611,7 +715,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_grand_summary_row {
+#dmdnfnldtf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -621,7 +725,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#wxwpcaxhqj .gt_first_grand_summary_row {
+#dmdnfnldtf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -631,11 +735,11 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_striped {
+#dmdnfnldtf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#wxwpcaxhqj .gt_table_body {
+#dmdnfnldtf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -644,7 +748,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_footnotes {
+#dmdnfnldtf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -658,7 +762,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_footnote {
+#dmdnfnldtf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -667,7 +771,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#wxwpcaxhqj .gt_sourcenotes {
+#dmdnfnldtf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -681,7 +785,7 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wxwpcaxhqj .gt_sourcenote {
+#dmdnfnldtf .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -689,64 +793,64 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   padding-right: 5px;
 }
 
-#wxwpcaxhqj .gt_left {
+#dmdnfnldtf .gt_left {
   text-align: left;
 }
 
-#wxwpcaxhqj .gt_center {
+#dmdnfnldtf .gt_center {
   text-align: center;
 }
 
-#wxwpcaxhqj .gt_right {
+#dmdnfnldtf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#wxwpcaxhqj .gt_font_normal {
+#dmdnfnldtf .gt_font_normal {
   font-weight: normal;
 }
 
-#wxwpcaxhqj .gt_font_bold {
+#dmdnfnldtf .gt_font_bold {
   font-weight: bold;
 }
 
-#wxwpcaxhqj .gt_font_italic {
+#dmdnfnldtf .gt_font_italic {
   font-style: italic;
 }
 
-#wxwpcaxhqj .gt_super {
+#dmdnfnldtf .gt_super {
   font-size: 65%;
 }
 
-#wxwpcaxhqj .gt_footnote_marks {
+#dmdnfnldtf .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#wxwpcaxhqj .gt_asterisk {
+#dmdnfnldtf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#wxwpcaxhqj .gt_indent_1 {
+#dmdnfnldtf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#wxwpcaxhqj .gt_indent_2 {
+#dmdnfnldtf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#wxwpcaxhqj .gt_indent_3 {
+#dmdnfnldtf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#wxwpcaxhqj .gt_indent_4 {
+#dmdnfnldtf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#wxwpcaxhqj .gt_indent_5 {
+#dmdnfnldtf .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -755,67 +859,579 @@ dt = read_csv(&quot;data/inspection_sub_all_date.csv&quot;)</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Characteristic&lt;/strong&gt;"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;N = 20,181&lt;/strong&gt;&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>N = 20,181</strong><sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Manhattan&lt;/strong&gt;, N = 2,422&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>Manhattan</strong>, N = 2,422<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Brooklyn&lt;/strong&gt;, N = 1,671&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>Brooklyn</strong>, N = 1,671<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Queens&lt;/strong&gt;, N = 1,302&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>Queens</strong>, N = 1,302<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Bronx&lt;/strong&gt;, N = 424&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>Bronx</strong>, N = 424<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Staten Island&lt;/strong&gt;, N = 234&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>Staten Island</strong>, N = 234<sup class="gt_footnote_marks">1</sup></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">boro</td>
-<td headers="stat_0" class="gt_row gt_center"></td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Bronx</td>
-<td headers="stat_0" class="gt_row gt_center">1,400 (6.9%)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Staten Island</td>
-<td headers="stat_0" class="gt_row gt_center">725 (3.6%)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Queens</td>
-<td headers="stat_0" class="gt_row gt_center">4,546 (23%)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Brooklyn</td>
-<td headers="stat_0" class="gt_row gt_center">5,391 (27%)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Manhattan</td>
-<td headers="stat_0" class="gt_row gt_center">8,119 (40%)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">score</td>
-<td headers="stat_0" class="gt_row gt_center">24 (16)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td headers="stat_0" class="gt_row gt_center">169</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">grade</td>
-<td headers="stat_0" class="gt_row gt_center"></td></tr>
+<td headers="stat_1" class="gt_row gt_center"></td>
+<td headers="stat_2" class="gt_row gt_center"></td>
+<td headers="stat_3" class="gt_row gt_center"></td>
+<td headers="stat_4" class="gt_row gt_center"></td>
+<td headers="stat_5" class="gt_row gt_center"></td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    A</td>
-<td headers="stat_0" class="gt_row gt_center">6,815 (55%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,280 (71%)</td>
+<td headers="stat_2" class="gt_row gt_center">913 (74%)</td>
+<td headers="stat_3" class="gt_row gt_center">666 (74%)</td>
+<td headers="stat_4" class="gt_row gt_center">194 (71%)</td>
+<td headers="stat_5" class="gt_row gt_center">148 (77%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    B</td>
-<td headers="stat_0" class="gt_row gt_center">507 (4.1%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">41 (2.3%)</td>
+<td headers="stat_2" class="gt_row gt_center">39 (3.1%)</td>
+<td headers="stat_3" class="gt_row gt_center">29 (3.2%)</td>
+<td headers="stat_4" class="gt_row gt_center">6 (2.2%)</td>
+<td headers="stat_5" class="gt_row gt_center">4 (2.1%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    C</td>
-<td headers="stat_0" class="gt_row gt_center">286 (2.3%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">16 (0.9%)</td>
+<td headers="stat_2" class="gt_row gt_center">8 (0.6%)</td>
+<td headers="stat_3" class="gt_row gt_center">12 (1.3%)</td>
+<td headers="stat_4" class="gt_row gt_center">8 (2.9%)</td>
+<td headers="stat_5" class="gt_row gt_center">0 (0%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    N</td>
-<td headers="stat_0" class="gt_row gt_center">2,508 (20%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">225 (13%)</td>
+<td headers="stat_2" class="gt_row gt_center">126 (10%)</td>
+<td headers="stat_3" class="gt_row gt_center">109 (12%)</td>
+<td headers="stat_4" class="gt_row gt_center">37 (14%)</td>
+<td headers="stat_5" class="gt_row gt_center">27 (14%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    Z</td>
-<td headers="stat_0" class="gt_row gt_center">2,333 (19%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">233 (13%)</td>
+<td headers="stat_2" class="gt_row gt_center">156 (13%)</td>
+<td headers="stat_3" class="gt_row gt_center">90 (9.9%)</td>
+<td headers="stat_4" class="gt_row gt_center">27 (9.9%)</td>
+<td headers="stat_5" class="gt_row gt_center">12 (6.3%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td headers="stat_0" class="gt_row gt_center">7,732</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">rating</td>
-<td headers="stat_0" class="gt_row gt_center">3.63 (0.76)</td></tr>
-    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">review_num</td>
-<td headers="stat_0" class="gt_row gt_center">218 (488)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">627</td>
+<td headers="stat_2" class="gt_row gt_center">429</td>
+<td headers="stat_3" class="gt_row gt_center">396</td>
+<td headers="stat_4" class="gt_row gt_center">152</td>
+<td headers="stat_5" class="gt_row gt_center">43</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">price</td>
-<td headers="stat_0" class="gt_row gt_center"></td></tr>
+<td headers="stat_1" class="gt_row gt_center"></td>
+<td headers="stat_2" class="gt_row gt_center"></td>
+<td headers="stat_3" class="gt_row gt_center"></td>
+<td headers="stat_4" class="gt_row gt_center"></td>
+<td headers="stat_5" class="gt_row gt_center"></td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    1</td>
-<td headers="stat_0" class="gt_row gt_center">6,906 (35%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">653 (28%)</td>
+<td headers="stat_2" class="gt_row gt_center">668 (41%)</td>
+<td headers="stat_3" class="gt_row gt_center">542 (44%)</td>
+<td headers="stat_4" class="gt_row gt_center">209 (53%)</td>
+<td headers="stat_5" class="gt_row gt_center">92 (41%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    2</td>
-<td headers="stat_0" class="gt_row gt_center">11,117 (57%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,420 (60%)</td>
+<td headers="stat_2" class="gt_row gt_center">856 (53%)</td>
+<td headers="stat_3" class="gt_row gt_center">655 (53%)</td>
+<td headers="stat_4" class="gt_row gt_center">171 (44%)</td>
+<td headers="stat_5" class="gt_row gt_center">123 (55%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    3</td>
-<td headers="stat_0" class="gt_row gt_center">1,244 (6.4%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">240 (10%)</td>
+<td headers="stat_2" class="gt_row gt_center">76 (4.7%)</td>
+<td headers="stat_3" class="gt_row gt_center">34 (2.7%)</td>
+<td headers="stat_4" class="gt_row gt_center">9 (2.3%)</td>
+<td headers="stat_5" class="gt_row gt_center">8 (3.6%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    4</td>
-<td headers="stat_0" class="gt_row gt_center">191 (1.0%)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">49 (2.1%)</td>
+<td headers="stat_2" class="gt_row gt_center">10 (0.6%)</td>
+<td headers="stat_3" class="gt_row gt_center">9 (0.7%)</td>
+<td headers="stat_4" class="gt_row gt_center">2 (0.5%)</td>
+<td headers="stat_5" class="gt_row gt_center">2 (0.9%)</td></tr>
     <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
-<td headers="stat_0" class="gt_row gt_center">723</td></tr>
+<td headers="stat_1" class="gt_row gt_center">60</td>
+<td headers="stat_2" class="gt_row gt_center">61</td>
+<td headers="stat_3" class="gt_row gt_center">62</td>
+<td headers="stat_4" class="gt_row gt_center">33</td>
+<td headers="stat_5" class="gt_row gt_center">9</td></tr>
   </tbody>
   
   <tfoot class="gt_footnotes">
     <tr>
-      <td class="gt_footnote" colspan="2"><sup class="gt_footnote_marks">1</sup> n (%); Mean (SD)</td>
+      <td class="gt_footnote" colspan="6"><sup class="gt_footnote_marks">1</sup> n (%)</td>
     </tr>
   </tfoot>
 </table>
 </div>
+<pre class="r"><code>df %&gt;% 
+  ungroup() %&gt;%
+  select(score,rating, review_num) %&gt;% 
+  tbl_summary(
+    missing_text = &quot;(Missing)&quot;, 
+    statistic = list(
+      all_continuous() ~ &quot;{mean} ({sd})&quot;
+      )) %&gt;% 
+  bold_labels() %&gt;%   
+  italicize_levels() </code></pre>
+<div id="wmzpbpkpyr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#wmzpbpkpyr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wmzpbpkpyr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wmzpbpkpyr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wmzpbpkpyr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wmzpbpkpyr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wmzpbpkpyr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wmzpbpkpyr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wmzpbpkpyr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wmzpbpkpyr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wmzpbpkpyr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wmzpbpkpyr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wmzpbpkpyr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wmzpbpkpyr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wmzpbpkpyr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wmzpbpkpyr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wmzpbpkpyr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wmzpbpkpyr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wmzpbpkpyr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wmzpbpkpyr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wmzpbpkpyr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wmzpbpkpyr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wmzpbpkpyr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wmzpbpkpyr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wmzpbpkpyr .gt_left {
+  text-align: left;
+}
+
+#wmzpbpkpyr .gt_center {
+  text-align: center;
+}
+
+#wmzpbpkpyr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wmzpbpkpyr .gt_font_normal {
+  font-weight: normal;
+}
+
+#wmzpbpkpyr .gt_font_bold {
+  font-weight: bold;
+}
+
+#wmzpbpkpyr .gt_font_italic {
+  font-style: italic;
+}
+
+#wmzpbpkpyr .gt_super {
+  font-size: 65%;
+}
+
+#wmzpbpkpyr .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#wmzpbpkpyr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wmzpbpkpyr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wmzpbpkpyr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wmzpbpkpyr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wmzpbpkpyr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wmzpbpkpyr .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Characteristic&lt;/strong&gt;"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;N = 6,053&lt;/strong&gt;&lt;sup class=&quot;gt_footnote_marks&quot;&gt;1&lt;/sup&gt;"><strong>N = 6,053</strong><sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">score</td>
+<td headers="stat_0" class="gt_row gt_center">17 (13)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-style: italic;">    (Missing)</td>
+<td headers="stat_0" class="gt_row gt_center">130</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">rating</td>
+<td headers="stat_0" class="gt_row gt_center">3.62 (0.79)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">review_num</td>
+<td headers="stat_0" class="gt_row gt_center">209 (459)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><sup class="gt_footnote_marks">1</sup> Mean (SD)</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+<p>From these results, we observe that:</p>
+<ul>
+<li><p>Manhattan has the most restaurants (40% of all restaurants in the
+city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and
+Staten Island (3.4%).</p></li>
+<li><p>The “score” variable has 100 missing values with mean 18 and
+standard deviation 14.</p></li>
+<li><p>The “grade” variable has 1,399 missing values with most of the
+restaurants receiving As (70% of all restaurants).</p></li>
+<li><p>Each restaurant has average rating 3.78 with standard deviation
+0.68.</p></li>
+<li><p>Each restaurant has on average 232 reviews with standard
+deviation 485.</p></li>
+<li><p>The most common price range for restaurants is between $11-$30
+(60%), followed by under $10 (31%).</p></li>
+</ul>
+</div>
+</div>
 <div id="chi-square-test" class="section level2">
 <h2>Chi-square Test</h2>
+<p>Now, we conduct chi-square tests to get a sense of whether boro and
+price range has an effect on the inspection grade that a given
+restaurant receives. Since the inspection grades reflect the extent of
+health hazards one might take risk of in dining at that particular
+restaurant and has been required by the City since 2010 for restaurants
+to post letter grades that correspond to scores received from sanitary
+inspections, this investigation might shed light on the whether dining
+at a particular boro or price range increases one’s danger of food
+poisoning or other food-borne diseases.</p>
+<div id="inspection-grades-and-boroughs" class="section level3">
+<h3>Inspection Grades and Boroughs</h3>
 <p>We try to determine whether there is a relationship between boroughs
 and restaurants’ inspection grades. Our hypothesis is that there is no
 difference in the number of restaurants across the five grades across
@@ -827,221 +1443,475 @@ restaurants in each grades are the same across all boroughs.</p>
 restaurants in each grades are not same across all boroughs.</p>
 <pre class="r"><code>grade_boro = 
   df %&gt;% 
-  drop_na(grade) %&gt;% 
+  ungroup() %&gt;%
+  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)) %&gt;% 
   count(boro, grade) %&gt;% 
   pivot_wider(
     names_from = &quot;grade&quot;,
     values_from = &quot;n&quot;) %&gt;%
-  replace(is.na(.), 0) %&gt;% 
-  data.matrix() %&gt;%
-  subset(select = -c(boro))
+  replace(is.na(.), 0) 
 
-rownames(grade_boro) &lt;- c(&quot;Bronx&quot;, &quot;Staten Island&quot;, &quot;Queens&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;)
-
+# Display results table.
 grade_boro %&gt;% 
-  knitr::kable(caption = &quot;Results Table&quot;)</code></pre>
+  knitr::kable(caption = &quot;Results Table&quot;,
+               col.names = c(&quot;Borough&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;))</code></pre>
 <table>
 <caption>Results Table</caption>
 <thead>
 <tr class="header">
-<th align="left"></th>
+<th align="left">Borough</th>
 <th align="right">A</th>
 <th align="right">B</th>
 <th align="right">C</th>
-<th align="right">N</th>
-<th align="right">Z</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Bronx</td>
-<td align="right">431</td>
-<td align="right">30</td>
-<td align="right">53</td>
-<td align="right">169</td>
-<td align="right">96</td>
+<td align="right">194</td>
+<td align="right">6</td>
+<td align="right">8</td>
 </tr>
 <tr class="even">
 <td align="left">Staten Island</td>
-<td align="right">363</td>
-<td align="right">17</td>
+<td align="right">148</td>
+<td align="right">4</td>
 <td align="right">0</td>
-<td align="right">106</td>
-<td align="right">49</td>
 </tr>
 <tr class="odd">
 <td align="left">Queens</td>
-<td align="right">1449</td>
-<td align="right">125</td>
-<td align="right">79</td>
-<td align="right">544</td>
-<td align="right">381</td>
+<td align="right">666</td>
+<td align="right">29</td>
+<td align="right">12</td>
 </tr>
 <tr class="even">
 <td align="left">Brooklyn</td>
-<td align="right">1880</td>
-<td align="right">171</td>
-<td align="right">52</td>
-<td align="right">607</td>
-<td align="right">690</td>
+<td align="right">913</td>
+<td align="right">39</td>
+<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="left">Manhattan</td>
-<td align="right">2692</td>
-<td align="right">164</td>
-<td align="right">102</td>
-<td align="right">1082</td>
-<td align="right">1117</td>
+<td align="right">1280</td>
+<td align="right">41</td>
+<td align="right">16</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>chisq.test(grade_boro)</code></pre>
+<pre class="r"><code>grade_boro = grade_boro %&gt;%  
+  data.matrix() %&gt;%
+  subset(select = -c(boro))
+
+# Perform chi-square test
+chisq.test(grade_boro)</code></pre>
 <pre><code>## 
 ##  Pearson&#39;s Chi-squared test
 ## 
 ## data:  grade_boro
-## X-squared = 251.11, df = 16, p-value &lt; 2.2e-16</code></pre>
-<p>Interpretation: The result of chi-square shows that p-value is less
-than 0.05, so we reject the null hypothesis at 95% significant level and
-conclude that the inspection grades of restaurants are significantly
-different by boroughs.</p>
+## X-squared = 17.93, df = 8, p-value = 0.02176</code></pre>
+<p>Interpretation: Since p-value is less than 0.05, we reject the null
+hypothesis at 95% significant level and conclude that the inspection
+grades of restaurants are significantly different by boroughs. In other
+words, dining at different boroughs in NYC carries different risk of
+food-related health hazards.</p>
+</div>
+<div id="price-and-inspection-grade" class="section level3">
+<h3>Price and Inspection Grade</h3>
+<p>Now, the reason that many might choose a restaurant of higher price
+range out of safety concerns. In this part we investigate if such is
+true with restaurants in NYC: does price range of a restaurant has an
+effect on its safety levels?</p>
+<p><span class="math inline">\(H0\)</span>: There is no difference in
+the inspection grade received among the four different groups of price
+range.</p>
+<p><span class="math inline">\(H1\)</span>: There is a difference in the
+inspection grade received among the four different groups of price
+range.</p>
+<pre class="r"><code>price_grade = df %&gt;% 
+  select(boro, score, grade, rating, review_num, price) %&gt;%
+  drop_na(price, grade) %&gt;% 
+  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)) %&gt;% 
+  group_by(price, grade) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n 
+  ) %&gt;% 
+  replace(is.na(.), 0) %&gt;% 
+  mutate(price = fct_recode(price, &quot;&lt;10&quot;=&quot;1&quot;, &quot;11-30&quot;=&quot;2&quot;, &quot;31-60&quot;=&quot;3&quot;, &quot;&gt;60&quot;=&quot;4&quot;))
+
+price_grade %&gt;% 
+  knitr::kable(caption = &quot;Results Table&quot;,
+               col.names = c(&quot;Price($)&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;))</code></pre>
+<table>
+<caption>Results Table</caption>
+<thead>
+<tr class="header">
+<th align="left">Price($)</th>
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">C</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">&lt;10</td>
+<td align="right">1228</td>
+<td align="right">54</td>
+<td align="right">19</td>
+</tr>
+<tr class="even">
+<td align="left">11-30</td>
+<td align="right">1623</td>
+<td align="right">57</td>
+<td align="right">23</td>
+</tr>
+<tr class="odd">
+<td align="left">31-60</td>
+<td align="right">194</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">&gt;60</td>
+<td align="right">44</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>price_grade = price_grade %&gt;% 
+  data.matrix() %&gt;%
+  subset(select = -c(price))
+
+# Perform chi-square test
+chisq.test(price_grade)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  price_grade
+## X-squared = 7.5714, df = 6, p-value = 0.2712</code></pre>
+<p>Interpretation: The result of chi-square shows that p-value is more
+than 0.05, so we fail to reject the null hypothesis at 95% significant
+level and conclude that we don’t have sufficient evidence to claim that
+the inspection grades of restaurants differ by price scales of
+restaurants. In other words, the results from this analysis tells us
+that the urban myth that dining in more expensive restaurant avoids
+health hazards is unfounded.</p>
+</div>
 </div>
 <div id="proportion-test" class="section level2">
 <h2>Proportion Test</h2>
+<div id="price-and-receiving-a" class="section level3">
+<h3>Price and Receiving “A”</h3>
 <p>Now, we want to see whether receiving grade A is equally common among
 restaurants of all four price scales. To do this, we will conduct a
 proportion test.</p>
+<p><span class="math inline">\(H0\)</span>: Receiving A is equally
+common among restaurants fo all four price scales.</p>
+<p><span class="math inline">\(H1\)</span>: Receiving A is not equally
+common among restaurants for all four price scales.</p>
 <pre class="r"><code>total = df %&gt;% 
   group_by(price) %&gt;% 
-  summarise(total = n())
+  summarise(total = n()) %&gt;%
+  drop_na()
 
 n_a = df %&gt;% 
+  ungroup() %&gt;%
   count(price, grade) %&gt;% 
   filter(grade == &quot;A&quot;)
 
-join = left_join(total, n_a) %&gt;% drop_na()</code></pre>
-<pre><code>## Joining, by = &quot;price&quot;</code></pre>
-<pre class="r"><code>prop.test(join$n, join$total)</code></pre>
+join = left_join(total, n_a)
+prop.test(join$n, join$total)</code></pre>
 <pre><code>## 
 ##  4-sample test for equality of proportions without continuity correction
 ## 
 ## data:  join$n out of join$total
-## X-squared = 94.095, df = 3, p-value &lt; 2.2e-16
+## X-squared = 23.36, df = 3, p-value = 3.397e-05
 ## alternative hypothesis: two.sided
 ## sample estimates:
 ##    prop 1    prop 2    prop 3    prop 4 
-## 0.3763394 0.3124944 0.3344051 0.4764398</code></pre>
+## 0.5674677 0.5032558 0.5286104 0.6111111</code></pre>
 <pre class="r"><code>#join = join %&gt;% 
  # mutate(prop = n/total) %&gt;% 
  # select(price, prop)</code></pre>
-<p>From the test result, we can see that the p-value is less than
-0.05,</p>
-<pre class="r"><code>total = df %&gt;% 
-  select(boro, score, grade, rating, review_num, price) %&gt;%
-  drop_na(price, grade) %&gt;% 
-  group_by(price) %&gt;%
-  summarise(sum = n())
+<p>Interpretation: since p-value &lt;&lt; 0.05, at confidence level of
+95%, we reject the null hypothesis and conclude that the proportion of
+restaurants receiving “A” is different among four datasets. Therefore,
+although the results from chi-square test tells us that dining at a
+particular price does not affect the overall health hazard that one
+faces, nonetheless the price range does seem to have an effect on
+whether the restaurant one dines at received an “A” as inspection
+grade.</p>
+</div>
+<div id="proportion-of-as-received-for-each-cuisine"
+class="section level3">
+<h3>Proportion of “A”s received for Each Cuisine</h3>
+<p>Since we have received a statistically significant result for price
+range against receiving an “A” grade, what about the proportion of
+restaurants receiving “A” for each cuisine type? To answer this
+question, we group data by cuisine type and perform proportion test on
+the percentage of A received.</p>
+<pre class="r"><code># create dataset grouped by cuisine_type
+cuisine_df &lt;- df %&gt;% 
+  ungroup() %&gt;%
+  group_by(cuisine_description) %&gt;%
+  summarise(total_evals = n(),
+            a_evals = sum(grade == &quot;A&quot;, na.rm = TRUE))
 
-price_grade = df %&gt;% 
-  select(boro, score, grade, rating, review_num, price) %&gt;%
-  drop_na(price, grade) %&gt;% 
-  group_by(price, grade) %&gt;% 
-  summarise(n = n())</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;price&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>left_join(price_grade, total) %&gt;% 
-  mutate(prop = n/sum) %&gt;% 
-  pivot_wider(
-    names_from = grade,
-    values_from = prop 
-  ) %&gt;% 
-  replace(is.na(.), 0) %&gt;% 
-  data.matrix() %&gt;%
-  subset(select = -c(price))</code></pre>
-<pre><code>## Joining, by = &quot;price&quot;</code></pre>
-<pre><code>##          n  sum         A          B          C         N          Z
-##  [1,] 2599 4392 0.5917577 0.00000000 0.00000000 0.0000000 0.00000000
-##  [2,]  234 4392 0.0000000 0.05327869 0.00000000 0.0000000 0.00000000
-##  [3,]  123 4392 0.0000000 0.00000000 0.02800546 0.0000000 0.00000000
-##  [4,]  588 4392 0.0000000 0.00000000 0.00000000 0.1338798 0.00000000
-##  [5,]  848 4392 0.0000000 0.00000000 0.00000000 0.0000000 0.19307832
-##  [6,] 3474 6667 0.5210739 0.00000000 0.00000000 0.0000000 0.00000000
-##  [7,]  239 6667 0.0000000 0.03584821 0.00000000 0.0000000 0.00000000
-##  [8,]  158 6667 0.0000000 0.00000000 0.02369882 0.0000000 0.00000000
-##  [9,] 1477 6667 0.0000000 0.00000000 0.00000000 0.2215389 0.00000000
-## [10,] 1319 6667 0.0000000 0.00000000 0.00000000 0.0000000 0.19784011
-## [11,]  416  803 0.5180573 0.00000000 0.00000000 0.0000000 0.00000000
-## [12,]   13  803 0.0000000 0.01618929 0.00000000 0.0000000 0.00000000
-## [13,]    4  803 0.0000000 0.00000000 0.00498132 0.0000000 0.00000000
-## [14,]  272  803 0.0000000 0.00000000 0.00000000 0.3387298 0.00000000
-## [15,]   98  803 0.0000000 0.00000000 0.00000000 0.0000000 0.12204234
-## [16,]   91  129 0.7054264 0.00000000 0.00000000 0.0000000 0.00000000
-## [17,]   34  129 0.0000000 0.00000000 0.00000000 0.2635659 0.00000000
-## [18,]    4  129 0.0000000 0.00000000 0.00000000 0.0000000 0.03100775</code></pre>
+test_full = cuisine_df %&gt;%
+  mutate(prop_test = map2(a_evals, total_evals, ~prop.test(.x, .y) %&gt;%
+           broom::tidy())) %&gt;%
+  unnest() %&gt;% # pull estimated proportion and confidence intervals
+  select(cuisine_description, estimate, lower_CI = conf.low, upper_CI = conf.high)
+
+# Display result
+test_full %&gt;%
+  mutate(cuisine_type = fct_reorder(cuisine_description, estimate)) %&gt;%
+  ggplot(aes(x = cuisine_type, y = estimate, ymin = lower_CI, ymax = upper_CI, col = estimate)) + 
+  geom_point() + 
+  geom_errorbar() +
+  coord_flip() +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+</div>
 </div>
 <div id="regression-model" class="section level2">
 <h2>Regression model</h2>
-<p>To perform any regression model, we first perform test of normality
-on the response variable, ratings. We first plot a histogram on the
-data, from which we can see that the response variable is not exactly
-normally distributed and slightly skewed to the left. We confirm this
-deviation from normality by conducting the Kolmogorov-Smirnov test for
-normality. To adjust for this factor, we transform the rating variable
-by squaring it. As we may see in the histogram, the square-adjusted
-variable is approximately normal.</p>
-<pre class="r"><code># plot histogram
-hist(df$rating)</code></pre>
+<p>In this step, we perform multiple linear regression (MLR) to
+ascertain the optimal model for predicting Yelp rating.</p>
+<div id="data-wrangling-and-transformation" class="section level3">
+<h3>Data Wrangling and Transformation</h3>
+<p>In this step, we check whether our data satisfies the normality
+assumptions for multiple linear regression and perform transformations
+to fit the assumptions if unsatisfied.</p>
+<pre class="r"><code># sided histogram for each untransformed numeric variable
+par(mfrow = c(2, 2))
+hist(df$rating, main = &quot;Histogram for Rating&quot;, xlab = &quot;rating&quot;, ylab = &quot;frequency&quot;)
+hist(df$score, main = &quot;Histogram for Score&quot;, xlab = &quot;rating&quot;, ylab = &quot;frequency&quot;)
+hist(df$review_num, main = &quot;Histogram for Number of Reviews&quot;, xlab = &quot;rating&quot;, ylab = &quot;frequency&quot;)
+hist(df$percent_critical, main = &quot;Histogram for Percentage of Flags Critical&quot;, xlab = &quot;rating&quot;, ylab = &quot;frequency&quot;)</code></pre>
 <p><img src="stat_analysis_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
-<pre class="r"><code># Kolmogorov-Smirnov test
-ks.test(df$rating, &#39;pnorm&#39;)</code></pre>
-<pre><code>## Warning in ks.test.default(df$rating, &quot;pnorm&quot;): ties should not be present for
-## the Kolmogorov-Smirnov test</code></pre>
-<pre><code>## 
-##  Asymptotic one-sample Kolmogorov-Smirnov test
-## 
-## data:  df$rating
-## D = 0.94445, p-value &lt; 2.2e-16
-## alternative hypothesis: two-sided</code></pre>
-<pre class="r"><code># plot histogram for square-transformed data
-hist(df$rating^2)</code></pre>
-<p><img src="stat_analysis_files/figure-html/unnamed-chunk-7-2.png" width="90%" /></p>
-<pre class="r"><code>df %&gt;% 
-  select(boro, score, grade, rating, review_num, price) %&gt;%
-  summary()</code></pre>
-<pre><code>##             boro          score        grade          rating     
-##  Bronx        :1400   Min.   : 0.00   A   :6815   Min.   :1.000  
-##  Staten Island: 725   1st Qu.:12.00   B   : 507   1st Qu.:3.200  
-##  Queens       :4546   Median :22.00   C   : 286   Median :3.800  
-##  Brooklyn     :5391   Mean   :23.68   N   :2508   Mean   :3.634  
-##  Manhattan    :8119   3rd Qu.:32.00   Z   :2333   3rd Qu.:4.200  
-##                       Max.   :95.00   NA&#39;s:7732   Max.   :5.000  
-##                       NA&#39;s   :169                                
-##    review_num       price      
-##  Min.   :    1.0   1   : 6906  
-##  1st Qu.:   21.0   2   :11117  
-##  Median :   73.0   3   : 1244  
-##  Mean   :  217.9   4   :  191  
-##  3rd Qu.:  227.0   NA&#39;s:  723  
-##  Max.   :14333.0               
-## </code></pre>
-<pre class="r"><code>lm(rating ~ grade*price, data = df)</code></pre>
+<p>As shown in the histograms, rating is severely positively-skewed,
+percent_critical_flag is slightly positively skewed, score is moderately
+positively-skewed, and rating is negatively skewed. However, MLR only
+requires the assumption that the response variable be normally
+distributed. Therefore, we square-transform the rating variable and use
+a QQ plot to confirm that normality is not severely violated.</p>
+<pre class="r"><code># square-transform rating
+reg_df = df %&gt;% 
+  filter(!is.na(score)) %&gt;%
+  mutate(sq_rating = rating^2) %&gt;%
+  ungroup() %&gt;%
+  select(sq_rating, boro, score, review_num, price, percent_critical) 
+
+# side-by-side qq-plot for transformed numeric variables
+qqnorm(reg_df$sq_rating, main = &quot;Normal QQ Plot: Squared Rating&quot;, pch = 0.01, frame = FALSE)
+qqline(reg_df$sq_rating, col = &quot;steelblue&quot;)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>Finally, we check for if the continuous independent variables are
+correlated.</p>
+<pre class="r"><code>cont_df &lt;- subset(reg_df, select=c(&quot;score&quot;, &quot;sq_rating&quot;, &quot;review_num&quot;, &quot;percent_critical&quot;))
+
+# correlation plot
+corrplot::corrplot(cor(cont_df), diag = FALSE, type = &quot;upper&quot;)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<p>As such, we expect some interaction between percent_critical and
+score, and also a significant correlation between squared-rating and
+review_num. In this way, we postulate that a model with dependent
+variables percent critical, score, and their interaction, as well as
+review_num and price would be reasonable in predicting square
+rating.</p>
+<pre class="r"><code>fit_1 = lm(sq_rating ~ percent_critical * score + price + review_num, data = reg_df)</code></pre>
+</div>
+<div
+id="criterion-based-approach-and-backward-elimination-to-model-selection"
+class="section level3">
+<h3>Criterion-Based Approach and Backward Elimination to Model
+Selection</h3>
+<p>We now turn our attention to choosing the best model for our data.
+Since the number of our predictor is not huge, we employ a
+criterion-based approach to select independent variables.</p>
+<pre class="r"><code>b = leaps::regsubsets(sq_rating ~ ., data = reg_df)
+rs = summary(b)
+
+# plot of Cp and Adj-R2 as functions of parameters
+par(mfrow = c(1,2))
+
+plot(2:9, rs$cp, xlab = &quot;No. of parameters&quot;, ylab = &quot;Cp Statsitic&quot;)
+abline(0, 1)
+
+plot(2:10, rs$adr2, xlab = &quot;No. of parameters&quot;, ylab = &quot;Adj R2&quot;)</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>As such, both the Cp criterion and the Adjusted <span
+class="math inline">\(R^2\)</span> suggests that we should consider all
+parameters. We fit a model accounting for all independent variables in
+the regression dataset.</p>
+<pre class="r"><code>fit_2 &lt;- lm(sq_rating ~ ., data = reg_df)
+
+# display results
+summary(fit_2)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = rating ~ grade * price, data = df)
+## lm(formula = sq_rating ~ ., data = reg_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14.5257  -3.5012   0.0921   3.3081  14.5721 
 ## 
 ## Coefficients:
-##   (Intercept)         gradeB         gradeC         gradeN         gradeZ  
-##        3.2680         0.4119         0.6385         0.4016         0.2378  
-##        price2         price3         price4  gradeB:price2  gradeC:price2  
-##        0.4999         0.6815         0.5968        -0.5706        -1.1381  
-## gradeN:price2  gradeZ:price2  gradeB:price3  gradeC:price3  gradeN:price3  
-##       -0.3112        -0.3937        -1.2461        -0.2880        -0.4015  
-## gradeZ:price3  gradeB:price4  gradeC:price4  gradeN:price4  gradeZ:price4  
-##       -0.6353             NA             NA         0.1689         0.1974</code></pre>
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       10.2961322  0.2888538  35.645  &lt; 2e-16 ***
+## boroStaten Island  0.1613085  0.4241444   0.380   0.7037    
+## boroQueens         1.2678006  0.2966795   4.273 1.96e-05 ***
+## boroBrooklyn       1.8938599  0.2887239   6.559 5.88e-11 ***
+## boroManhattan      1.5391989  0.2844937   5.410 6.55e-08 ***
+## score             -0.0028023  0.0050958  -0.550   0.5824    
+## review_num         0.0006332  0.0001487   4.258 2.09e-05 ***
+## price2             2.5297977  0.1439771  17.571  &lt; 2e-16 ***
+## price3             2.9820302  0.2922580  10.203  &lt; 2e-16 ***
+## price4             4.0964899  0.6203502   6.604 4.38e-11 ***
+## percent_critical   0.6048031  0.2466610   2.452   0.0142 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.006 on 5698 degrees of freedom
+##   (214 observations deleted due to missingness)
+## Multiple R-squared:  0.08438,    Adjusted R-squared:  0.08278 
+## F-statistic: 52.51 on 10 and 5698 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Finally, since the “score” variable comes out to be not significantly
+correlated with the response variable sq_rating under any circumstances,
+we employ the backwards approach.</p>
+<pre class="r"><code>step(fit_2, direction = &quot;backward&quot;)</code></pre>
+<pre><code>## Start:  AIC=18400.98
+## sq_rating ~ boro + score + review_num + price + percent_critical
+## 
+##                    Df Sum of Sq    RSS   AIC
+## - score             1       7.6 142793 18399
+## &lt;none&gt;                          142785 18401
+## - percent_critical  1     150.7 142936 18405
+## - review_num        1     454.4 143240 18417
+## - boro              4    1502.8 144288 18453
+## - price             3    8650.7 151436 18731
+## 
+## Step:  AIC=18399.28
+## sq_rating ~ boro + review_num + price + percent_critical
+## 
+##                    Df Sum of Sq    RSS   AIC
+## &lt;none&gt;                          142793 18399
+## - percent_critical  1     144.2 142937 18403
+## - review_num        1     452.0 143245 18415
+## - boro              4    1502.9 144296 18451
+## - price             3    8648.3 151441 18729</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sq_rating ~ boro + review_num + price + percent_critical, 
+##     data = reg_df)
+## 
+## Coefficients:
+##       (Intercept)  boroStaten Island         boroQueens       boroBrooklyn  
+##         1.026e+01          1.675e-01          1.267e+00          1.896e+00  
+##     boroManhattan         review_num             price2             price3  
+##         1.539e+00          6.314e-04          2.525e+00          2.978e+00  
+##            price4   percent_critical  
+##         4.099e+00          5.859e-01</code></pre>
+<p>As such, we fit this model selected by the backwards approach.</p>
+<pre class="r"><code>fit_3 &lt;- lm(sq_rating ~ boro + review_num + price + percent_critical, data = reg_df)
+
+# display result
+summary(fit_3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sq_rating ~ boro + review_num + price + percent_critical, 
+##     data = reg_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14.5088  -3.4922   0.0995   3.2997  14.5739 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       1.026e+01  2.804e-01  36.585  &lt; 2e-16 ***
+## boroStaten Island 1.675e-01  4.240e-01   0.395   0.6928    
+## boroQueens        1.267e+00  2.967e-01   4.270 1.99e-05 ***
+## boroBrooklyn      1.896e+00  2.887e-01   6.567 5.57e-11 ***
+## boroManhattan     1.539e+00  2.845e-01   5.411 6.51e-08 ***
+## review_num        6.314e-04  1.487e-04   4.247 2.20e-05 ***
+## price2            2.525e+00  1.437e-01  17.570  &lt; 2e-16 ***
+## price3            2.978e+00  2.921e-01  10.193  &lt; 2e-16 ***
+## price4            4.099e+00  6.203e-01   6.608 4.25e-11 ***
+## percent_critical  5.859e-01  2.442e-01   2.399   0.0165 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.006 on 5699 degrees of freedom
+##   (214 observations deleted due to missingness)
+## Multiple R-squared:  0.08433,    Adjusted R-squared:  0.08289 
+## F-statistic: 58.32 on 9 and 5699 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="cross-validation" class="section level3">
+<h3>Cross Validation</h3>
+<p>Finally, we perform cross-validation to compare our three models in
+terms of cross-validation prediction error.</p>
+<pre class="r"><code>library(modelr)
+cv_df &lt;- crossv_mc(reg_df, n = 100) %&gt;%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)) %&gt;% 
+  mutate(
+    fit_1 = map(train, ~lm(sq_rating ~ percent_critical * score + price + review_num, data = .x)),
+    fit_2 = map(train, ~lm(sq_rating ~ ., data = .x)),
+    fit_3 = map(train, ~lm(sq_rating ~ boro + review_num + price + percent_critical, data = .x))
+  ) %&gt;%
+  mutate(
+    rmse_fit_1 = map2_dbl(fit_1, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_2 = map2_dbl(fit_2, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_3 = map2_dbl(fit_3, test, ~rmse(model = .x, data = .y))
+  )
+
+# Display RMSE results
+cv_df %&gt;% 
+  summarise(fit1_mean_error = mean(rmse_fit_1),
+            fit2_mean_error = mean(rmse_fit_2),
+            fit3_mean_error = mean(rmse_fit_3)) %&gt;%
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">fit1_mean_error</th>
+<th align="right">fit2_mean_error</th>
+<th align="right">fit3_mean_error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">5.019</td>
+<td align="right">4.999</td>
+<td align="right">4.998</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Show the distribution of RMSEs using violin plots
+cv_df %&gt;%
+  select(starts_with(&quot;rmse&quot;)) %&gt;%
+  pivot_longer(
+    everything(),
+    names_to = &quot;model&quot;,
+    values_to = &quot;rmse&quot;,
+    names_prefix = &quot;rmse&quot;) %&gt;%
+  mutate(model = fct_inorder(model)) %&gt;%
+  ggplot(aes(x = model, y = rmse)) + 
+  geom_violin()</code></pre>
+<p><img src="stat_analysis_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+<p>As such, we can see that all three of our models perform very
+similarly.</p>
+</div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -1073,7 +1943,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

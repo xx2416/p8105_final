@@ -14,6 +14,9 @@ library(patchwork)
 library(gtsummary)
 
 knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
@@ -34,7 +37,9 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Dataset Overview
 
-In this first step, we wrangle the data such that it is usable and provide an overview for the dataset of use.
+### Data Wrangling
+
+In this first step, we wrangle the data such that it is suitable for statistical analysis and provide an overview for the dataset of use. In particular, we create a new numeric variable, percent_critical, that accounts for the percentage of critical flags a given restaurant receives out of all violations. Moreover, we factorize categorical variables price, borough, and grade; before finally making distinct each restaurant such that each represent a unique row. 
 
 ```{r}
 library(readr)
@@ -46,23 +51,45 @@ df = read_csv("data/inspection_sub_latest_date.csv") %>%
   group_by(camis) %>%
   mutate(percent_critical = sum(critical_flag == "Critical")/n())
 
-df <- df %>% distinct(camis, .keep_all = TRUE)
+# Make distinction such that each restaurant is its unique row.
+df <- df %>% 
+  distinct(camis, .keep_all = TRUE) %>%
+  ungroup() %>% # select desired variables
+  select(dba, boro, grade, zipcode, cuisine_description, inspection_type, rating, review_num, price, percent_critical, score)
+
+# Display data
+head(df)
 ```
 
-Now, we provide a table summary of all variables involved.
+### Summary of Wrangled Data
 
+Now, a brief summary of our dataset to use.
 ```{r}
 df %>% 
-  select(boro, score, grade, rating, review_num, price) %>% 
+  ungroup() %>%
+  select(boro, grade, price) %>% 
+  mutate(boro = fct_infreq(boro)) %>% 
   tbl_summary(
+    by = boro,
     missing_text = "(Missing)", 
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})", 
       all_categorical() ~ "{n} ({p}%)"
       )) %>% 
   bold_labels() %>%   
   italicize_levels() 
+
+df %>% 
+  ungroup() %>%
+  select(score,rating, review_num) %>% 
+  tbl_summary(
+    missing_text = "(Missing)", 
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})"
+      )) %>% 
+  bold_labels() %>%   
+  italicize_levels() 
 ```
+
 
 From these results, we observe that: 
 
@@ -77,6 +104,7 @@ From these results, we observe that:
 * Each restaurant has on average 232 reviews with standard deviation 485.
 
 * The most common price range for restaurants is between \$11-\$30 (60%), followed by under \$10 (31%).
+
 
 
 ## Chi-square Test
@@ -156,27 +184,69 @@ chisq.test(price_grade)
 Interpretation: The result of chi-square shows that p-value is more than 0.05, so we fail to reject the null hypothesis at 95% significant level and conclude that we don't have sufficient evidence to claim that the inspection grades of restaurants differ by price scales of restaurants. In other words, the results from this analysis tells us that the urban myth that dining in more expensive restaurant avoids health hazards is unfounded.
 
 
-
 ## Proportion Test
 
+
+### Price and Receiving "A"
+
 Now, we want to see whether receiving grade A is equally common among restaurants of all four price scales. To do this, we will conduct a proportion test.
+
+$H0$: Receiving A is equally common among restaurants fo all four price scales.
+
+$H1$: Receiving A is not equally common among restaurants for all four price scales.
 
 ```{r}
 total = df %>% 
   group_by(price) %>% 
-  summarise(total = n())
+  summarise(total = n()) %>%
+  drop_na()
 
 n_a = df %>% 
+  ungroup() %>%
   count(price, grade) %>% 
   filter(grade == "A")
 
-join = left_join(total, n_a) %>% drop_na()
+join = left_join(total, n_a)
 prop.test(join$n, join$total)
 
 #join = join %>% 
  # mutate(prop = n/total) %>% 
  # select(price, prop)
 ```
+
+Interpretation: since p-value << 0.05, at confidence level of 95%, we reject the null hypothesis and conclude that the proportion of restaurants receiving "A" is different among four datasets. Therefore, although the results from chi-square test tells us that dining at a particular price does not affect the overall health hazard that one faces, nonetheless the price range does seem to have an effect on whether the restaurant one dines at received an "A" as inspection grade.
+
+
+### Proportion of "A"s received for Each Cuisine
+
+Since we have received a statistically significant result for price range against receiving an "A" grade, what about the proportion of restaurants receiving "A" for each cuisine type? To answer this question, we group data by cuisine type and perform proportion test on the percentage of A received. In particular, to reduce data variability, swe concern only the cuisine types in which there are at least 10 restaurants in our dataset.
+
+```{r}
+# create dataset grouped by cuisine_type
+cuisine_df <- df %>% 
+  ungroup() %>%
+  group_by(cuisine_description) %>%
+  summarise(total_evals = n(),
+            a_evals = sum(grade == "A", na.rm = TRUE)) %>%
+  filter(total_evals >= 10)
+
+test_full = cuisine_df %>%
+  mutate(prop_test = map2(a_evals, total_evals, ~prop.test(.x, .y) %>%
+           broom::tidy())) %>%
+  unnest() %>% # pull estimated proportion and confidence intervals
+  select(cuisine_description, estimate, lower_CI = conf.low, upper_CI = conf.high)
+
+# Display result
+test_full %>%
+  mutate(cuisine_type = fct_reorder(cuisine_description, estimate)) %>%
+  ggplot(aes(x = cuisine_type, y = estimate, ymin = lower_CI, ymax = upper_CI, col = estimate)) + 
+  geom_point() + 
+  geom_errorbar() +
+  coord_flip() +
+  theme(legend.position = "none")
+```
+
+As we can observe, soups/salads/sandwich restauants are most likely to receive As, followed by donuts, salads, and vegan.
 
 
 ## Regression model
