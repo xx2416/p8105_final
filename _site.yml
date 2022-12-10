@@ -3,8 +3,6 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-  - text: "Home"
-    href: index.html
   - text: "Exploratory Analysis"  
     menu: 
     - text: "Yelp Review Data"

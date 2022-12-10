@@ -194,7 +194,7 @@ price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
 In general, Manhattan has the largest number of restaurants and a much denser distribution compared to other boroughs. The proportion of the least and second least expensive restaurants are much higher compared to the proportions of more expensive dining places in Bronx, Queens, Brooklyn, and Staten Island. In addition, the majority of the restaurants that fall into the most expensive category are located in Manhattan.  
 
 ## cuisine map
-```{r}
+```{r warning=FALSE}
 price_rating_map = inspection_raw %>%
   mutate(text_label = str_c("Cuisine", cuisine_description)) %>% 
   drop_na(price) %>%
