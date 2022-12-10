@@ -13,6 +13,12 @@ One metric consistently missing in restaurant recommendation apps is the conside
 
 ## Initial Questions
 
+* Is there a relationship between boroughs and restaurants' inspection grades?
+
+* Does price range of a restaurant has an effect on its safety levels?
+
+* What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type.
+
 ## Related Work
 
 ## Data Collection and Cleaning
