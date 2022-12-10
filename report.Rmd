@@ -10,13 +10,15 @@ output:
 
 ## Motivation
 
-One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type. Furthermore, we provide statistical analysis on whether sanitary grades depend on which borough one is dining in, which cuisine type one chooses, which price range the given restaurant is. This provides formal analysis that could potentially guide consumers on which types of restaurants to choose if they wish to avoid health hazards as much as possible. Finally, we fit multiple linear regression models on Yelp rating and attempt to understand which predictors to be statistically significant. The motivation on this front is to potentially provide insight for investors in the culinary industry on which measures to take (e.g., which borough should they open their restaurant, which price range should they shoot for, how much they should invest in sanitary conditions for the restaurant, etc.) if they wish to ensure the best ratings from platforms like Yelp.
+One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type on our Shiny App. This is particularly useful for those that have higher standards for sanitary conditions. Furthermore, we provide statistical analysis on whether sanitary grades depend on which borough one is dining in, which cuisine type one chooses, and which price range the given restaurant is. This provides formal analysis that could potentially guide consumers on which types of restaurants to choose if they wish to avoid health hazards as much as possible. Finally, we fit multiple linear regression models on Yelp rating and attempt to understand which predictors to be statistically significant. The motivation on this front is to potentially provide insight for investors in the culinary industry on which measures to take (e.g., which borough should they open their restaurant, which price range should they shoot for, how much they should invest in sanitary conditions for the restaurant, etc.) if they wish to ensure the best ratings from platforms like Yelp.
 
 ## Initial Questions
 
-* What are th
+* What are the factors that influence sanitary grading? As a consumer, does their choice involving the borough of the restaurant, the price range of the restaurant, the cuisine type of their choosing have an effect on the sanitary grading of the restaurant?
 
-* What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type.
+* What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type? If an investor wishes to open a new restaurant and maximize review score on Yelp, which factors should he consider and which areas should he focus on investing in?
+
+* 
 
 ## Related Work
 
@@ -82,6 +84,10 @@ We then generated a density heat map to identify an underlying pattern of the di
 In terms of the performance during inspection, the majority of the restaurants in NYC received an "A" as the inspection grade, either during the initial inspection or re-inspection. Among all boroughs in NYC, Bronx was the one with the highest proportion of restaurants receiving a grade "C". Staten Island had the highest proportion of restaurants with grade "A" and no restaurant with grade "C", followed by Manhattan which had the second highest proportion of grade "A" restaurants. 
 
 ## Statistical Analysis
+
+### Statistical Testing: Factors affecting Inspection Grade 
+
+In the first part of our statistical analysis, we performed chi-square tests to investigate the relationship between 
 
 ## Shiny app
 
