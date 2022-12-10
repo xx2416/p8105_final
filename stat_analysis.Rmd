@@ -34,7 +34,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Dataset Overview
 
-In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest. In particular, we create anoth
+In this first step, we wrangle the data such that it is usable and provide an overview for the dataset of use.
 
 ```{r}
 library(readr)
@@ -64,16 +64,27 @@ df %>%
   italicize_levels() 
 ```
 
-* We can see that Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
+From these results, we observe that: 
+
+* Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
+
 * The "score" variable has 100 missing values with mean 18 and standard deviation 14.
+
 * The "grade" variable has 1,399 missing values with most of the restaurants receiving As (70% of all restaurants).
+
 * Each restaurant has average rating 3.78 with standard deviation 0.68.
+
 * Each restaurant has on average 232 reviews with standard deviation 485.
+
 * The most common price range for restaurants is between \$11-\$30 (60%), followed by under \$10 (31%).
 
-### Chi-square Test
 
-#### Inspection Grades and Boroughs
+## Chi-square Test
+
+Now, we conduct chi-square tests to get a sense of whether boro and price range has an effect on the inspection grade that a given restaurant receives. Since the inspection grades reflect the extent of health hazards one might take risk of in dining at that particular restaurant and has been required by the City since 2010 for restaurants to post letter grades that correspond to scores received from sanitary inspections, this investigation might shed light on the whether dining at a particular boro or price range increases one's danger of food poisoning or other food-borne diseases.
+
+
+### Inspection Grades and Boroughs
 
 We try to determine whether there is a relationship between boroughs and restaurants' inspection grades. Our hypothesis is that there is no difference in the number of restaurants across the five grades across the five boroughs in NYC. We will perform the chi-square test to verify our assumption.
 
@@ -84,30 +95,43 @@ $H1$: the expected number of restaurants in each grades are not same across all 
 ```{r}
 grade_boro = 
   df %>% 
-  drop_na(grade) %>% 
+  ungroup() %>%
+  filter(grade %in% c("A", "B", "C")) %>% 
   count(boro, grade) %>% 
   pivot_wider(
     names_from = "grade",
     values_from = "n") %>%
-  replace(is.na(.), 0) %>% 
+  replace(is.na(.), 0) 
+
+# Display results table.
+grade_boro %>% 
+  knitr::kable(caption = "Results Table",
+               col.names = c("Borough", "A", "B", "C"))
+
+grade_boro = grade_boro %>%  
   data.matrix() %>%
   subset(select = -c(boro))
 
-rownames(grade_boro) <- c("Bronx", "Staten Island", "Queens", "Brooklyn", "Manhattan")
-
-grade_boro %>% 
-  knitr::kable(caption = "Results Table")
-
-# chi-square test.
+# Perform chi-square test
 chisq.test(grade_boro)
 ```
 
-Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. 
+Interpretation: Since p-value is less than 0.05, we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. In other words, dining at different boroughs in NYC carries different risk of food-related health hazards.
+
+
+### Price and Inspection Grade
+
+Now, the reason that many might choose a restaurant of higher price range out of safety concerns. In this part we investigate if such is true with restaurants in NYC: does price range of a restaurant has an effect on its safety levels?
+
+$H0$: There is no difference in the inspection grade received among the four different groups of price range.
+
+$H1$: There is a difference in the inspection grade received among the four different groups of price range.
 
 ```{r}
 price_grade = df %>% 
   select(boro, score, grade, rating, review_num, price) %>%
   drop_na(price, grade) %>% 
+  filter(grade %in% c("A", "B", "C")) %>% 
   group_by(price, grade) %>% 
   summarise(n = n()) %>% 
   pivot_wider(
@@ -115,18 +139,22 @@ price_grade = df %>%
     values_from = n 
   ) %>% 
   replace(is.na(.), 0) %>% 
+  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4"))
+
+price_grade %>% 
+  knitr::kable(caption = "Results Table",
+               col.names = c("Price($)", "A", "B", "C"))
+
+price_grade = price_grade %>% 
   data.matrix() %>%
   subset(select = -c(price))
 
-rownames(price_grade) <- c("$", "$$", "$$$", "$$$$")
-
-price_grade %>% 
-  knitr::kable(caption = "Results Table")
-
+# Perform chi-square test
 chisq.test(price_grade)
 ```
 
-Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by price scales of restaurants.
+Interpretation: The result of chi-square shows that p-value is more than 0.05, so we fail to reject the null hypothesis at 95% significant level and conclude that we don't have sufficient evidence to claim that the inspection grades of restaurants differ by price scales of restaurants. In other words, the results from this analysis tells us that the urban myth that dining in more expensive restaurant avoids health hazards is unfounded.
+
 
 
 ## Proportion Test
@@ -150,35 +178,136 @@ prop.test(join$n, join$total)
  # select(price, prop)
 ```
 
+
 ## Regression model
 
-We first wrangle the data such that each restaurant only represent one row in the dataset.
+In this step, we perform multiple linear regression (MLR) to ascertain the optimal model for predicting Yelp rating.
 
 
+### Data Wrangling and Transformation
 
-### Regression Diagnostics
-
-To perform any regression model, we first perform test of normality on the response variable, ratings. We first plot a histogram on the data, from which we can see that the response variable is not exactly normally distributed and slightly skewed to the left. We confirm this deviation from normality by conducting the Kolmogorov-Smirnov test for normality. To adjust for this factor, we transform the rating variable by squaring it. As we may see in the histogram, the square-adjusted variable is approximately normal.
-
-```{r}
-# plot histogram
-hist(df$rating)
-
-# Kolmogorov-Smirnov test
-ks.test(df$rating, 'pnorm')
-
-# plot histogram for square-transformed data
-hist(df$rating^2)
-```
-
-Now, we perform diagnostic tests required for regression models.
+In this step, we check whether our data satisfies the normality assumptions for multiple linear regression and perform transformations to fit the assumptions if unsatisfied.
 
 ```{r}
-df %>% 
-  select(boro, score, grade, rating, review_num, price) %>%
-  summary()
-
-lm(rating^2 ~ , data = df)
+# sided histogram for each untransformed numeric variable
+par(mfrow = c(2, 2))
+hist(df$rating, main = "Histogram for Rating", xlab = "rating", ylab = "frequency")
+hist(df$score, main = "Histogram for Score", xlab = "rating", ylab = "frequency")
+hist(df$review_num, main = "Histogram for Number of Reviews", xlab = "rating", ylab = "frequency")
+hist(df$percent_critical, main = "Histogram for Percentage of Flags Critical", xlab = "rating", ylab = "frequency")
 ```
 
-### Choosing the "Best" Model
+As shown in the histograms, rating is severely positively-skewed, percent_critical_flag is slightly positively skewed, score is moderately positively-skewed, and rating is negatively skewed. However, MLR only requires the assumption that the response variable be normally distributed. Therefore, we square-transform the rating variable and use a QQ plot to confirm that normality is not severely violated.
+
+```{r}
+# square-transform rating
+reg_df = df %>% 
+  filter(!is.na(score)) %>%
+  mutate(sq_rating = rating^2) %>%
+  ungroup() %>%
+  select(sq_rating, boro, score, review_num, price, percent_critical) 
+
+# side-by-side qq-plot for transformed numeric variables
+qqnorm(reg_df$sq_rating, main = "Normal QQ Plot: Squared Rating", pch = 0.01, frame = FALSE)
+qqline(reg_df$sq_rating, col = "steelblue")
+```
+
+Finally, we check for if the continuous independent variables are correlated.
+
+```{r}
+cont_df <- subset(reg_df, select=c("score", "sq_rating", "review_num", "percent_critical"))
+
+# correlation plot
+corrplot::corrplot(cor(cont_df), diag = FALSE, type = "upper")
+```
+
+As such, we expect some interaction between percent_critical and score, and also a significant correlation between squared-rating and review_num. In this way, we postulate that a model with dependent variables percent critical, score, and their interaction, as well as review_num and price would be reasonable in predicting square rating.
+
+```{r}
+fit_1 = lm(sq_rating ~ percent_critical * score + price + review_num, data = reg_df)
+```
+
+
+### Criterion-Based Approach and Backward Elimination to Model Selection
+
+We now turn our attention to choosing the best model for our data. Since the number of our predictor is not huge, we employ a criterion-based approach to select independent variables.
+
+```{r}
+b = leaps::regsubsets(sq_rating ~ ., data = reg_df)
+rs = summary(b)
+
+# plot of Cp and Adj-R2 as functions of parameters
+par(mfrow = c(1,2))
+
+plot(2:9, rs$cp, xlab = "No. of parameters", ylab = "Cp Statsitic")
+abline(0, 1)
+
+plot(2:10, rs$adr2, xlab = "No. of parameters", ylab = "Adj R2")
+```
+
+As such, both the Cp criterion and the Adjusted $R^2$ suggests that we should consider all parameters. We fit a model accounting for all independent variables in the regression dataset.
+
+```{r}
+fit_2 <- lm(sq_rating ~ ., data = reg_df)
+
+# display results
+summary(fit_2)
+```
+
+Finally, since the "score" variable comes out to be not significantly correlated with the response variable sq_rating under any circumstances, we employ the backwards approach.
+
+```{r}
+step(fit_2, direction = "backward")
+```
+
+As such, we fit this model selected by the backwards approach.
+
+```{r}
+fit_3 <- lm(sq_rating ~ boro + review_num + price + percent_critical, data = reg_df)
+
+# display result
+summary(fit_3)
+```
+
+### Cross Validation
+
+Finally, we perform cross-validation to compare our three models in terms of cross-validation prediction error.
+
+```{r}
+library(modelr)
+cv_df <- crossv_mc(reg_df, n = 100) %>%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)) %>% 
+  mutate(
+    fit_1 = map(train, ~lm(sq_rating ~ percent_critical * score + price + review_num, data = .x)),
+    fit_2 = map(train, ~lm(sq_rating ~ ., data = .x)),
+    fit_3 = map(train, ~lm(sq_rating ~ boro + review_num + price + percent_critical, data = .x))
+  ) %>%
+  mutate(
+    rmse_fit_1 = map2_dbl(fit_1, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_2 = map2_dbl(fit_2, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_3 = map2_dbl(fit_3, test, ~rmse(model = .x, data = .y))
+  )
+
+# Display RMSE results
+cv_df %>% 
+  summarise(fit1_mean_error = mean(rmse_fit_1),
+            fit2_mean_error = mean(rmse_fit_2),
+            fit3_mean_error = mean(rmse_fit_3)) %>%
+  knitr::kable(digits = 3)
+
+# Show the distribution of RMSEs using violin plots
+cv_df %>%
+  select(starts_with("rmse")) %>%
+  pivot_longer(
+    everything(),
+    names_to = "model",
+    values_to = "rmse",
+    names_prefix = "rmse") %>%
+  mutate(model = fct_inorder(model)) %>%
+  ggplot(aes(x = model, y = rmse)) + 
+  geom_violin()
+```
+
+As such, we can see that all three of our models perform very similarly.
