@@ -64,7 +64,9 @@ df %>%
   italicize_levels() 
 ```
 
-* We can see that Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
+From these results, we observe that: 
+
+* Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
 
 * The "score" variable has 100 missing values with mean 18 and standard deviation 14.
 
@@ -79,6 +81,9 @@ df %>%
 
 ## Chi-square Test
 
+Now, we conduct chi-square tests to get a sense of whether boro and price range has an effect on the inspection grade that a given restaurant receives. Since the inspection grades reflect the extent of health hazards one might take risk of in dining at that particular restaurant and has been required by the City since 2010 for restaurants to post letter grades that correspond to scores received from sanitary inspections, this investigation might shed light on the whether dining at a particular boro or price range increases one's danger of food poisoning or other food-borne diseases.
+
+
 ### Inspection Grades and Boroughs
 
 We try to determine whether there is a relationship between boroughs and restaurants' inspection grades. Our hypothesis is that there is no difference in the number of restaurants across the five grades across the five boroughs in NYC. We will perform the chi-square test to verify our assumption.
@@ -90,30 +95,43 @@ $H1$: the expected number of restaurants in each grades are not same across all 
 ```{r}
 grade_boro = 
   df %>% 
-  drop_na(grade) %>% 
+  ungroup() %>%
+  filter(grade %in% c("A", "B", "C")) %>% 
   count(boro, grade) %>% 
   pivot_wider(
     names_from = "grade",
     values_from = "n") %>%
-  replace(is.na(.), 0) %>% 
+  replace(is.na(.), 0) 
+
+# Display results table.
+grade_boro %>% 
+  knitr::kable(caption = "Results Table",
+               col.names = c("Borough", "A", "B", "C"))
+
+grade_boro = grade_boro %>%  
   data.matrix() %>%
   subset(select = -c(boro))
 
-rownames(grade_boro) <- c("Bronx", "Staten Island", "Queens", "Brooklyn", "Manhattan")
-
-grade_boro %>% 
-  knitr::kable(caption = "Results Table")
-
-# chi-square test.
+# Perform chi-square test
 chisq.test(grade_boro)
 ```
 
-Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. 
+Interpretation: Since p-value is less than 0.05, we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. In other words, dining at different boroughs in NYC carries different risk of food-related health hazards.
+
+
+### Price and Inspection Grade
+
+Now, the reason that many might choose a restaurant of higher price range out of safety concerns. In this part we investigate if such is true with restaurants in NYC: does price range of a restaurant has an effect on its safety levels?
+
+$H0$: There is no difference in the inspection grade received among the four different groups of price range.
+
+$H1$: There is a difference in the inspection grade received among the four different groups of price range.
 
 ```{r}
 price_grade = df %>% 
   select(boro, score, grade, rating, review_num, price) %>%
   drop_na(price, grade) %>% 
+  filter(grade %in% c("A", "B", "C")) %>% 
   group_by(price, grade) %>% 
   summarise(n = n()) %>% 
   pivot_wider(
@@ -121,18 +139,22 @@ price_grade = df %>%
     values_from = n 
   ) %>% 
   replace(is.na(.), 0) %>% 
+  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4"))
+
+price_grade %>% 
+  knitr::kable(caption = "Results Table",
+               col.names = c("Price($)", "A", "B", "C"))
+
+price_grade = price_grade %>% 
   data.matrix() %>%
   subset(select = -c(price))
 
-rownames(price_grade) <- c("$", "$$", "$$$", "$$$$")
-
-price_grade %>% 
-  knitr::kable(caption = "Results Table")
-
+# Perform chi-square test
 chisq.test(price_grade)
 ```
 
-Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by price scales of restaurants.
+Interpretation: The result of chi-square shows that p-value is more than 0.05, so we fail to reject the null hypothesis at 95% significant level and conclude that we don't have sufficient evidence to claim that the inspection grades of restaurants differ by price scales of restaurants. In other words, the results from this analysis tells us that the urban myth that dining in more expensive restaurant avoids health hazards is unfounded.
+
 
 
 ## Proportion Test
