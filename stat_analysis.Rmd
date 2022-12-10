@@ -150,35 +150,21 @@ prop.test(join$n, join$total)
  # select(price, prop)
 ```
 
+
 ## Regression model
 
-We first wrangle the data such that each restaurant only represent one row in the dataset.
+In this step, we perform multiple linear regression (MLR) to ascertain the optimal model for predicting Yelp rating.
 
+### Data Wrangling and Transformation
 
-
-### Regression Diagnostics
-
-To perform any regression model, we first perform test of normality on the response variable, ratings. We first plot a histogram on the data, from which we can see that the response variable is not exactly normally distributed and slightly skewed to the left. We confirm this deviation from normality by conducting the Kolmogorov-Smirnov test for normality. To adjust for this factor, we transform the rating variable by squaring it. As we may see in the histogram, the square-adjusted variable is approximately normal.
+In this step, we check whether our data satisfies the normality assumptions for multiple linear regression and perform transformations to fit the assumptions if unsatisfied.
 
 ```{r}
-# plot histogram
-hist(df$rating)
+# sided qq-plot for each untransformed numeric variable
+par(mfrow = c(2, 2))
+qqplot(qnorm(pp))
 
-# Kolmogorov-Smirnov test
-ks.test(df$rating, 'pnorm')
-
-# plot histogram for square-transformed data
-hist(df$rating^2)
+# log transform percent_critical, score, and review_num, square-transform 
+reg_df = df %>% 
+  select(boro, score, rating, review_num, price, percent_critical) 
 ```
-
-Now, we perform diagnostic tests required for regression models.
-
-```{r}
-df %>% 
-  select(boro, score, grade, rating, review_num, price) %>%
-  summary()
-
-lm(rating^2 ~ , data = df)
-```
-
-### Choosing the "Best" Model
