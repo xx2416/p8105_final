@@ -61,9 +61,11 @@ df <- df %>%
 head(df)
 ```
 
+
 ### Summary of Wrangled Data
 
 Now, a brief summary of our dataset to use.
+
 ```{r}
 df %>% 
   ungroup() %>%
@@ -247,137 +249,3 @@ test_full %>%
 ```
 
 As we can observe, soups/salads/sandwich restauants are most likely to receive As, followed by donuts, salads, and vegan.
-
-
-## Regression model
-
-In this step, we perform multiple linear regression (MLR) to ascertain the optimal model for predicting Yelp rating.
-
-
-### Data Wrangling and Transformation
-
-In this step, we check whether our data satisfies the normality assumptions for multiple linear regression and perform transformations to fit the assumptions if unsatisfied.
-
-```{r}
-# sided histogram for each untransformed numeric variable
-par(mfrow = c(2, 2))
-hist(df$rating, main = "Histogram for Rating", xlab = "rating", ylab = "frequency")
-hist(df$score, main = "Histogram for Score", xlab = "rating", ylab = "frequency")
-hist(df$review_num, main = "Histogram for Number of Reviews", xlab = "rating", ylab = "frequency")
-hist(df$percent_critical, main = "Histogram for Percentage of Flags Critical", xlab = "rating", ylab = "frequency")
-```
-
-As shown in the histograms, rating is severely positively-skewed, percent_critical_flag is slightly positively skewed, score is moderately positively-skewed, and rating is negatively skewed. However, MLR only requires the assumption that the response variable be normally distributed. Therefore, we square-transform the rating variable and use a QQ plot to confirm that normality is not severely violated.
-
-```{r}
-# square-transform rating
-reg_df = df %>% 
-  filter(!is.na(score)) %>%
-  mutate(sq_rating = rating^2) %>%
-  ungroup() %>%
-  select(sq_rating, boro, score, review_num, price, percent_critical) 
-
-# side-by-side qq-plot for transformed numeric variables
-qqnorm(reg_df$sq_rating, main = "Normal QQ Plot: Squared Rating", pch = 0.01, frame = FALSE)
-qqline(reg_df$sq_rating, col = "steelblue")
-```
-
-Finally, we check for if the continuous independent variables are correlated.
-
-```{r}
-cont_df <- subset(reg_df, select=c("score", "sq_rating", "review_num", "percent_critical"))
-
-# correlation plot
-corrplot::corrplot(cor(cont_df), diag = FALSE, type = "upper")
-```
-
-As such, we expect some interaction between percent_critical and score, and also a significant correlation between squared-rating and review_num. In this way, we postulate that a model with dependent variables percent critical, score, and their interaction, as well as review_num and price would be reasonable in predicting square rating.
-
-```{r}
-fit_1 = lm(sq_rating ~ percent_critical * score + price + review_num, data = reg_df)
-```
-
-
-### Criterion-Based Approach and Backward Elimination to Model Selection
-
-We now turn our attention to choosing the best model for our data. Since the number of our predictor is not huge, we employ a criterion-based approach to select independent variables.
-
-```{r}
-b = leaps::regsubsets(sq_rating ~ ., data = reg_df)
-rs = summary(b)
-
-# plot of Cp and Adj-R2 as functions of parameters
-par(mfrow = c(1,2))
-
-plot(2:9, rs$cp, xlab = "No. of parameters", ylab = "Cp Statsitic")
-abline(0, 1)
-
-plot(2:10, rs$adr2, xlab = "No. of parameters", ylab = "Adj R2")
-```
-
-As such, both the Cp criterion and the Adjusted $R^2$ suggests that we should consider all parameters. We fit a model accounting for all independent variables in the regression dataset.
-
-```{r}
-fit_2 <- lm(sq_rating ~ ., data = reg_df)
-
-# display results
-summary(fit_2)
-```
-
-Finally, since the "score" variable comes out to be not significantly correlated with the response variable sq_rating under any circumstances, we employ the backwards approach.
-
-```{r}
-step(fit_2, direction = "backward")
-```
-
-As such, we fit this model selected by the backwards approach.
-
-```{r}
-fit_3 <- lm(sq_rating ~ boro + review_num + price + percent_critical, data = reg_df)
-
-# display result
-summary(fit_3)
-```
-
-### Cross Validation
-
-Finally, we perform cross-validation to compare our three models in terms of cross-validation prediction error.
-
-```{r}
-library(modelr)
-cv_df <- crossv_mc(reg_df, n = 100) %>%
-  mutate(
-    train = map(train, as_tibble),
-    test = map(test, as_tibble)) %>% 
-  mutate(
-    fit_1 = map(train, ~lm(sq_rating ~ percent_critical * score + price + review_num, data = .x)),
-    fit_2 = map(train, ~lm(sq_rating ~ ., data = .x)),
-    fit_3 = map(train, ~lm(sq_rating ~ boro + review_num + price + percent_critical, data = .x))
-  ) %>%
-  mutate(
-    rmse_fit_1 = map2_dbl(fit_1, test, ~rmse(model = .x, data = .y)),
-    rmse_fit_2 = map2_dbl(fit_2, test, ~rmse(model = .x, data = .y)),
-    rmse_fit_3 = map2_dbl(fit_3, test, ~rmse(model = .x, data = .y))
-  )
-
-# Display RMSE results
-cv_df %>% 
-  summarise(fit1_mean_error = mean(rmse_fit_1),
-            fit2_mean_error = mean(rmse_fit_2),
-            fit3_mean_error = mean(rmse_fit_3)) %>%
-  knitr::kable(digits = 3)
-
-# Show the distribution of RMSEs using violin plots
-cv_df %>%
-  select(starts_with("rmse")) %>%
-  pivot_longer(
-    everything(),
-    names_to = "model",
-    values_to = "rmse",
-    names_prefix = "rmse") %>%
-  mutate(model = fct_inorder(model)) %>%
-  ggplot(aes(x = model, y = rmse)) + 
-  geom_violin()
-```
-
-As such, we can see that all three of our models perform very similarly.

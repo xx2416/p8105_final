@@ -1,6 +1,5 @@
 ---
 title: "Statistical Analysis"
-author: "Jiayi Shi"
 date: "2022-12-09"
 output:
   html_document:
@@ -17,6 +16,7 @@ library(gtsummary)
 knitr::opts_chunk$set(
   warning = FALSE, 
   message = FALSE,
+  error = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
@@ -31,411 +31,247 @@ options(
 
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
-```
 
-
-## Dataset Overview
-
-In this first step, we wrangle the data to be analyzable and provide a brief overview of our dataset and our variables of interest.
-
-```{r}
 library(readr)
-dt = read_csv("data/inspection_sub_all_date.csv")
+# dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  distinct(camis, .keep_all = TRUE) %>% 
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
-         grade = fct_relevel(grade, "A"))
+         grade = fct_relevel(grade, "A")) %>%
+  group_by(camis) %>%
+  mutate(percent_critical = sum(critical_flag == "Critical")/n())
 
-top_cuisine = df %>%
-  count(cuisine_description) %>% 
-  arrange(-n) %>% 
-  top_n(4) %>% 
-  pull(cuisine_description)
-
-reg_df = df %>% 
-  select(rating, boro, grade, cuisine_description, score, review_num, price) %>%
-  filter(cuisine_description %in% top_cuisine) 
+# Make distinction such that each restaurant is its unique row.
+df <- df %>% 
+  distinct(camis, .keep_all = TRUE) %>%
+  ungroup()
 ```
-
-Now, we provide a table summary of all variables involved.
-
-```{r}
-reg_df %>% 
-  select(boro, grade, price, cuisine_description) %>% 
-  mutate(boro = fct_infreq(boro)) %>% 
-  tbl_summary(
-    by = boro,
-    missing_text = "(Missing)", 
-    statistic = list(
-      all_categorical() ~ "{n} ({p}%)"
-      )) %>% 
-  bold_labels() %>%   
-  italicize_levels() 
-
-reg_df %>% 
-  select(score,rating, review_num) %>% 
-  tbl_summary(
-    missing_text = "(Missing)", 
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})"
-      )) %>% 
-  bold_labels() %>%   
-  italicize_levels() 
-```
-
-
-We observe that,
-
-* Manhattan has the most restaurants (40% of all restaurants in the city), followed by Brooklyn (28%), Queens (22%), Bronx (6.6%), and Staten Island (3.4%).
-
-* The "score" variable has 100 missing values with mean 18 and standard deviation 14.
-
-* The "grade" variable has 1,399 missing values with most of the restaurants receiving As (70% of all restaurants).
-
-* Each restaurant has average rating 3.78 with standard deviation 0.68.
-
-* Each restaurant has on average 232 reviews with standard deviation 485.
-
-* The most common price range for restaurants is between \$11-\$30 (60%), followed by under \$10 (31%).
-
-
-## Exploratory Data Analysis
-
-We first perform chi-square tests and proportion test to get a sense of the data that we are dealing with. Specifically, we ask the following questions: 
-
-* is there a relationship between boroughs and restaurant's inspection grades? 
-
-* Is there a relationship between price and restaurant's inspection grades? 
-
-* More specifically, is price range of the restaurant a factor in the inspection grades that a particular restaurant receives?
-
-
-### Chi-square Test
-
-#### Inspection Grades and Boroughs
-
-We try to determine whether there is a relationship between boroughs and restaurants' inspection grades. Our hypothesis is that there is no difference in the number of restaurants across the five grades across the five boroughs in NYC. We will perform the chi-square test to verify our assumption.
-
-$H0$: the expected number of restaurants in each grades are the same across all boroughs.
-
-$H1$: the expected number of restaurants in each grades are not same across all boroughs.
-
-```{r}
-grade_boro = 
-  df %>% 
-  filter(grade %in% c("A", "B", "C")) %>% 
-  count(boro, grade) %>% 
-  pivot_wider(
-    names_from = "grade",
-    values_from = "n") %>%
-  replace(is.na(.), 0) 
-
-# Display result.
-grade_boro %>% 
-  knitr::kable(caption = "Results Table",
-               col.names = c("Borough", "A", "B", "C"))
-```
-
-```{r}
-# Perform chi-square test
-grade_boro =  grade_boro %>%  
-  data.matrix() %>%
-  subset(select = -c(boro))
-
-chisq.test(grade_boro)
-```
-
-Interpretation: The result of chi-square shows that p-value is less than 0.05, so we reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants are significantly different by boroughs. 
-
-
-#### Price and Inspection Grade
-
-Next, we focus on whether inspection grade received is different among different groups of price range. 
-
-$H0$: There is no difference in the inspection grade received among the four different groups of price range.
-
-$H1$: There is a difference in the inspecion grade received among the four different groups of price range.
-
-```{r}
-price_grade = df %>% 
-  select(boro, score, grade, rating, review_num, price) %>%
-  drop_na(price, grade) %>% 
-  filter(grade %in% c("A", "B", "C")) %>% 
-  group_by(price, grade) %>% 
-  summarise(n = n()) %>% 
-  pivot_wider(
-    names_from = grade,
-    values_from = n 
-  ) %>% 
-  replace(is.na(.), 0) %>% 
-  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4"))
-
-price_grade %>% 
-  knitr::kable(caption = "Results Table",
-               col.names = c("Price($)", "A", "B", "C"))
-
-price_grade = price_grade %>% 
-  data.matrix() %>%
-  subset(select = -c(price))
-
-# Perform test
-chisq.test(price_grade)
-```
-
-Interpretation: The result of chi-square shows that p-value is more than 0.05, so we fail to reject the null hypothesis at 95% significant level and conclude that the inspection grades of restaurants do not differ by price scales of restaurants.
-
-
-### Proportion Test
-
-Now, we want to see whether receiving grade A is equally common among restaurants of all four price scales. To do this, we will conduct a proportion test.
-
-$H0$: Receiving A is equally common among restaurants fo all four price scales.
-
-$H1$: Receiving A is not equally common among restaurants for all four price scales.
-
-```{r}
-total = df %>% 
-  group_by(price) %>% 
-  summarise(total = n())
-
-n_a = df %>% 
-  count(price, grade) %>% 
-  filter(grade == "A")
-
-join = left_join(total, n_a) %>% drop_na()
-prop.test(join$n, join$total)
-
-#join = join %>% 
- # mutate(prop = n/total) %>% 
- # select(price, prop)
-```
-
-Since p-value  0.07 > 0.05, at confidence level of 95%, we fail to reject the null hypothesis, and conclude that we do not have enough evidence to claim that the proportion of restaurants receiving A is different among four datasets.
 
 
 ## Regression model
 
 Now, we perform regression analysis from our data treating "rating" as the response variable of interest.
 
-### Data Exploration and Variable Transformation
+### Data Wrangling and Transformation
 
-The dataset used for regression model contains three categorical variables and three continuous variables. From the plot below, we can see that score and review number is left skewed and rating is right skewed. 
+In this step, we check whether our data satisfies the normality assumptions for multiple linear regression and perform transformations to fit the assumptions if unsatisfied.
+
+```{r}
+# sided histogram for each untransformed numeric variable
+par(mfrow = c(2, 2))
+hist(df$rating, main = "Histogram for Rating", xlab = "rating", ylab = "frequency")
+hist(df$score, main = "Histogram for Score", xlab = "rating", ylab = "frequency")
+hist(df$review_num, main = "Histogram for Number of Reviews", xlab = "rating", ylab = "frequency")
+hist(df$percent_critical, main = "Histogram for Percentage of Flags Critical", xlab = "rating", ylab = "frequency")
+```
+
+As shown in the histograms, rating is severely positively-skewed, percent_critical_flag is slightly positively skewed, score is moderately positively-skewed, and rating is negatively skewed. However, MLR only requires the assumption that the response variable be normally distributed. Therefore, we square-transform the rating variable and use a QQ plot to confirm that normality is not severely violated.
+
+```{r}
+# square-transform rating
+reg_df = df %>% 
+  filter(!is.na(score)) %>%
+  mutate(sq_rating = rating^2) %>%
+  ungroup() %>%
+  select(sq_rating, boro, score, review_num, price, percent_critical) 
+
+# side-by-side qq-plot for transformed numeric variables
+qqnorm(reg_df$sq_rating, main = "Normal QQ Plot: Squared Rating", pch = 0.01, frame = FALSE)
+qqline(reg_df$sq_rating, col = "steelblue")
+```
+
+### Selecting Model Based on Predictor Prognosis
+
+Next, we check for correlation between continuous independent variables and interaction between other independent variables.
 
 ```{r}
 library("ggplot2")                     
 library("GGally")
 
 reg_df %>% 
-  ggpairs()+
-  theme_bw()
+  ggpairs() + theme_bw()
 ```
 
-
-#### Data Transformation
-
-We first test the normality assumption of the response variable, "rating". We see from the below histogram that it is negatively skewed. Though sample size is large, to avoid confounding, we need to square-transform the rating variable. Furthermore, after checking the dependent variable review_num, we've found the data to be positively skewed. We remedy the problem by log-transforming it.
+Thus, we expect review_num, percent_critical, price, and boro to be significant predictors for sq_rating. For continuous independent variables, we expect statistically significant correlation between score and percent_critical. Now, we assess the interaction between review_num and price range; review_num and boro; percent_critical and price range; and percent_critical and boro.
 
 ```{r}
-# Histogram for response variable rating
-reg_df %>% 
-  ggplot(aes(x = rating))+
-  geom_histogram(aes(y = ..density..), bins = 30, color = "black", fill = "grey") +
-  geom_density()
-
-# QQ plot
-qqnorm(reg_df$rating)
-```
-
-
-Comparing the residual vs. fitted value plot of rating and review_num before and after log transformation of review_num, we see now that the transformed data does not significantly violate the assumptions of linearity, equal error variance, and no outlier assumptions. This is the same as we do log transformation of score.
-
-```{r}
-par(mfrow = c(2, 2))
-plot(rating ~ review_num, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
-review = lm(rating ~ review_num, data = reg_df)
-abline(review, col = "darkorange", lwd = 2)
-plot(fitted(review), resid(review), col = "dodgerblue",
-     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
-abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
-title(main = "Before transformation")
-
-plot(rating ~ log(review_num), data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
-review = lm(rating ~ log(review_num), data = reg_df)
-abline(review, col = "darkorange", lwd = 2)
-plot(fitted(review), resid(review), col = "dodgerblue",
-     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
-abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
-title(main = "After transformation")
-```
-
-```{r}
-par(mfrow = c(2, 2))
-plot(rating ~ score, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
-rating_score = lm(rating ~ score, data = reg_df)
-abline(rating_score, col = "darkorange", lwd = 2)
-plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
-     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
-abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
-title(main = "Before transformation")
-
-plot(rating ~ log(score+0.1), data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
-rating_score = lm(rating ~ log(score+0.1), data = reg_df)
-abline(rating_score, col = "darkorange", lwd = 2)
-plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
-     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
-abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
-title(main = "After transformation")
-```
-
-
-```{r}
-# Log transform review_num, square transform rating
-reg_df = reg_df %>% 
-  select(rating, everything()) %>% 
-  mutate(review_num = log(review_num),
-         score = log(score+0.1),
-         rating = rating^2)
-```
-
-
-#### Prognosis of Significant Predictors
-
-In this section, we speculate the potentially statistically significant predictors for response variable "rating". We use boxplots to visualize the effects of categorical variables like cuisine type, inspection grade, and price scales; and use scatterplots for continuous distributions like score and review number.
-
-##### Categorical Independent Variables
-
-Firstly, we visualize the effects of categorical variables cuisine type, inspection grade, and price scales on rating. In particular, we have found that rating has some association with cuisine type, inspection grade and price scale.
-
-```{r}
-reg_df %>% 
-  ggplot(aes(y = rating, x = cuisine_description, color = cuisine_description))+
-  geom_boxplot()
-
-reg_df %>%
-  ggplot(aes(y = rating, x= grade, color = grade))+
-  geom_boxplot()
-
-reg_df %>%
-  drop_na(price) %>% 
-  mutate(price = fct_recode(price, "<10"="1", "11-30"="2", "31-60"="3", ">60"="4")) %>% 
-  ggplot(aes(y = rating, x = price, color = price))+
-  geom_boxplot()
-
-reg_df %>%
-  mutate(boro = fct_reorder(boro, rating)) %>% 
-  ggplot(aes(y = rating, x = boro, color = boro))+
-  geom_boxplot()
-```
-
-As shown in the boxplots above, when considering the most populated cuisine types, restaurants that serve coffee/tea tend to receive the highest ratings. Furthermore, though restaurants that receive A or B for grade inspection have similar median rating, restaurants receiving C for grade inspection have a slightly lower median rating compared to those that received A or B. Finally, there seems to be an association between price range and rating as higher priced restaurants tend to receive better ratings.
-
-##### Continuous Independent Variables
-
-Now, we consider the effects of continuous independent variables.
-
-#### Interaction and Confounding
-
-The cross lines indicate that borough and cuisine type is a confounder of the relationship between score and rating.
-
-```{r}
+# review_num and price
 p1 = reg_df %>% 
-  ggplot(aes(x = score, y = rating, color = cuisine_description))+
-  geom_point()+
-  geom_smooth(method="lm", se=F, aes(group = cuisine_description, color = cuisine_description))
+  ggplot(aes(x = review_num, y = sq_rating, color = price)) +
+  geom_point() +
+  geom_smooth(method="lm", se=F, aes(group = price, color = price))
+# review_num and boro
 p2 = reg_df %>% 
-  ggplot(aes(x = score, y = rating, color = boro))+
-  geom_point()+
+  ggplot(aes(x = review_num, y = sq_rating, color = boro)) +
+  geom_point() +
   geom_smooth(method="lm", se=F, aes(group = boro, color = boro))
+# percent_critical and price
+p3 = reg_df %>%
+  ggplot(aes(x = percent_critical, y = sq_rating, color = price)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F, aes(group = price, color = price))
+# percent_critical and boro
+p4 = reg_df %>%
+  ggplot(aes(x = percent_critical, y = sq_rating, color = boro)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F, aes(group = boro, color = boro))
 
-p1+p2
+# Display results
+p1+p2+p3+p4
 ```
 
-The cross lines indicate that borough and cuisine type is a confounder of the relationship between review numbers and rating.
+As such, we observe strong interaction between review_num, borough, and price; but little interaction between percent_critical and price or percent_critical and borough. Therefore, we fit our first model with interaction of review_num, borough, and price along with percent_critical.
 
 ```{r}
-p1 = reg_df %>% 
-  ggplot(aes(x = review_num, y = rating, color = cuisine_description))+
-  geom_point()+
-  geom_smooth(method="lm", se=F, aes(group = cuisine_description, color = cuisine_description))
-p2 = reg_df %>% 
-  ggplot(aes(x = review_num, y = rating, color = boro))+
-  geom_point()+
-  geom_smooth(method="lm", se=F, aes(group = boro, color = boro))
+fit_1 = lm(sq_rating ~ price * review_num + boro + percent_critical, data = reg_df)
 
-p1+p2
+# display results
+fit_1 %>% broom::tidy() %>% knitr::kable(digits = 4)
 ```
 
-#### MLR Molde selection
+### Criterion-Based Approach and Backward Elimination to Model Selection
 
-```{r}
-model = lm(rating ~ score + cuisine_description*review_num + boro*review_num + price, data = reg_df)
-summary(model)
-```
+We now turn our attention to formal methods of choosing optimal model. Since the number of our predictor is not huge, we employ a criterion-based approach to select independent variables.
 
-10-fold cross validation:
-```{r}
-library(caret)
-set.seed(1)
-train = trainControl(method = "cv", number = 10)
-model = train(rating ~ cuisine_description*score+boro+review_num+price, 
-              data = reg_df,
-              trControl = train,
-              method = 'lm',
-              na.action = na.pass)
-model$finalModel
-print(model)
-```
-
-Elastic Net
-```{r}
-library(glmnet)
-library(caret)
-set.seed(2)
-cv_10 = trainControl(method = "cv", number = 10)
-x = model.matrix(~ ., dplyr::select(reg_df, -rating))[,-1]
-y = reg_df$rating
-elnet_int = train(
-  rating ~ . ^ 2, data = reg_df %>% drop_na(),
-  method = "glmnet",
-  trControl = cv_10,
-  tuneLength = 10
-)
-
-get_best_result = function(caret_fit) {
-  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
-  best_result = caret_fit$results[best, ]
-  rownames(best_result) = NULL
-  best_result
-}
-
-get_best_result(elnet_int)
-```
-
-Criterion based
 ```{r}
 library(leaps)
-b = regsubsets(rating ~ ., data = reg_df)
+b = regsubsets(sq_rating ~ ., data = reg_df)
 rs = summary(b)
-
 par(mfrow = c(2, 2))
 plot(rs$rss, xlab = "Number of Variables", ylab = "RSS", type = "b")
-
 plot(rs$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "b")
 best_adj_r2 = which.max(rs$adjr2) # 4 (index)
 points(best_adj_r2, rs$adjr2[best_adj_r2], # point(x, y)
        col = "red",cex = 2, pch = 20)
-
 plot(rs$cp, xlab = "Number of Variables", ylab = "Cp", type = 'b')
 best_cp = which.min(rs$cp)
 points(best_cp, rs$cp[best_cp], 
        col = "red", cex = 2, pch = 20)
-
 plot(rs$bic, xlab = "Number of Variables", ylab = "BIC", type = 'b')
 best_bic = which.min(rs$bic)
 points(best_bic, rs$bic[best_bic], 
        col = "red", cex = 2, pch = 20)
 ```
 
+As such, both the Cp criterion and the Adjusted $R^2$ suggests that we should consider all parameters. We fit a model accounting for all independent variables in the regression dataset.
 
+```{r}
+fit_2 <- lm(sq_rating ~ ., data = reg_df)
+fit_2 %>% broom::tidy() %>% knitr::kable(digits = 4)
+```
 
+Finally, since the "score" variable comes out to be not significantly correlated with the response variable sq_rating under any circumstances, we consider the backwards approach to see eliminating it would create more efficiency for the model.
+
+```{r}
+step(fit_2, direction = "backward") 
+```
+
+In this way, we fit this model selected by the backwards approach. From the results of this model shown below, all predictors are significant except the boro of Staten Island.
+
+```{r}
+fit_3 <- lm(sq_rating ~ boro + review_num + price + percent_critical, data = reg_df)
+
+# display result
+fit_3 %>% broom::tidy() %>% knitr::kable(digits = 4)
+```
+
+### Cross Validation
+
+#### Model Comparison
+
+In this step, we perform cross-validation to compare our three models in terms of cross-validation prediction error.
+
+```{r}
+library(modelr)
+cv_df <- crossv_mc(reg_df, n = 100) %>%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)) %>% 
+  mutate(
+    fit_1 = map(train, ~lm(sq_rating ~ price * review_num + boro + percent_critical, data = .x)),
+    fit_2 = map(train, ~lm(sq_rating ~ ., data = .x)),
+    fit_3 = map(train, ~lm(sq_rating ~ boro + review_num + price + percent_critical, data = .x))
+  ) %>%
+  mutate(
+    rmse_fit_1 = map2_dbl(fit_1, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_2 = map2_dbl(fit_2, test, ~rmse(model = .x, data = .y)),
+    rmse_fit_3 = map2_dbl(fit_3, test, ~rmse(model = .x, data = .y))
+  )
+
+# Display RMSE results
+cv_df %>% 
+  summarise(fit1_mean_error = mean(rmse_fit_1),
+            fit2_mean_error = mean(rmse_fit_2),
+            fit3_mean_error = mean(rmse_fit_3)) %>%
+  knitr::kable(digits = 3)
+
+# Show the distribution of RMSEs using violin plots
+cv_df %>%
+  select(starts_with("rmse")) %>%
+  pivot_longer(
+    everything(),
+    names_to = "model",
+    values_to = "rmse",
+    names_prefix = "rmse") %>%
+  mutate(model = fct_inorder(model)) %>%
+  ggplot(aes(x = model, y = rmse)) + 
+  geom_violin()
+```
+
+#### Elastic Net
+
+As seen, fit_1 has the least RMSE compared to all other models. Therefore, we use this model for further training using elastic net.
+
+```{r}
+library(glmnet)
+library(caret)
+set.seed(2)
+cv_10 = trainControl(method = "cv", number = 10)
+x = model.matrix(~ ., dplyr::select(reg_df, -sq_rating))[,-1]
+y = reg_df$sq_rating
+elnet_int = train(
+  sq_rating ~ price * review_num + boro + percent_critical, data = reg_df %>% drop_na(),
+  method = "glmnet",
+  trControl = cv_10,
+  tuneLength = 10
+)
+get_best_result = function(caret_fit) {
+  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
+  best_result = caret_fit$results[best, ]
+  rownames(best_result) = NULL
+  best_result
+}
+get_best_result(elnet_int)
+```
+
+### Model Diagnostics
+
+In this final step, we perform model diagnostics to see if assumptions are satisfied for our chosen, optimal model. Specifically, we assess whether our model of choice violates the assumptions of multicollinearity by using VIF values, non-linearity, unequal error variances, and outliers by examining residual vs. fitted plot.
+
+#### Residual vs. Fitted Plot
+
+```{r}
+# Plot model residuals against fitted values
+reg_df %>% 
+  add_predictions(fit_1) %>%
+  add_residuals(fit_1) %>% 
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point()
+```
+
+1. The residuals do not "bounce randomly" around the 0 line, suggesting that the assumption that the relationship is linear is not reasonable.
+
+2. The residuals do not roughly form a "horizontal band" around 0, which suggests violations for equal variance assumption.
+
+3. There are a few outliers in our plot, suggesting there are influential points or outliers.
+
+#### Multicolinearity
+
+Since our optimal model contains interaction terms, which may inflate VIF, we check for fit_2, which includes all predictor variables and no interaction terms.
+
+```{r}
+library(performance)
+multicollinearity(fit_2) %>% as_tibble() %>% knitr::kable(digits = 4)
+```
+
+As such, we may be confident in saying that there is no significant violation for collinearity assumption.
