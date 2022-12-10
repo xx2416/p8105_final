@@ -9,11 +9,15 @@ title: "Project report"
 ## Related Work
 
 ## Data
+We used two main datasets for analysis, one is restaurant inspection data from NYC OpenData, the other is yelp data scraped from the Internet. We merged them to one dataset by the id number of restaurants from the inspection dataset.
 
+a. DOHMH New York City Restaurant Inspection Results ([dataset](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j))
+The dataset hosted online 
 ## Data Processing and Cleaning
 
 ## Exploratory analysis
 
 ## Statistical Analysis
+
 
 ## Shiny app
