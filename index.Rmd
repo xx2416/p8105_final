@@ -1,8 +1,60 @@
 ---
 title: "Home"
+subtitle: "Find Your FAVORITE Restaurant in NYC!"
 output: 
   html_document:
     toc: true
     toc_float: true
+    code_folding: hide
     theme: flatly
 ---
+
+<h6 style="text-align: left;" markdown="1">By: Xuesen Zhao |  Tianshu Liu |  Xicheng Xie | Jiayi Shi |  Lincole Jiang </h6>
+
+```{r, include = FALSE}
+library(tidyverse)
+library(readr)
+```
+
+## Background
+
+According to the data from [Statista](https://www.statista.com/statistics/259776/number-of-people-who-went-to-restaurants-in-new-york-by-type/), there had been over twenty-seven thousand restaurants in New York City by the end of 2018. Although more than a [thousand restaurants](https://ny.eater.com/2020/12/30/22203053/nyc-coronavirus-timeline-restaurants-bars-2020) were shut down or temporarily closed due to the COVID-19 pandemic, some restaurants quickly adapted to offering deliveries, takeout and outdoor dining. By mid May, New York City [reopened indoor dining at full capacity](https://www.cnn.com/2021/04/29/politics/new-york-city-coronavirus-restrictions-lifted-de-blasio/index.html). Meanwhile, as public schools, colleges and increasingly more companies reverted back to in-person operations, or at least a hybrid mode, the needs for dining start to grow rapidly once again. 
+
+![](./pic/kitchen_snap_1.jpg)
+
+While it is glad to see restaurants reopening and even new ones opening, it is crucial to keep up with rigorous inspection on food storage and processing, dining environment, and kitchen management to ensure public health safety. Such a year-long stagnancy on the restaurant industry also means potential needs for old facility check-ups, new employee training for appropriate food handling, proper waste disposal, cold-chain management, and kitchen sanitation. Hence, we are interested in not only the customers' review of the restaurants in NYC, but also the performance of these restaurant during inspection programs held by the NYC Health Department.  
+
+![](./pic/cleaning_1.jpg)
+
+
+## Datasets
+
+With this in mind, we first identified the first `r read_csv("./data/inspection_sub_latest_date.csv")%>% nrow()`distinct restaurant in NYC on [Yelp](https://www.yelp.com/search?find_desc=Restaurants&find_loc=New+York%2C+NY) and used the corresponding CSS html tags to pull the restaurant name, review scores, price, number of reviews, and location for each restaurant. 
+
+Meanwhile, we cited NYC restaurant inspection data that is made available to the public on [Opendata](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j) This dataset contains detailed information on restaurant and college cafeteria inspection results, up to three years prior to the most recent inspection. The original [dataset](https://data.cityofnewyork.us/api/views/43nn-pn8j/files/ec33d2c8-81f5-499a-a238-0213a38239cd?download=true&filename=RestaurantInspectionDataDictionary_09242018.xlsx) has over 230 thousand rows and 27 columns by December 1st, 2022. Some examples of the variables include: inspection score and corresponding letter grade, violation description, date, types of cuisine, and the borough in which the restaurant is located in, etc.
+
+Then, we merged the two dataset by an unique identifier ID for each restaurant. Here is a quick glance at the merged data set:
+
+```{r, echo= FALSE}
+inspection_all = read.csv("data/inspection_sub_all_date.csv") 
+inspection_all%>%
+  drop_na(grade,rating) %>%
+  select(dba, boro, zipcode, cuisine_description, grade, rating )%>%
+  head(8) %>% 
+  knitr::kable() 
+```
+
+
+
+## Objectives & Main Questions
+
+
+## The Upshot's
+
+## What FOOD is NY most famous for?
+
+Please feel free to grab a slice of pizza : )
+
+![](./pic/pizza_a.jpg)
+
+
