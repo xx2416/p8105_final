@@ -1,5 +1,11 @@
 ---
 title: "Statistical Analysis"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -28,16 +34,19 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Dataset Overview
 
-In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest.
+In this first step, we wrangle the data such that it is usable and provide a brief overview of our dataset and our variables of interest. In particular, we create anoth
 
 ```{r}
 library(readr)
-dt = read_csv("data/inspection_sub_all_date.csv")
+# dt = read_csv("data/inspection_sub_all_date.csv")
 df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  distinct(camis, .keep_all = TRUE) %>%  # s.t. each row contains info for one restaurant
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
-         grade = fct_relevel(grade, "A"))
+         grade = fct_relevel(grade, "A")) %>%
+  group_by(camis) %>%
+  mutate(percent_critical = sum(critical_flag == "Critical")/n())
+
+df <- df %>% distinct(camis, .keep_all = TRUE)
 ```
 
 Now, we provide a table summary of all variables involved.
@@ -61,12 +70,6 @@ df %>%
 * Each restaurant has average rating 3.78 with standard deviation 0.68.
 * Each restaurant has on average 232 reviews with standard deviation 485.
 * The most common price range for restaurants is between \$11-\$30 (60%), followed by under \$10 (31%).
-
-
-## Exploratory Data Analysis
-
-We first perform chi-square tests and proportion test to get a sense of the data that we are dealing with. Specifically, we ask the following questions: is there a relationship between boroughs and restaurant's inspection grades? 
-
 
 ### Chi-square Test
 

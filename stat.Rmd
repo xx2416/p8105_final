@@ -36,17 +36,19 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Dataset Overview
 
-In this first step, we wrangle the data to be analyzable and provide a brief overview of our dataset and our variables of interest.
+In the first step, we wrangle the data and provide a brief overview of our data set and our variables of interest. In particular, we create a numeric variable, percent_critical, that records the percentage of critical flag that a restaurant receives for all violations.
 
 ```{r}
 library(readr)
-dt = read_csv("data/inspection_sub_all_date.csv")
-df = read_csv("data/inspection_sub_latest_date.csv") %>%
-  distinct(camis, .keep_all = TRUE) %>% 
+# dt = read_csv("data/inspection_sub_all_date.csv")
+df = read_csv("data/inspection_sub_latest_date.csv")
   mutate(price = fct_recode(price, "1" = "$", "2" = "$$", "3" = "$$$", "4" = "$$$$"),
          boro = fct_reorder(boro, rating),
-         grade = fct_relevel(grade, "A"))
+         grade = fct_relevel(grade, "A")) %>%
+  group_by(camis) %>%
+  mutate(percent_critical = sum(critical_flag == "Critical")/sum(critical_flag != "Critical"))
 
+df <- df %>% distinct(camis, .keep_all = TRUE)
 ```
 
 Now, we provide a table summary of all variables involved.
@@ -198,7 +200,27 @@ Since p-value  0.07 > 0.05, at confidence level of 95%, we fail to reject the nu
 
 Now, we perform regression analysis from our data treating "rating" as the response variable of interest.
 
-### Regression Diagnostics and Data Transformation
+### Data Exploration and Variable Transformation
+
+```{r}
+top_cuisine = df %>%
+  count(cuisine_description) %>% 
+  arrange(-n) %>% 
+  top_n(4) %>% 
+  pull(cuisine_description)
+
+reg_df = df %>% 
+  select(boro, cuisine_description, score, grade, rating, review_num, price) %>%
+  filter(cuisine_description %in% top_cuisine) %>% 
+  filter(grade %in% c("A", "B", "C"))
+
+library("ggplot2")                     
+library("GGally")
+ggpairs(data)+theme_bw()
+reg_df %>% 
+  relocate("rating") %>% 
+  ggpairs()
+```
 
 #### Data Transformation
 
@@ -214,18 +236,10 @@ df %>%
 
 # QQ plot
 qqnorm(df$rating)
+```
 
-top_cuisine = df %>%
-  count(cuisine_description) %>% 
-  arrange(-n) %>% 
-  top_n(4) %>% 
-  pull(cuisine_description)
 
-reg_df = df %>% 
-  select(boro, cuisine_description, score, grade, rating, review_num, price) %>%
-  filter(cuisine_description %in% top_cuisine) %>% 
-  filter(grade %in% c("A", "B", "C"))
-
+```{r}
 dlookr::find_skewness(reg_df)
 ```
 
@@ -250,9 +264,17 @@ abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 title(main = "After transformation")
 ```
 
+* Check
 ```{r}
+par(mfrow = c(2, 2))
 plot(rating ~ score, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
 rating_score = lm(rating ~ score, data = reg_df)
+abline(rating_score, col = "darkorange", lwd = 2)
+plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
+     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
+abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
+plot(rating ~ log(score), data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
+rating_score = lm(rating ~ log(score), data = reg_df)
 abline(rating_score, col = "darkorange", lwd = 2)
 plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
      pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
@@ -265,7 +287,13 @@ abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 reg_df = reg_df %>% 
   select(rating, everything()) %>% 
   mutate(review_num = log(review_num),
+<<<<<<< HEAD
+         rating = rating^2,
+         score = log(score))
+=======
+         score = log(score),
          rating = rating^2)
+>>>>>>> 8e6e31ebce4993561688492d838fc796d31f4da5
 ```
 
 
@@ -326,11 +354,11 @@ reg_df %>%
 
 #### Multicollinearity of Dependent Variables
 
+
 ```{r}
 model = lm(rating ~ cuisine_description*score + boro + review_num + price, data = reg_df)
 summary(model)
 ```
-
 10-fold cross validation:
 ```{r}
 library(caret)
