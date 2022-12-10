@@ -400,11 +400,47 @@ choice of price range, sanitary grading, location, and cuisine type.</p>
 <div id="related-work" class="section level2">
 <h2>Related Work</h2>
 </div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="data-collection-and-cleaning" class="section level2">
+<h2>Data Collection and Cleaning</h2>
+<p>We used two data sets to complete our analysis.</p>
+<div id="a.-dohmh-nyc-restaurant-inspection-data"
+class="section level3">
+<h3>a. <a
+href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">DOHMH
+NYC Restaurant Inspection Data</a></h3>
+<p>This dataset provided by Department of Health and Mental Hygiene
+(DOHMH) contains detailed information on restaurant inspection results.
+We downloaded and imported the version updated on Nov. 17th. Since this
+file is too large to be uoloaded on Github, we used Github Large File
+System to store it and its cleaning results.</p>
+<p>In the process of data cleaning, we formatted variables, identified
+illegal values and dropped NAs. The distinct restaurants are filtered to
+be our targets.</p>
+<p>After cleaning, we are mainly focus on variables shown below:</p>
+<ul>
+<li><p><code>score</code>: Total score for a particular
+inspection.</p></li>
+<li><p><code>grade</code>: Grade associated with the
+inspection.</p></li>
+<li><p><code>violation_description</code>: Violation description type
+associated with the inspection.</p></li>
+<li><p><code>critical_flag</code>: Indicator of critical
+violation.</p></li>
+</ul>
+<p>Some examples of the variables include: inspection score and
+corresponding letter grade, violation description, date, types of
+cuisine, and the borough in which the restaurant is located in, etc.</p>
 </div>
-<div id="data-processing-and-cleaning" class="section level2">
-<h2>Data Processing and Cleaning</h2>
+<div id="b.-yelp-data" class="section level3">
+<h3>b. <a
+href="https://www.yelp.com/search?find_desc=Restaurants&amp;find_loc=New+York%2C+NY">Yelp
+Data</a></h3>
+<p>After identifying the first 8000 distinct restaurant with latest
+inspection records, we extracted their name and location information to
+generate Yelp searching URLs, and used the corresponding CSS tags to
+pull real-time information, including the restaurant name, review
+scores, price, number of reviews, and location for each restaurant.</p>
+</div>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory analysis</h2>

@@ -15,9 +15,32 @@ One metric consistently missing in restaurant recommendation apps is the conside
 
 ## Related Work
 
-## Data
+## Data Collection and Cleaning
 
-## Data Processing and Cleaning
+We used two data sets to complete our analysis. 
+
+### a. [DOHMH NYC Restaurant Inspection Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j)
+
+This dataset provided by Department of Health and Mental Hygiene (DOHMH) contains detailed information on restaurant inspection results. We downloaded and imported the version updated on Nov. 17th. Since this file is too large to be uoloaded on Github, we used Github Large File System to store it and its cleaning results. 
+
+In the process of data cleaning, we formatted variables, identified illegal values and dropped NAs. The distinct restaurants are filtered to be our targets. 
+
+After cleaning, we are mainly focus on variables shown below:
+
+  - `score`: Total score for a particular inspection.
+  
+  - `grade`: Grade associated with the inspection. 
+  
+  - `violation_description`: Violation description type associated with the  inspection. 
+  
+  - `critical_flag`: Indicator of critical violation. 
+  
+Some examples of the variables include: inspection score and corresponding letter grade, violation description, date, types of cuisine, and the borough in which the restaurant is located in, etc.
+
+### b. [Yelp Data](https://www.yelp.com/search?find_desc=Restaurants&find_loc=New+York%2C+NY)
+
+After identifying the first 8000 distinct restaurant with latest inspection records, we extracted their name and location information to generate Yelp  searching URLs, and used the corresponding CSS tags to pull real-time information, including the restaurant name, review scores, price, number of reviews, and location for each restaurant. 
+
 
 ## Exploratory analysis
 For our exploratory analyses, we aim to observe patterns related to inspection information and cuisine types across different boroughs and price levels. Meanwhile, the latent associations between sanitary grading, inspection-related variables, review numbers, and rating are our particular interests. The exploratory analyses consist of two main parts: visualization and mapping of cuisine types and ratings in different boroughs and at price levels, visualization and mapping of critical inspection information.
