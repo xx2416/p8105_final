@@ -14,13 +14,15 @@ One metric consistently missing in restaurant recommendation apps is the conside
 
 ## Initial Questions
 
-* What are the factors that influence sanitary grading? As a consumer, does their choice involving the borough of the restaurant, the price range of the restaurant, the cuisine type of their choosing have an effect on the sanitary grading of the restaurant?
+* What does the dataset we have at hand tell us about the restaurant industry in New York City? For example, what is the geographical distribution of restaurants with respect to price range, cuisine type, and grade(e.g., Washington Heights is dominated by Latin American restaurants)? Is there any pattern with respect to inspection information and cuisine types across different boroughs and price levels? (i.e., EDA)
 
-* What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type? If an investor wishes to open a new restaurant and maximize review score on Yelp, which factors should he consider and which areas should he focus on investing in?
+* What are the factors that influence sanitary grading? As a consumer, does their choice involving the borough of the restaurant, the price range of the restaurant, the cuisine type of their choosing have an effect on the sanitary grading of the restaurant? (i.e, Statistical Tests)
 
-* 
+* What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type? If an investor wishes to open a new restaurant and maximize review score on Yelp, which factors should he consider and which areas should he focus on investing in? (e.g., Multiple Linear Regression)
+
 
 ## Related Work
+
 
 ## Data Collection and Cleaning
 
@@ -83,11 +85,15 @@ We then generated a density heat map to identify an underlying pattern of the di
 
 In terms of the performance during inspection, the majority of the restaurants in NYC received an "A" as the inspection grade, either during the initial inspection or re-inspection. Among all boroughs in NYC, Bronx was the one with the highest proportion of restaurants receiving a grade "C". Staten Island had the highest proportion of restaurants with grade "A" and no restaurant with grade "C", followed by Manhattan which had the second highest proportion of grade "A" restaurants. 
 
-## Statistical Analysis
+## Formal Statistical Analysis
 
-### Statistical Testing: Factors affecting Inspection Grade 
+### Statistical Testing: Factors affecting Inspection Grade
 
-In the first part of our statistical analysis, we performed chi-square tests to investigate the relationship between 
+In the first part of our statistical analysis, we focused on investigating the factors that influence inspection grades. 
+
+### Multipe Linear Regression: Factors Predicting Yelp Rating
+
+
 
 ## Shiny app
 
