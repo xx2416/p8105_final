@@ -34,3 +34,10 @@ In terms of the performance during inspection, the majority of the restaurants i
 ## Statistical Analysis
 
 ## Shiny app
+
+We developed and deployed an Shiny App for users to get appropriate and interactive recommendations based on their personalized input. 
+Users can receive key information of each restaurant from the table and see the locations of on the map. 
+The table can be sorted by each variables based on users' preference. 
+By clicking a specific entry of the table, the latest inspection records of the corresponding restaurant will be shown in the lower right.
+
+![](./pic/Shiny_Screen_Shot.png)
