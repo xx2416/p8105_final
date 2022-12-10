@@ -150,10 +150,14 @@ prop.test(join$n, join$total)
  # select(price, prop)
 ```
 
+
 ## Regression model
 
-We first wrangle the data such that each restaurant only represent one row in the dataset.
+In this step, we perform multiple linear regression (MLR) to ascertain the optimal model for predicting Yelp rating.
 
+### Data Wrangling and Transformation
+
+In this step, we check whether our data satisfies the normality assumptions for multiple linear regression and perform transformations to fit the assumptions if unsatisfied.
 
 
 ### Regression Diagnostics
