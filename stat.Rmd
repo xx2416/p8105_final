@@ -202,6 +202,26 @@ Now, we perform regression analysis from our data treating "rating" as the respo
 
 ### Data Exploration and Variable Transformation
 
+```{r}
+top_cuisine = df %>%
+  count(cuisine_description) %>% 
+  arrange(-n) %>% 
+  top_n(4) %>% 
+  pull(cuisine_description)
+
+reg_df = df %>% 
+  select(boro, cuisine_description, score, grade, rating, review_num, price) %>%
+  filter(cuisine_description %in% top_cuisine) %>% 
+  filter(grade %in% c("A", "B", "C"))
+
+library("ggplot2")                     
+library("GGally")
+ggpairs(data)+theme_bw()
+reg_df %>% 
+  relocate("rating") %>% 
+  ggpairs()
+```
+
 #### Data Transformation
 
 We first test the normality assumption of the response variable, "rating". We see from the below histogram that it is negatively skewed. Though sample size is large, to avoid confounding, we need to square-transform the rating variable. Furthermore, after checking the dependent variable review_num, we've found the data to be positively skewed. We remedy the problem by log-transforming it.
@@ -216,18 +236,10 @@ df %>%
 
 # QQ plot
 qqnorm(df$rating)
+```
 
-top_cuisine = df %>%
-  count(cuisine_description) %>% 
-  arrange(-n) %>% 
-  top_n(4) %>% 
-  pull(cuisine_description)
 
-reg_df = df %>% 
-  select(boro, cuisine_description, score, grade, rating, review_num, price) %>%
-  filter(cuisine_description %in% top_cuisine) %>% 
-  filter(grade %in% c("A", "B", "C"))
-
+```{r}
 dlookr::find_skewness(reg_df)
 ```
 
