@@ -47,13 +47,22 @@ df = read_csv("data/inspection_sub_latest_date.csv") %>%
          boro = fct_reorder(boro, rating),
          grade = fct_relevel(grade, "A"))
 
+top_cuisine = df %>%
+  count(cuisine_description) %>% 
+  arrange(-n) %>% 
+  top_n(4) %>% 
+  pull(cuisine_description)
+
+reg_df = df %>% 
+  select(rating, boro, grade, cuisine_description, score, review_num, price) %>%
+  filter(cuisine_description %in% top_cuisine) 
 ```
 
 Now, we provide a table summary of all variables involved.
 
 ```{r}
-df %>% 
-  select(boro, grade, price) %>% 
+reg_df %>% 
+  select(boro, grade, price, cuisine_description) %>% 
   mutate(boro = fct_infreq(boro)) %>% 
   tbl_summary(
     by = boro,
@@ -64,7 +73,7 @@ df %>%
   bold_labels() %>%   
   italicize_levels() 
 
-df %>% 
+reg_df %>% 
   select(score,rating, review_num) %>% 
   tbl_summary(
     missing_text = "(Missing)", 
@@ -214,24 +223,12 @@ Now, we perform regression analysis from our data treating "rating" as the respo
 The dataset used for regression model contains three categorical variables and three continuous variables. From the plot below, we can see that score and review number is left skewed and rating is right skewed. 
 
 ```{r}
-top_cuisine = df %>%
-  count(cuisine_description) %>% 
-  arrange(-n) %>% 
-  top_n(4) %>% 
-  pull(cuisine_description)
-
-reg_df = df %>% 
-  select(rating, boro, cuisine_description, score, review_num, price) %>%
-  filter(cuisine_description %in% top_cuisine) %>% 
-  filter(grade %in% c("A", "B", "C"))
-
 library("ggplot2")                     
 library("GGally")
 
 reg_df %>% 
   ggpairs()+
   theme_bw()
-
 ```
 
 
@@ -414,4 +411,31 @@ get_best_result = function(caret_fit) {
 
 get_best_result(elnet_int)
 ```
+
+Criterion based
+```{r}
+library(leaps)
+b = regsubsets(rating ~ ., data = reg_df)
+rs = summary(b)
+
+par(mfrow = c(2, 2))
+plot(rs$rss, xlab = "Number of Variables", ylab = "RSS", type = "b")
+
+plot(rs$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "b")
+best_adj_r2 = which.max(rs$adjr2) # 4 (index)
+points(best_adj_r2, rs$adjr2[best_adj_r2], # point(x, y)
+       col = "red",cex = 2, pch = 20)
+
+plot(rs$cp, xlab = "Number of Variables", ylab = "Cp", type = 'b')
+best_cp = which.min(rs$cp)
+points(best_cp, rs$cp[best_cp], 
+       col = "red", cex = 2, pch = 20)
+
+plot(rs$bic, xlab = "Number of Variables", ylab = "BIC", type = 'b')
+best_bic = which.min(rs$bic)
+points(best_bic, rs$bic[best_bic], 
+       col = "red", cex = 2, pch = 20)
+```
+
+
 

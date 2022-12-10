@@ -343,8 +343,20 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li>
-  <a href="stat_analysis.html">Statistical Analysis</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Statistical Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stat_analysis.html">Data exploration</a>
+    </li>
+    <li>
+      <a href="stat.html">Model Selection</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="report.html">Project Report</a>
@@ -396,15 +408,70 @@ choice of price range, sanitary grading, location, and cuisine type.</p>
 </div>
 <div id="initial-questions" class="section level2">
 <h2>Initial Questions</h2>
+<ul>
+<li><p>Is there a relationship between boroughs and restaurants’
+inspection grades?</p></li>
+<li><p>Does price range of a restaurant has an effect on its safety
+levels?</p></li>
+<li><p>What is the relationship between reviewer’s rating of the
+restaurant and other variables including inspection score, boroughs,
+price range, review numbers, cuisine type.</p></li>
+</ul>
 </div>
 <div id="related-work" class="section level2">
 <h2>Related Work</h2>
 </div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="data-collection-and-cleaning" class="section level2">
+<h2>Data Collection and Cleaning</h2>
+<p>We used two data sets to complete our analysis.</p>
+<div id="a.-dohmh-nyc-restaurant-inspection-data"
+class="section level3">
+<h3>a. <a
+href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">DOHMH
+NYC Restaurant Inspection Data</a></h3>
+<p>This dataset provided by Department of Health and Mental Hygiene
+(DOHMH) contains detailed information on restaurant inspection results.
+We downloaded and imported the version updated on Nov. 17th. Since this
+file is too large to be uploaded on Github, we used Github Large File
+System to store it and its cleaning results.</p>
+<p>In the process of data cleaning, we formatted variables, identified
+illegal values and dropped NAs. The distinct restaurants are filtered to
+be our targets.</p>
+<p>After cleaning, we are mainly focus on variables shown below:</p>
+<ul>
+<li><p><code>score</code>: Total score for a particular
+inspection.</p></li>
+<li><p><code>grade</code>: Grade associated with the
+inspection.</p></li>
+<li><p><code>violation_description</code>: Violation description
+associated with the inspection.</p></li>
+<li><p><code>critical_flag</code>: Indicator of critical
+violation.</p></li>
+</ul>
 </div>
-<div id="data-processing-and-cleaning" class="section level2">
-<h2>Data Processing and Cleaning</h2>
+<div id="b.-yelp-data" class="section level3">
+<h3>b. <a
+href="https://www.yelp.com/search?find_desc=Restaurants&amp;find_loc=New+York%2C+NY">Yelp
+Data</a></h3>
+<p>After selecting the first 8000 distinct restaurant with latest
+inspection records, we extracted their name and location information to
+generate Yelp searching URLs, and used the corresponding CSS tags to
+pull real-time information for each restaurant, which includes:</p>
+<ul>
+<li><p><code>name</code>: Restaurant’s name.</p></li>
+<li><p><code>rating</code>: Overall rating score given by Yelp
+users.</p></li>
+<li><p><code>review_num</code>: Number of reviews for a specific
+restaurant.</p></li>
+<li><p><code>price</code>: Average consuming price range for a specific
+restaurant.</p></li>
+<li><p><code>distance</code>: Distance between target location and
+searching result.</p></li>
+</ul>
+<p>Finally, due to the instability of the website display, we got 6053
+restaurants’ yelp information in total and joined them with the
+inspection dataset for subsequent analysis.</p>
+</div>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory analysis</h2>

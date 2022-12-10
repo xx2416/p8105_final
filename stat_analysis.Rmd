@@ -109,7 +109,7 @@ From these results, we observe that:
 
 ## Chi-square Test
 
-Now, we conduct chi-square tests to get a sense of whether boro and price range has an effect on the inspection grade that a given restaurant receives. Since the inspection grades reflect the extent of health hazards one might take risk of in dining at that particular restaurant and has been required by the City since 2010 for restaurants to post letter grades that correspond to scores received from sanitary inspections, this investigation might shed light on the whether dining at a particular boro or price range increases one's danger of food poisoning or other food-borne diseases.
+Now, we conduct chi-square tests to get a sense of whether boro and price range has an effect on the inspection grade that a given restaurant receives. Since the inspection grades reflect the extent of health hazards one might take risk of in dining at that particular restaurant and has been required by the City since 2010 for restaurants to post letter grades that correspond to scores received from sanitary inspections, this investigation might shed light on the whether dining at a particular borough or price range increases one's danger of food poisoning or other food-borne diseases.
 
 
 ### Inspection Grades and Boroughs
