@@ -200,7 +200,7 @@ Since p-value  0.07 > 0.05, at confidence level of 95%, we fail to reject the nu
 
 Now, we perform regression analysis from our data treating "rating" as the response variable of interest.
 
-### Regression Diagnostics and Data Transformation
+### Data Exploration and Variable Transformation
 
 #### Data Transformation
 
@@ -254,8 +254,15 @@ title(main = "After transformation")
 
 * Check
 ```{r}
+par(mfrow = c(2, 2))
 plot(rating ~ score, data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
 rating_score = lm(rating ~ score, data = reg_df)
+abline(rating_score, col = "darkorange", lwd = 2)
+plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
+     pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
+abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
+plot(rating ~ log(score), data = reg_df, col = "dodgerblue", pch = 20, cex = 1.5)
+rating_score = lm(rating ~ log(score), data = reg_df)
 abline(rating_score, col = "darkorange", lwd = 2)
 plot(fitted(rating_score), resid(rating_score), col = "dodgerblue",
      pch = 20, cex = 1.5, xlab = "Fitted", ylab = "Residuals")
@@ -268,8 +275,13 @@ abline(h = 0, lty = 2, col = "darkorange", lwd = 2)
 reg_df = reg_df %>% 
   select(rating, everything()) %>% 
   mutate(review_num = log(review_num),
+<<<<<<< HEAD
          rating = rating^2,
          score = log(score))
+=======
+         score = log(score),
+         rating = rating^2)
+>>>>>>> 8e6e31ebce4993561688492d838fc796d31f4da5
 ```
 
 
