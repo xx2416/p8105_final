@@ -15,6 +15,7 @@ library(plotly)
 library(ggridges)
 library(patchwork)
 library(ggplot2)
+library(knitr)
 
 
 Sys.setenv("plotly_username"="theonlyviper66")
@@ -30,7 +31,7 @@ inspection_raw<-read.csv("data/inspection_sub_latest_date.csv") %>%
   janitor::clean_names()
 ```
 
-## Top 10 cuisine in the whole NYC and by boro
+## Top 10 cuisine types in the whole NYC and by boro
 As a real international metropolitan, There is a total of 80 different cuisine types in NYC based on our dataset and we firstly plot the 10 most frequently shown cuisine types in NYC.
 ```{r echo = FALSE, warning=FALSE}
 top_10_cuisine_nyc<-
@@ -73,11 +74,27 @@ inspection_raw %>%
   facet_grid(~boro)
 ggplotly(boro_cuisine_bar)
 ```
-The top 3 frequently cuisine types in `Manhattan` and `Brooklyn` are `American`, `Coffee/Tea`, and `Chinese`. 
+The top 3 frequently shown cuisine types in `Manhattan` and `Brooklyn` are `American`, `Coffee/Tea`, and `Chinese`. In `Queens`, `Chinese`, `Latin American`, and `American` are the top 3 preferred cuisine types. This make sense, since  Queens has the largest Asian American population by county outside the Western United States. In `Bronx`, they are `pizza`, `American`, and `Chinese`. In `Staten Island`, `American`, `Donuts`, and `Pizza` are more liked by local citizens. 
 
+## Top 10 cuisine types by price
 
-## price vs cuisine
+Based on the description on [Yelp](https://www.yelp.com), the price of restaurants per Person is categorized by `$` signs: 
 
+* `$`= under 10 dollars
+* `$$`= 11-30 dollars
+* `$$$`= 31-60 dollars
+* `$$$$` = over 61 dollars
+
+```{r}
+inspection_raw %>%
+  drop_na(price) %>% 
+  group_by(price) %>%
+  summarise(n=n())%>%
+  mutate(
+    prop=round(n/sum(n)*100,2))
+```
+
+Based on our dataset, The price per person of restaurants which has the highest percentage in NYC is `11-30 dollars`. 
 ```{r}
 price_cuisine<-
   inspection_raw %>% 
@@ -98,9 +115,9 @@ price_cuisine<-
   facet_grid(~price)
 ggplotly(price_cuisine)
 ```
+In the price level `$`, the top 3 frequently shown cuisine types are `Chinese`, `Pizza`, and `American`. In the price level `$$`, the top 3 frequently shown cuisine types are `American`, `Chinese`, and `Coffee/Tea`. In the price level `$$$`, the top 3 cuisine types are `American`, `italian`, and `Chinese`. In the price level `$$$$`, the mainstreams become `Japanese` and `American`. There are only few restaurants labeled as `$$$$` in our dataset, which kind of contradicts the consensus that there are lots of fancy and expensive restaurants in NYC. This might be due to the limits of our data source since our datasets are selected and merged from restaurants that are under inspection or have been in inspection and from restaurants that can be searched from Yelp. Really expensive and gorgeous restaurants might not need inspection and not be searched from Yelp.
 
-## Price vs. borough
-
+## Price by borough
 ```{r}
 price_boro<-
   inspection_raw %>% 
@@ -109,12 +126,17 @@ price_boro<-
   mutate(boro = fct_infreq(boro),
          price=as.factor(price)) %>%
   ggplot(aes(x = boro, fill = price)) + 
-  geom_bar()
+  geom_bar()+
+  labs(
+    x="Borough",
+    y="Number"
+  )
+  
 ggplotly(price_boro)
 ```
+The above plot shows the number of restaurants at each price level in different boroughs. The proportions of restaurants at price level `$$$` and `$$$$` are so tiny among all the boroughs. The main stream in `Manhattan` is `$$`, while in the rest of boroughs.
 
 ## review number vs. rating score (exclude extreme outliers)
-
 ```{r}
 review_num_rating<-
   inspection_raw %>% 
@@ -126,12 +148,12 @@ review_num_rating<-
   geom_point()+
   geom_smooth()+
   labs(
-    x="Sum of review_numbers",
-    y="Rating"
+    y="Sum of review_numbers",
+    x="Rating"
   )
 ggplotly(review_num_rating)
 ```
-
+We are very curious about the relationship between rating and review numbers, so we make this plot to try to discover any latent association. As it showed above, the plot is seriously left-skewed. For most of rating lower than 3.0, the sum of review numbers are lower than 10000, which means for restaurants which gets low rates, the review numbers tend to be small. Meanwhile, it gives certain inspection about the model-building part, when using review numbers as a predictor.
 
 ## Review Scores & Price  
 
@@ -173,8 +195,7 @@ price_rating_map %>% config(mapboxAccessToken = Sys.getenv("MAPBOX_TOKEN"))
 In general, Manhattan has the largest number of restaurants and a much denser distribution compared to other boroughs. The proportion of the least and second least expensive restaurants are much higher compared to the proportions of more expensive dining places in Bronx, Queens, Brooklyn, and Staten Island. In addition, the majority of the restaurants that fall into the most expensive category are located in Manhattan.  
 
 ## cuisine map
-
-```{r}
+```{r warning=FALSE}
 price_rating_map = inspection_raw %>%
   mutate(text_label = str_c("Cuisine", cuisine_description)) %>% 
   drop_na(price) %>%

@@ -33,6 +33,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -222,6 +223,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -324,10 +328,7 @@ div.tocify {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li class="dropdown">
+        <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Exploratory Analysis
      
@@ -335,10 +336,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="eda.html">Eda about restaurants in NYC</a>
+      <a href="eda.html">Yelp Review Data</a>
     </li>
     <li>
-      <a href="map.html"></a>
+      <a href="map.html">NYC Inspection Data</a>
     </li>
   </ul>
 </li>
@@ -370,14 +371,172 @@ div.tocify {
 
 <div id="header">
 
-
-
-<h1 class="title toc-ignore">Home</h1>
-
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
 </div>
 
 
 
+<h1 class="title toc-ignore">Home</h1>
+<h3 class="subtitle">Find Your FAVORITE Restaurant in NYC!</h3>
+
+</div>
+
+
+<h6 style="text-align: left;">
+By: Xuesen Zhao | Tianshu Liu | Xicheng Xie | Jiayi Shi | Lincole Jiang
+</h6>
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>According to the data from <a
+href="https://www.statista.com/statistics/259776/number-of-people-who-went-to-restaurants-in-new-york-by-type/">Statista</a>,
+there had been over twenty-seven thousand restaurants in New York City
+by the end of 2018. Although more than a <a
+href="https://ny.eater.com/2020/12/30/22203053/nyc-coronavirus-timeline-restaurants-bars-2020">thousand
+restaurants</a> were shut down or temporarily closed due to the COVID-19
+pandemic, some restaurants quickly adapted to offering deliveries,
+takeout and outdoor dining. By mid May, New York City <a
+href="https://www.cnn.com/2021/04/29/politics/new-york-city-coronavirus-restrictions-lifted-de-blasio/index.html">reopened
+indoor dining at full capacity</a>. Meanwhile, as public schools,
+colleges and increasingly more companies reverted back to in-person
+operations, or at least a hybrid mode, the needs for dining start to
+grow rapidly once again.</p>
+<p><img src="pic/kitchen_snap_1.jpg" /></p>
+<p>While it is glad to see restaurants reopening and even new ones
+opening, it is crucial to keep up with rigorous inspection on food
+storage and processing, dining environment, and kitchen management to
+ensure public health safety. Such a year-long stagnancy on the
+restaurant industry also means potential needs for old facility
+check-ups, new employee training for appropriate food handling, proper
+waste disposal, cold-chain management, and kitchen sanitation. Hence, we
+are interested in not only the customers’ review of the restaurants in
+NYC, but also the performance of these restaurant during inspection
+programs held by the NYC Health Department.</p>
+<p><img src="pic/cleaning_1.jpg" /></p>
+</div>
+<div id="datasets" class="section level2">
+<h2>Datasets</h2>
+<p>With this in mind, we first identified the first 20181distinct
+restaurant in NYC on <a
+href="https://www.yelp.com/search?find_desc=Restaurants&amp;find_loc=New+York%2C+NY">Yelp</a>
+and used the corresponding CSS html tags to pull the restaurant name,
+review scores, price, number of reviews, and location for each
+restaurant.</p>
+<p>Meanwhile, we cited NYC restaurant inspection data that is made
+available to the public on <a
+href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">Opendata</a>
+This dataset contains detailed information on restaurant and college
+cafeteria inspection results, up to three years prior to the most recent
+inspection. The original <a
+href="https://data.cityofnewyork.us/api/views/43nn-pn8j/files/ec33d2c8-81f5-499a-a238-0213a38239cd?download=true&amp;filename=RestaurantInspectionDataDictionary_09242018.xlsx">dataset</a>
+has over 230 thousand rows and 27 columns by December 1st, 2022. Some
+examples of the variables include: inspection score and corresponding
+letter grade, violation description, date, types of cuisine, and the
+borough in which the restaurant is located in, etc.</p>
+<p>Then, we merged the two dataset by an unique identifier ID for each
+restaurant. Here is a quick glance at the merged data set:</p>
+<table>
+<colgroup>
+<col width="24%" />
+<col width="13%" />
+<col width="10%" />
+<col width="33%" />
+<col width="8%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">dba</th>
+<th align="left">boro</th>
+<th align="right">zipcode</th>
+<th align="left">cuisine_description</th>
+<th align="left">grade</th>
+<th align="right">rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">RUMA’S KITCHEN</td>
+<td align="left">Queens</td>
+<td align="right">11377</td>
+<td align="left">Bangladeshi</td>
+<td align="left">Z</td>
+<td align="right">4.1</td>
+</tr>
+<tr class="even">
+<td align="left">NONNAS PIZZERIA</td>
+<td align="left">Brooklyn</td>
+<td align="right">11222</td>
+<td align="left">Pizza</td>
+<td align="left">Z</td>
+<td align="right">3.8</td>
+</tr>
+<tr class="odd">
+<td align="left">66 CLUB</td>
+<td align="left">Brooklyn</td>
+<td align="right">11220</td>
+<td align="left">Chinese</td>
+<td align="left">A</td>
+<td align="right">4.2</td>
+</tr>
+<tr class="even">
+<td align="left">RUMA’S KITCHEN</td>
+<td align="left">Queens</td>
+<td align="right">11377</td>
+<td align="left">Bangladeshi</td>
+<td align="left">Z</td>
+<td align="right">4.1</td>
+</tr>
+<tr class="odd">
+<td align="left">HUDSON CLEARWATER</td>
+<td align="left">Manhattan</td>
+<td align="right">10014</td>
+<td align="left">French</td>
+<td align="left">Z</td>
+<td align="right">3.9</td>
+</tr>
+<tr class="even">
+<td align="left">GOLDEN STEAMER</td>
+<td align="left">Manhattan</td>
+<td align="right">10013</td>
+<td align="left">Bakery Products/Desserts</td>
+<td align="left">Z</td>
+<td align="right">4.3</td>
+</tr>
+<tr class="odd">
+<td align="left">DON POLLO</td>
+<td align="left">Queens</td>
+<td align="right">11421</td>
+<td align="left">Peruvian</td>
+<td align="left">Z</td>
+<td align="right">3.2</td>
+</tr>
+<tr class="even">
+<td align="left">CANTINA ROOFTOP</td>
+<td align="left">Manhattan</td>
+<td align="right">10036</td>
+<td align="left">Mexican</td>
+<td align="left">N</td>
+<td align="right">3.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="objectives-main-questions" class="section level2">
+<h2>Objectives &amp; Main Questions</h2>
+</div>
+<div id="the-upshots" class="section level2">
+<h2>The Upshot’s</h2>
+</div>
+<div id="what-food-is-ny-most-famous-for" class="section level2">
+<h2>What FOOD is NY most famous for?</h2>
+<p>Please feel free to grab a slice of pizza : )</p>
+<p><img src="pic/pizza_a.jpg" /></p>
+</div>
 
 
 
@@ -414,6 +573,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
