@@ -27,7 +27,8 @@ We used two data sets to complete our analysis.
 
 ### a. [DOHMH NYC Restaurant Inspection Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j)
 
-This dataset provided by Department of Health and Mental Hygiene (DOHMH) contains detailed information on restaurant inspection results. We downloaded and imported the version updated on Nov. 17th. Since this file is too large to be uploaded on Github, we used Github Large File System to store it and its cleaning results. 
+This dataset provided by Department of Health and Mental Hygiene (DOHMH) contains detailed information on restaurant inspection results. We downloaded and imported the version updated on Nov. 17th. 
+Since this file is too large to be uploaded on Github, we used Github Large File System to store it and its cleaning results. 
 
 In the process of data cleaning, we formatted variables, identified illegal values and dropped NAs. The distinct restaurants are filtered to be our targets. 
 
@@ -55,7 +56,7 @@ After selecting the first 8000 distinct restaurant with latest inspection record
   
   - `distance`: Distance between target location and searching result.
 
-Finally, due to the instability of the website display, we got 6053 restaurants' yelp information in total and joined them with the inspection dataset for subsequent analysis. 
+Finally, due to the instability of the website display, we got 6943 restaurants' yelp information in total and kept 6053 entries without NA which were joined with the inspection dataset for subsequent analysis. 
 
 ## Exploratory analysis
 For our exploratory analyses, we aim to observe patterns related to inspection information and cuisine types across different boroughs and price levels. Meanwhile, the latent associations between sanitary grading, inspection-related variables, review numbers, and rating are our particular interests. The exploratory analyses consist of two main parts: visualization and mapping of cuisine types and ratings in different boroughs and at price levels, visualization and mapping of critical inspection information.
