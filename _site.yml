@@ -10,7 +10,11 @@ navbar:
     - text: "NYC Inspection Data"
       href: map.html
   - text: "Statistical Analysis"
-    href: stat_analysis.html
+    menu: 
+    - text: "Data exploration"
+      href: stat_analysis.html
+    - text: "Model Selection"
+      href: stat.html
   - text: "Project Report"
     href: report.html
   - text: "Shiny app"
