@@ -4,6 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    source_code: embed
 runtime: shiny
 ---
 
@@ -21,6 +22,8 @@ library(jsonlite)
 library(geosphere)
 library(urltools)
 library(leaflet)
+library(DT)
+
 ```
 
 ```{r golbal, context = "data"}
@@ -51,19 +54,6 @@ price_list = c(
   "$$$$ >60"
 )
 
-sort_list_1 = c(
-  "distance", 
-  "rating", 
-  "price",
-  "inspection date"
-)
-
-sort_list_2 = c(
-  "rating", 
-  "price",
-  "inspection date"
-)
-
 ```
 
 User Input {.sidebar data-width=300}
@@ -73,14 +63,13 @@ User Input {.sidebar data-width=300}
 selectInput(
   inputId = "boro_choice",
   label = "Select borough",
-  choices = all_res_df %>% distinct(boro) %>% pull()
+  choices = all_res_df %>% distinct(boro) %>% pull(), 
+  selected  = "Manhattan"
 )
 
 textInput(
   inputId = "street", 
   label = "Street (Optional)")
-
-# reactive(input$street)
 
 selectInput(
   inputId = "cuisince_choice",
@@ -91,17 +80,15 @@ selectInput(
 sliderInput(
   inputId = "rating_range",
   label = "Choose rating range",
-  min = 0.0, max = 5.0, value = c(1.0, 5.0), step = 0.1, round = -2
+  min = 0.0, max = 5.0, value = c(3.5, 5.0), step = 0.1, round = -2
 )
 
 sliderTextInput(
   inputId = "price_range",
   label = "Choose price range" , 
   choices = price_list, 
-  selected = c(price_list[1], price_list[4])
+  selected = c(price_list[2], price_list[4])
 )
-
-
 
 sliderInput(
   "inspection_range",
@@ -109,25 +96,28 @@ sliderInput(
   min = 0, max = 100, value = c(0, 100)
 )
 
-
-sort_list = sort_list_2
 actionButton(
   "search_button", "Search"
 )
 ```
 
-Column {data-width= 700}
+Column {data-width= 650}
 -----------------------------------------------------------------------
 
 ### Result
 
 ```{r}
-get_coord <- function(url) {
+get_coord <- function(url, boro) {
   
   tryCatch({
-    json_output <- fromJSON(url(url))$features
-    coord <- json_output$geometry[2]
-    return(unlist(coord[1,]))
+    coord =  fromJSON(url(url))$features %>% 
+      tibble() %>% 
+      filter(properties$borough == boro) %>% 
+      slice(1,) %>% 
+      select(geometry) %>% unlist() %>% 
+      as.vector() %>% .[2:3] %>% 
+      as.double() %>% c()
+    return(ifelse(is.na(coord), c(0, 0), coord))
   }, 
   
   error=function(e){
@@ -138,16 +128,16 @@ get_coord <- function(url) {
 
 target_coord = eventReactive(
   input$search_button, 
-  get_coord(paste0("https://geosearch.planninglabs.nyc/v1/search?text=", url_encode(input$street), "&size=1"))
+  get_coord(paste0("https://geosearch.planninglabs.nyc/v1/search?text=", url_encode(input$street)), input$boro_choice)
 )
 
-
 get_dist <- function(coord1, coord2) {
-  dist = ifelse(coord1 == c(0, 0), "NA" , round(distm(coord1, coord2, fun = distHaversine)[,1]/1609, digits = 1) %>% as.character())
-  return(dist[1])
+  dist = ifelse(coord1 == c(0, 0), NA , round(distm(coord1, coord2, fun = distHaversine)[,1]/1609, digits = 1)[1])
+  dist = as.vector(dist)[1]
+  return(dist)
 }
 
-res_table = 
+res_df = 
   eventReactive(
     input$search_button,
     latest_res_df  %>% 
@@ -158,65 +148,74 @@ res_table =
       score %in% input$inspection_range[1]:input$inspection_range[2])%>% 
       mutate(
         coord = map2(longitude, latitude, ~c(.x, .y)), 
-        distance = map(coord, ~get_dist(target_coord(), .x)[1])
-        ) 
+        distance = map(coord, ~get_dist(target_coord(), .x)), 
+        info = str_c(dba, " (", rating,", ", price,  ")\n", building, " ", street)) %>% 
+      unnest(distance) %>% 
+      arrange(desc(rating))
 )
  
 
-renderDataTable(
-  res_table() %>%
+output$res_table = renderDataTable(
+  datatable(res_df() %>%
     select(dba, building, street, rating, price, score, distance) %>% 
-    arrange(desc(rating)) %>% 
     rename(name = dba, inspection = score) ,
       options = list(
         scrollX = TRUE,
         scrollY = "500px"
-      )
+      ), selection = "single")
 )
 
-
+dataTableOutput("res_table")
 
 ```
 
-Column {data-width=200}
+Column {data-width=400}
 -----------------------------------------------------------------------
 
 ### Map
 
 ```{r}
-res_map = 
+res_map =
   eventReactive(
     input$search_button,
-    latest_res_df  %>% 
-    filter(boro == input$boro_choice, 
-      cuisine_description ==  input$cuisince_choice, 
+    latest_res_df  %>%
+    filter(boro == input$boro_choice,
+      cuisine_description ==  input$cuisince_choice,
       rating %in% seq(input[["rating_range"]][1],input[["rating_range"]][2],0.1),
-      price_count %in% str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")), 
-      score %in% input$inspection_range[1]:input$inspection_range[2])%>% 
+      price_count %in% str_count(input$price_range[1],fixed("$")):str_count(input$price_range[2], fixed("$")),
+      score %in% input$inspection_range[1]:input$inspection_range[2])%>%
       mutate(
-        coord = map2(longitude, latitude, ~c(.x, .y)), 
-        distance = map(coord, ~get_dist(target_coord(), .x)[1]), 
+        coord = map2(longitude, latitude, ~c(.x, .y)),
+        distance = map(coord, ~get_dist(target_coord(), .x)),
         info = str_c(dba, " (", rating,", ", price,  ")\n", building, " ", street)
-        ) 
+        )
 )
 
-renderLeaflet({
+
+output$leaflet = renderLeaflet({
+ 
     leaflet(res_map()) %>%
-      # addProviderTiles(providers$Stamen.TonerLite,
-      #   options = providerTileOptions(noWrap = TRUE)
-      # ) %>%
-    addTiles() %>% addCircleMarkers(lng=~longitude, lat=~latitude, label = ~dba, popup=~ info, radius = 3, color = "red", fillOpacity = ~rating)
+    addTiles() %>% 
+    addCircleMarkers(lng=~longitude, lat=~latitude, label = ~dba, popup=~ info, radius = 3, color = "red", fillOpacity = ~rating)
   })
 
+leafletOutput("leaflet")
+
 ```
 
-### Chart C
+### Inspection Records
 
 ```{r}
-# renderText({ 
-#   seq(input[["rating_range"]][1], input[["rating_range"]][2], 0.1)
-# })
-reactive(input$rating_range)
+# input$res_table_cell_clicked
+
+output$ins_table = renderTable({
+  req(length(input$res_table_cell_clicked) > 0)
+  res_df() %>% slice(input$res_table_cell_clicked$row, ) %>% 
+    unnest(inspection_detail) %>% 
+    mutate(inspection_date = format(inspection_date,'%Y-%m-%d'), 
+           score = as.integer(score)) %>% 
+    select(violation_code, violation_description, critical_flag, inspection_date, inspection_type, score, grade)}, width = "10%")
+
+tableOutput("ins_table")
 
 ```
-
