@@ -404,15 +404,25 @@ div.tocify {
 the consideration for sanitary conditions. Combining the Inspection
 dataset and ratings information from the most popular rating website
 Yelp, we provide recommendations for restaurants in NYC based on one’s
-choice of price range, sanitary grading, location, and cuisine type.</p>
+choice of price range, sanitary grading, location, and cuisine type.
+Furthermore, we provide statistical analysis on whether sanitary grades
+depend on which borough one is dining in, which cuisine type one
+chooses, which price range the given restaurant is. This provides formal
+analysis that could potentially guide consumers on which types of
+restaurants to choose if they wish to avoid health hazards as much as
+possible. Finally, we fit multiple linear regression models on Yelp
+rating and attempt to understand which predictors to be statistically
+significant. The motivation on this front is to potentially provide
+insight for investors in the culinary industry on which measures to take
+(e.g., which borough should they open their restaurant, which price
+range should they shoot for, how much they should invest in sanitary
+conditions for the restaurant, etc.) if they wish to ensure the best
+ratings from platforms like Yelp.</p>
 </div>
 <div id="initial-questions" class="section level2">
 <h2>Initial Questions</h2>
 <ul>
-<li><p>Is there a relationship between boroughs and restaurants’
-inspection grades?</p></li>
-<li><p>Does price range of a restaurant has an effect on its safety
-levels?</p></li>
+<li><p>What are th</p></li>
 <li><p>What is the relationship between reviewer’s rating of the
 restaurant and other variables including inspection score, boroughs,
 price range, review numbers, cuisine type.</p></li>
@@ -439,10 +449,11 @@ illegal values and dropped NAs. The distinct restaurants are filtered to
 be our targets.</p>
 <p>After cleaning, we are mainly focus on variables shown below:</p>
 <ul>
-<li><p><code>score</code>: Total score for a particular
-inspection.</p></li>
-<li><p><code>grade</code>: Grade associated with the
-inspection.</p></li>
+<li><p><code>score</code>: Total score for a particular inspection. The
+higher the score, the lower the performance and riskier the health
+hazards.</p></li>
+<li><p><code>grade</code>: Grade associated with the inspection. The
+lower the score, the higher (alphabetically) the grade.</p></li>
 <li><p><code>violation_description</code>: Violation description
 associated with the inspection.</p></li>
 <li><p><code>critical_flag</code>: Indicator of critical
@@ -572,7 +583,7 @@ rating values by default, it can be sorted by each variables based on
 users’ preference. By clicking a specific entry of the table, the latest
 inspection records of the corresponding restaurant will be shown in the
 lower right.</p>
-<p><img src="pic/Shiny_Screen_Shot.png" /></p>
+<p><img src="./pic/Shiny_Screen_Shot.png" /></p>
 </div>
 
 

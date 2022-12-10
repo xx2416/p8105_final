@@ -9,13 +9,12 @@ output:
 ---
 
 ## Motivation
-One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type.
+
+One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type. Furthermore, we provide statistical analysis on whether sanitary grades depend on which borough one is dining in, which cuisine type one chooses, which price range the given restaurant is. This provides formal analysis that could potentially guide consumers on which types of restaurants to choose if they wish to avoid health hazards as much as possible. Finally, we fit multiple linear regression models on Yelp rating and attempt to understand which predictors to be statistically significant. The motivation on this front is to potentially provide insight for investors in the culinary industry on which measures to take (e.g., which borough should they open their restaurant, which price range should they shoot for, how much they should invest in sanitary conditions for the restaurant, etc.) if they wish to ensure the best ratings from platforms like Yelp.
 
 ## Initial Questions
 
-* Is there a relationship between boroughs and restaurants' inspection grades?
-
-* Does price range of a restaurant has an effect on its safety levels?
+* What are th
 
 * What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type.
 
@@ -34,9 +33,9 @@ In the process of data cleaning, we formatted variables, identified illegal valu
 
 After cleaning, we are mainly focus on variables shown below:
 
-  - `score`: Total score for a particular inspection.
+  - `score`: Total score for a particular inspection. The higher the score, the lower the performance and riskier the health hazards.
   
-  - `grade`: Grade associated with the inspection. 
+  - `grade`: Grade associated with the inspection. The lower the score, the higher (alphabetically) the grade. 
   
   - `violation_description`: Violation description associated with the  inspection. 
   
