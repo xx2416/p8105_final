@@ -1,8 +1,15 @@
 ---
 title: "Project report"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: flatly
 ---
 
 ## Motivation
+One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type.
 
 ## Initial Questions
 
@@ -13,6 +20,16 @@ title: "Project report"
 ## Data Processing and Cleaning
 
 ## Exploratory analysis
+For our exploratory analyses, we aim to observe patterns related to inspection information and cuisine types across different boroughs and price levels. Meanwhile, the latent associations between sanitary grading, inspection-related variables, review numbers, and rating are our particular interests. The exploratory analyses consist of two main parts: visualization and mapping of cuisine types and ratings in different boroughs and at price levels, visualization and mapping of critical inspection information.
+
+### Visulization of cuisine types and ratings in NYC
+Based on our data frame, we get the top 10 popular cuisine types in NYC and in different boroughs across NYC. `American`, `Chinese` are always among people's favorites, while citizens in different boroughs shows their different preferences. Then, we visualized the pattern of the top 10 frequent cuisine at different price, which can be useful when considering the preferences at different levels of consumption. After that, restaurants at different price levels by borough are inspected. 
+We then discover the association between review number and review scores. Living in a era full of bots and artificial intelligence, it's interesting to have some inspection on them. Meanwhile, the review scores by price levels are visualized. At last, we mapped the geolocation of restaurants by price and cuisine types. 
+
+### violation 
+After grouping the data by the types of violation, we identified the 10 most frequent violations to gain an understanding of the general problems faced by the restaurants. More specifically, we look at the proportions of violations made by each restaurant and calculated the proportion that was categorized as "critical". We found that more than 50 percent of the violations are not critical. In addition, the ratio of critical to non-critical violations is approximately the same across different boroughs of NYC.
+
+In terms of the performance during inspection, the majority of the restaurants in NYC received an "A" as the inspection grade, either during the initial inspection or re-inspection. Among all boroughs in NYC, Bronx was the one with the largest proportion of restaurants receiving a grade "C" while no documented restaurant in Staten Island received a "C".
 
 ## Statistical Analysis
 

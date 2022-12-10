@@ -29,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -219,7 +223,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -229,6 +299,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -248,10 +328,7 @@ $(document).ready(function () {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li class="dropdown">
+        <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Exploratory Analysis
      
@@ -259,10 +336,10 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="eda.html">Eda about restaurants in NYC</a>
+      <a href="eda.html">Yelp Review Data</a>
     </li>
     <li>
-      <a href="map.html"></a>
+      <a href="map.html">NYC Inspection Data</a>
     </li>
   </ul>
 </li>
@@ -294,6 +371,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Project report</h1>
@@ -301,10 +386,82 @@ $(document).ready(function () {
 </div>
 
 
+<div id="motivation" class="section level2">
+<h2>Motivation</h2>
+<p>One metric consistently missing in restaurant recommendation apps is
+the consideration for sanitary conditions. Combining the Inspection
+dataset and ratings information from the most popular rating website
+Yelp, we provide recommendations for restaurants in NYC based on one’s
+choice of price range, sanitary grading, location, and cuisine type.</p>
+</div>
+<div id="initial-questions" class="section level2">
+<h2>Initial Questions</h2>
+</div>
+<div id="related-work" class="section level2">
+<h2>Related Work</h2>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+</div>
+<div id="data-processing-and-cleaning" class="section level2">
+<h2>Data Processing and Cleaning</h2>
+</div>
+<div id="exploratory-analysis" class="section level2">
+<h2>Exploratory analysis</h2>
+<p>For our exploratory analyses, we aim to observe patterns related to
+inspection information and cuisine types across different boroughs and
+price levels. Meanwhile, the latent associations between sanitary
+grading, inspection-related variables, review numbers, and rating are
+our particular interests. The exploratory analyses consist of two main
+parts: visualization and mapping of cuisine types and ratings in
+different boroughs and at price levels, visualization and mapping of
+critical inspection information.</p>
+<div id="visulization-of-cuisine-types-and-ratings-in-nyc"
+class="section level3">
+<h3>Visulization of cuisine types and ratings in NYC</h3>
+<p>Based on our data frame, we get the top 10 popular cuisine types in
+NYC and in different boroughs across NYC. <code>American</code>,
+<code>Chinese</code> are always among people’s favorites, while citizens
+in different boroughs shows their different preferences. Then, we
+visualized the pattern of the top 10 frequent cuisine at different
+price, which can be useful when considering the preferences at different
+levels of consumption. After that, restaurants at different price levels
+by borough are inspected. We then discover the association between
+review number and review scores. Living in a era full of bots and
+artificial intelligence, it’s interesting to have some inspection on
+them. Meanwhile, the review scores by price levels are visualized. At
+last, we mapped the geolocation of restaurants by price and cuisine
+types.</p>
+</div>
+<div id="violation" class="section level3">
+<h3>violation</h3>
+<p>After grouping the data by the types of violation, we identified the
+10 most frequent violations to gain an understanding of the general
+problems faced by the restaurants. More specifically, we look at the
+proportions of violations made by each restaurant and calculated the
+proportion that was categorized as “critical”. We found that more than
+50 percent of the violations are not critical. In addition, the ratio of
+critical to non-critical violations is approximately the same across
+different boroughs of NYC.</p>
+<p>In terms of the performance during inspection, the majority of the
+restaurants in NYC received an “A” as the inspection grade, either
+during the initial inspection or re-inspection. Among all boroughs in
+NYC, Bronx was the one with the largest proportion of restaurants
+receiving a grade “C” while no documented restaurant in Staten Island
+received a “C”.</p>
+</div>
+</div>
+<div id="statistical-analysis" class="section level2">
+<h2>Statistical Analysis</h2>
+</div>
+<div id="shiny-app" class="section level2">
+<h2>Shiny app</h2>
+</div>
 
 
 
-
+</div>
+</div>
 
 </div>
 
@@ -336,7 +493,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
