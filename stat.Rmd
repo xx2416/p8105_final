@@ -221,7 +221,7 @@ top_cuisine = df %>%
   pull(cuisine_description)
 
 reg_df = df %>% 
-  select(rating, boro, cuisine_description, score, review_num, price) %>%
+  select(rating, boro, grade, cuisine_description, score, review_num, price) %>%
   filter(cuisine_description %in% top_cuisine) %>% 
   filter(grade %in% c("A", "B", "C"))
 
@@ -414,4 +414,31 @@ get_best_result = function(caret_fit) {
 
 get_best_result(elnet_int)
 ```
+
+Criterion based
+```{r}
+library(leaps)
+b = regsubsets(rating ~ ., data = reg_df)
+rs = summary(b)
+
+par(mfrow = c(2, 2))
+plot(rs$rss, xlab = "Number of Variables", ylab = "RSS", type = "b")
+
+plot(rs$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "b")
+best_adj_r2 = which.max(rs$adjr2) # 4 (index)
+points(best_adj_r2, rs$adjr2[best_adj_r2], # point(x, y)
+       col = "red",cex = 2, pch = 20)
+
+plot(rs$cp, xlab = "Number of Variables", ylab = "Cp", type = 'b')
+best_cp = which.min(rs$cp)
+points(best_cp, rs$cp[best_cp], 
+       col = "red", cex = 2, pch = 20)
+
+plot(rs$bic, xlab = "Number of Variables", ylab = "BIC", type = 'b')
+best_bic = which.min(rs$bic)
+points(best_bic, rs$bic[best_bic], 
+       col = "red", cex = 2, pch = 20)
+```
+
+
 
