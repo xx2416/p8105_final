@@ -10,7 +10,6 @@
 
 
 
-<meta name="date" content="2022-12-09" />
 
 <title>Statistical Analysis</title>
 
@@ -402,7 +401,6 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Statistical Analysis</h1>
-<h4 class="date">2022-12-09</h4>
 
 </div>
 
@@ -853,6 +851,7 @@ fit_3 %&gt;% broom::tidy() %&gt;% knitr::kable(digits = 4)</code></pre>
 <p>In this step, we perform cross-validation to compare our three models
 in terms of cross-validation prediction error.</p>
 <pre class="r"><code>library(modelr)
+set.seed(1)
 cv_df &lt;- crossv_mc(reg_df, n = 100) %&gt;%
   mutate(
     train = map(train, as_tibble),
@@ -884,9 +883,9 @@ cv_df %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">5.006</td>
-<td align="right">5.027</td>
-<td align="right">5.026</td>
+<td align="right">4.979</td>
+<td align="right">5</td>
+<td align="right">4.999</td>
 </tr>
 </tbody>
 </table>
@@ -942,8 +941,12 @@ non-linearity, unequal error variances.</p>
 <div id="residual-vs.-fitted-plot" class="section level4">
 <h4>Residual vs. Fitted Plot</h4>
 <pre class="r"><code># Plot model residuals against fitted values
-plot(fit_1)</code></pre>
-<p><img src="stat_files/figure-html/unnamed-chunk-12-1.png" width="90%" /><img src="stat_files/figure-html/unnamed-chunk-12-2.png" width="90%" /><img src="stat_files/figure-html/unnamed-chunk-12-3.png" width="90%" /><img src="stat_files/figure-html/unnamed-chunk-12-4.png" width="90%" /></p>
+par(mfrow = c(2, 2))
+plot(fit_1, which = 1)
+plot(fit_1, which = 2)
+plot(fit_1, which = 3)
+plot(fit_1, which = 4)</code></pre>
+<p><img src="stat_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
 <ol style="list-style-type: decimal">
 <li><p>The residuals do not “bounce randomly” around the 0 line,
 suggesting that the assumption that the relationship is linear is not
