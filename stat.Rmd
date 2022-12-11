@@ -246,17 +246,13 @@ get_best_result(elnet_int)
 
 ### Model Diagnostics
 
-In this final step, we perform model diagnostics to see if assumptions are satisfied for our chosen, optimal model. Specifically, we assess whether our model of choice violates the assumptions of multicollinearity by using VIF values, non-linearity, unequal error variances, and outliers by examining residual vs. fitted plot.
+In this final step, we perform model diagnostics to see if assumptions are satisfied for our chosen, optimal model. Specifically, we assess whether our model of choice violates the assumptions of linear regression model, including multicollinearity by using VIF values, non-linearity, unequal error variances.
 
 #### Residual vs. Fitted Plot
 
 ```{r}
 # Plot model residuals against fitted values
-reg_df %>% 
-  add_predictions(fit_1) %>%
-  add_residuals(fit_1) %>% 
-  ggplot(aes(x = pred, y = resid)) +
-  geom_point()
+plot(fit_1)
 ```
 
 1. The residuals do not "bounce randomly" around the 0 line, suggesting that the assumption that the relationship is linear is not reasonable.
