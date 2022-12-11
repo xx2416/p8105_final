@@ -16,6 +16,9 @@ library(tidyverse)
 library(readr)
 ```
 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZVljKV5TWDM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Background
 
 According to the data from [Statista](https://www.statista.com/statistics/259776/number-of-people-who-went-to-restaurants-in-new-york-by-type/), there had been over twenty-seven thousand restaurants in New York City by the end of 2018. Although more than a [thousand restaurants](https://ny.eater.com/2020/12/30/22203053/nyc-coronavirus-timeline-restaurants-bars-2020) were shut down or temporarily closed due to the COVID-19 pandemic, some restaurants quickly adapted to offering deliveries, takeout and outdoor dining. By mid May, New York City [reopened indoor dining at full capacity](https://www.cnn.com/2021/04/29/politics/new-york-city-coronavirus-restrictions-lifted-de-blasio/index.html). Meanwhile, as public schools, colleges and increasingly more companies reverted back to in-person operations, or at least a hybrid mode, the needs for dining start to grow rapidly once again. 
@@ -52,7 +55,6 @@ inspection_all%>%
 
 * Can we set up an interactive recommender to provide appropriate searching results as well as inspection records?
 
-## Screencast
 
 
 ## Fun Fact: What FOOD is NY most famous for?
