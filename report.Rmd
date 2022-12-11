@@ -12,7 +12,9 @@ output:
 
 One metric consistently missing in restaurant recommendation apps is the consideration for sanitary conditions. Combining the Inspection dataset and ratings information from the most popular rating website Yelp, we provide recommendations for restaurants in NYC based on one’s choice of price range, sanitary grading, location, and cuisine type on our Shiny App. This is particularly useful for those that have higher standards for sanitary conditions. Furthermore, we provide statistical analysis on whether sanitary grades depend on which borough one is dining in, which cuisine type one chooses, and which price range the given restaurant is. This provides formal analysis that could potentially guide consumers on which types of restaurants to choose if they wish to avoid health hazards as much as possible. Finally, we fit multiple linear regression models on Yelp rating and attempt to understand which predictors to be statistically significant. The motivation on this front is to potentially provide insight for investors in the culinary industry on which measures to take (e.g., which borough should they open their restaurant, which price range should they shoot for, how much they should invest in sanitary conditions for the restaurant, etc.) if they wish to ensure the best ratings from platforms like Yelp.
 
-## Initial Questions
+## The Nature of Our Inquiry
+
+### Initial Questions
 
 * What does the dataset we have at hand tell us about the restaurant industry in New York City? For example, what is the geographical distribution of restaurants with respect to price range, cuisine type, and grade(e.g., Washington Heights is dominated by Latin American restaurants)? Is there any pattern with respect to inspection information and cuisine types across different boroughs and price levels? (i.e., EDA)
 
@@ -20,8 +22,22 @@ One metric consistently missing in restaurant recommendation apps is the conside
 
 * What is the relationship between reviewer's rating of the restaurant and other variables including inspection score, boroughs, price range, review numbers, cuisine type? If an investor wishes to open a new restaurant and maximize review score on Yelp, which factors should he consider and which areas should he focus on investing in? (e.g., Multiple Linear Regression)
 
+### Along the Way...
+
+* How reliable is the Yelp rating data that we have extracted? There exists a significant positive correlation between review numbers and rating, suggesting that the higher the number of reviews that a restaurant has, the higher its rating tends to be. This creates a potential for some to invest in In this way, how much does bots or paid reviewers influence this outcome of rating? How reliable should a restaurant owner or a consumer depend on this rating to assess the quality of the restaurant?
+
+* How credible is the price variable? The initial "price" variable must had been a numerical variable that is the median/mean spending of an individual in the particular restaurant. However, because of the nature of our data, this variable has been categorized to the levels of 1, 2, 3, 4, though with specific range associated with each. In this way, a restaurant that has a median individual spending of \$100 would appear the same as one that has a median individual spending of \$1000. How much confounding would this create for it as an independent predictor variable?
+
+### Final Thoughts
+
+* Our Shiny App involves a strongly interactive feature that recommends restaurant for one that types their desired price range, location, cuisine type, and sanitary score. However, unlike the NYC Inspection Data and the Yelp Website, which updates daily, our results may not be the most up-to-date. In this way, will there be a feasible way (perhaps through collaboration with Yelp) to develop an recommender that combines the most up-to-date raw data from both Yelp and NYC Inspection Data?
+
 
 ## Related Work
+
+* In an article concerning the [impact of the letter-grade program on restaurant sanitary conditions and dining behaviors in New York City](https://ajph.aphapublications.org/doi/full/10.2105/AJPH.2014.302404), it was found that the letter grading system has resulted in improvements in sanitary conditions on unannounced inspection and that it is an effective regulatory tool. In this way, the grading system might be of reference to consumers as well: if a restaurant has not received a grade of "A", it might imply that there exists some serioues health hazards that dining at the restaurant might entail. This underlies the basis for our formal statistical analysis with respect to Inspection grades.
+
+* In a research [article published by Harvard Business School](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1928601), an analysis was done on the efficacy Yelp ratings. Specifically, it was found that an increase in 1 star on Yelp rating leads to a 5-9% increase in revenue, and that such an the effect is driven by individual restaurants and unaffected by chained affiliations. This suggests a practical incentive for restaurant owners to create bloated reviews by using bots or fake reviewers, which adds duplicity of our rating variable.
 
 
 ## Data Collection and Cleaning
@@ -63,7 +79,7 @@ Finally, due to the instability of the website display, we got 6943 restaurants'
 
 ## Exploratory analysis
 
-For our exploratory analyses, we aimed to identify patterns related to inspection information and cuisine types across different boroughs and price levels. Meanwhile, the latent associations between sanitary grading, inspection-related variables, review numbers, and rating are our particular interests. The exploratory analyses consisted of two main parts: visualization and mapping of cuisine types and ratings in different boroughs and at price levels, visualization and mapping of critical inspection information.
+For our exploratory analyses, we aimed to identify patterns related to inspection information and cuisine types across different boroughs and price levels. Meanwhile, the latent associations between sanitary grading, inspection-related variables, review numbers, and rating are our particular interests. The exploratory analyses consisted of two main parts: visualization and mapping of cuisine types and ratings in different boroughs and at price levels, and visualization and mapping of critical inspection information.
 
 ### Visulization of cuisine types and ratings in NYC
 
@@ -87,12 +103,16 @@ In terms of the performance during inspection, the majority of the restaurants i
 
 ## Formal Statistical Analysis
 
+In this section, we conducted formal statistical tests and constructed multiple lienar regression model to analyze the data at hand. Specifically, to understand the effects of categorical variables like price range, borough, and cuisine type on inspection grades, we conducted chi-square tests and proportion tests. Moreover, to find adequate predictors for Yelp Rating, we fitted several MLR models using variable model selection techniques and compared their efficacy by performing cross-validation. 
+
 ### Statistical Testing: Factors affecting Inspection Grade
 
-In the first part of our statistical analysis, we focused on investigating the factors that influence inspection grades. 
+In the first part of our statistical analysis, we focused on investigating the factors that influence inspection grades. Specifically, we performed Chi-Square tests on inspection grades against borough and price range, and the results inform us that while the inspection grades significantly differ among different groups of borough at $\alpha = 0.05$, inspection grades do not differ significantly among restaurants with different price range. On the other hand, since receiving an "A" grade is a valid metric for whether the restaurant satisfies high sanitary standards in New York City, we performed proportion test on whether the percentage of restaurants receiving an "A" in inspection grades differ by price range. The result, which runs a bit counterintuitive compared to our previous result, indicates that there is a statistically significant difference in proportion of restaurants receiving "A"s among different price ranges. In other words, when a consumer intends on choosing the restaurant of the best sanitary conditions, the price range of the particular restaurant matter to this choice; though there might not be an overall difference when considering all different inspection grades. Finally, we did proportion tests for each cuisine type that has at least ten restaurants included in our dataset, and concluded that the restaurants that are most likely to have the highest inspection grades are delicatessen(soups/salads/sandwich), followed by donuts, salads, and vegan.
+
 
 ### Multipe Linear Regression: Factors Predicting Yelp Rating
 
+The second part of formal statistical analysis involves building a regression model that predicts rating. In particular, we attempt to answer the second question raised for statistical analysis: if an investor is looking to open a new restaurant in New York City, what factors should he invest in the most? Since the response variable, rating, is negatively skewed, we performed a square transform on the data to normalize it. We fitted three models in total, the first by conducting preliminary analysis on the effect of individual predictors on the response variable the interaction between independent variables; the second by using the criterion-based method for model prediction, and the third by using backward selection. We then performed cross-validation on these three models to compare their efficacy. In conclusion, the first model provides the least RMSE and is regarded as the optimal of three. In particular, this model predicts that price range, borough, the number of reviews, the percentage of critical flags received by the restaurant out of all violations, and the interaction between review number and price range are all statistically significant predictors of rating. One particular point to note is in all our attempts to fit score as an independent variable and also from our correlation analysis, it could not be shown to be a statistically significant predictor for sq_rating. Therefore, if I were a restaurant owner, I would invest in such criterions as price range, borough, number of Yelp reviews(maybe to hire bots) so as to maximize my Yelp review rating, and incidentally, wealth; than to pay any attention on improving my sanitary condition. 
 
 
 ## Shiny app
@@ -105,3 +125,8 @@ While the table is sorted by rating values by default, it can be sorted by each 
 By clicking a specific entry of the table, the latest inspection records of the corresponding restaurant will be shown in the lower right.
 
 ![](./pic/Shiny_Screen_Shot.png)
+
+
+## Discussion
+
+There are quite a few improvements possible for our study. In particular, upon constructing our regression model, model diagnostics analysis indicate that our model has violated the assumptions of linearity, equal variance, and have several outliers. Our natural next step would be to research other forms of modeling that might overcome these violations. Furthermore, as stated formerly, our Shiny App, though extremely versatile and practical, don't have access to real-time dataset to update daily as do the NYC Inspection Data or the Yelp Website. Therefore, the logical next step will be for us to incorporate the updating nature and produce an app that provides recommendation using the most recent data.s
