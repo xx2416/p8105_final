@@ -1,6 +1,5 @@
 ---
 title: "Statistical Analysis"
-date: "2022-12-09"
 output:
   html_document:
     code_folding: hide
@@ -18,7 +17,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   error = FALSE,
   fig.width = 6,
-  fig.asp = .6,
+  fig.asp = .9,
   out.width = "90%"
 )
 
@@ -181,8 +180,9 @@ fit_3 %>% broom::tidy() %>% knitr::kable(digits = 4)
 
 In this step, we perform cross-validation to compare our three models in terms of cross-validation prediction error.
 
-```{r}
+```{r fig.height=3}
 library(modelr)
+set.seed(1)
 cv_df <- crossv_mc(reg_df, n = 100) %>%
   mutate(
     train = map(train, as_tibble),
@@ -246,17 +246,17 @@ get_best_result(elnet_int)
 
 ### Model Diagnostics
 
-In this final step, we perform model diagnostics to see if assumptions are satisfied for our chosen, optimal model. Specifically, we assess whether our model of choice violates the assumptions of multicollinearity by using VIF values, non-linearity, unequal error variances, and outliers by examining residual vs. fitted plot.
+In this final step, we perform model diagnostics to see if assumptions are satisfied for our chosen, optimal model. Specifically, we assess whether our model of choice violates the assumptions of linear regression model, including multicollinearity by using VIF values, non-linearity, unequal error variances.
 
 #### Residual vs. Fitted Plot
 
 ```{r}
 # Plot model residuals against fitted values
-reg_df %>% 
-  add_predictions(fit_1) %>%
-  add_residuals(fit_1) %>% 
-  ggplot(aes(x = pred, y = resid)) +
-  geom_point()
+par(mfrow = c(2, 2))
+plot(fit_1, which = 1)
+plot(fit_1, which = 2)
+plot(fit_1, which = 3)
+plot(fit_1, which = 4)
 ```
 
 1. The residuals do not "bounce randomly" around the 0 line, suggesting that the assumption that the relationship is linear is not reasonable.

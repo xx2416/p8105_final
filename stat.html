@@ -10,11 +10,10 @@
 
 
 
-<meta name="date" content="2022-12-09" />
 
 <title>Statistical Analysis</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -186,8 +185,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -195,9 +194,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -395,7 +401,6 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Statistical Analysis</h1>
-<h4 class="date">2022-12-09</h4>
 
 </div>
 
@@ -846,6 +851,7 @@ fit_3 %&gt;% broom::tidy() %&gt;% knitr::kable(digits = 4)</code></pre>
 <p>In this step, we perform cross-validation to compare our three models
 in terms of cross-validation prediction error.</p>
 <pre class="r"><code>library(modelr)
+set.seed(1)
 cv_df &lt;- crossv_mc(reg_df, n = 100) %&gt;%
   mutate(
     train = map(train, as_tibble),
@@ -877,9 +883,9 @@ cv_df %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">4.987</td>
-<td align="right">5.006</td>
-<td align="right">5.005</td>
+<td align="right">4.979</td>
+<td align="right">5</td>
+<td align="right">4.999</td>
 </tr>
 </tbody>
 </table>
@@ -929,17 +935,17 @@ get_best_result(elnet_int)</code></pre>
 <h3>Model Diagnostics</h3>
 <p>In this final step, we perform model diagnostics to see if
 assumptions are satisfied for our chosen, optimal model. Specifically,
-we assess whether our model of choice violates the assumptions of
-multicollinearity by using VIF values, non-linearity, unequal error
-variances, and outliers by examining residual vs. fitted plot.</p>
+we assess whether our model of choice violates the assumptions of linear
+regression model, including multicollinearity by using VIF values,
+non-linearity, unequal error variances.</p>
 <div id="residual-vs.-fitted-plot" class="section level4">
 <h4>Residual vs. Fitted Plot</h4>
 <pre class="r"><code># Plot model residuals against fitted values
-reg_df %&gt;% 
-  add_predictions(fit_1) %&gt;%
-  add_residuals(fit_1) %&gt;% 
-  ggplot(aes(x = pred, y = resid)) +
-  geom_point()</code></pre>
+par(mfrow = c(2, 2))
+plot(fit_1, which = 1)
+plot(fit_1, which = 2)
+plot(fit_1, which = 3)
+plot(fit_1, which = 4)</code></pre>
 <p><img src="stat_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
 <ol style="list-style-type: decimal">
 <li><p>The residuals do not “bounce randomly” around the 0 line,

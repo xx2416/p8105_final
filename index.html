@@ -13,7 +13,7 @@
 
 <title>Home</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -185,8 +185,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -194,9 +194,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -343,8 +350,20 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li>
-  <a href="stat_analysis.html">Statistical Analysis</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Statistical Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stat_analysis.html">Data exploration</a>
+    </li>
+    <li>
+      <a href="stat.html">Model Selection</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="report.html">Project Report</a>
@@ -529,15 +548,22 @@ restaurant. Here is a quick glance at the merged dataset:</p>
 </div>
 <div id="objectives-main-questions" class="section level2">
 <h2>Objectives &amp; Main Questions</h2>
+<ul>
+<li><p>What is the geographical distibution of restaurants with respect
+to price, cuisine type, or other characteristic of the
+restaurant?</p></li>
+<li><p>Is there any pattern related to inspection information and
+cuisine types across different boroughs and price levels?</p></li>
+<li><p>Can we set up an interactive recommender to provide appropriate
+searching results as well as inspection records?</p></li>
+</ul>
 </div>
 <div id="screencast" class="section level2">
 <h2>Screencast</h2>
 </div>
-<div id="the-upshots" class="section level2">
-<h2>The Upshot’s</h2>
-</div>
-<div id="what-food-is-ny-most-famous-for" class="section level2">
-<h2>What FOOD is NY most famous for?</h2>
+<div id="fun-fact-what-food-is-ny-most-famous-for"
+class="section level2">
+<h2>Fun Fact: What FOOD is NY most famous for?</h2>
 <p>Please feel free to grab a slice of pizza : )</p>
 <p><img src="pic/pizza_a.jpg" /></p>
 </div>

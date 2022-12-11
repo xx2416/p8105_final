@@ -46,13 +46,16 @@ inspection_all%>%
 
 
 ## Objectives & Main Questions
+* What is the geographical distibution of restaurants with respect to price, cuisine type, or other characteristic of the restaurant?
+
+* Is there any pattern related to inspection information and cuisine types across different boroughs and price levels?
+
+* Can we set up an interactive recommender to provide appropriate searching results as well as inspection records?
 
 ## Screencast
 
 
-## The Upshot's
-
-## What FOOD is NY most famous for?
+## Fun Fact: What FOOD is NY most famous for?
 
 Please feel free to grab a slice of pizza : )
 
